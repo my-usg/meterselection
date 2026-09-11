@@ -39,6 +39,19 @@ jobs:
           git diff --exit-code -- data/capacities.json \
             || (echo "::error::data/capacities.json does not match data/capacities.xlsx. Run tools/extract_capacities.py and commit the result." && exit 1)
 
+      # The build has to be reproducible for the staleness check below to mean
+      # anything. It once stamped the bundle with the git commit, which made
+      # every rebuild differ from the committed file and failed this job on
+      # every push for a reason unrelated to the rules.
+      - name: Build is reproducible
+        run: |
+          python tools/build.py
+          cp dist/usg-meter-sizing.js /tmp/first.js
+          python tools/build.py
+          diff -q /tmp/first.js dist/usg-meter-sizing.js \
+            || (echo "::error::tools/build.py is not deterministic - two builds of the same sources differ." && exit 1)
+          git checkout -- dist/usg-meter-sizing.js 2>/dev/null || true
+
       # A rules change in the Python without the rebuilt bundle beside it
       # would leave the website running the old rules. This is what stops it.
       - name: Bundle is up to date

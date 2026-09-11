@@ -28,6 +28,14 @@ HTTP, so the bot and the page cannot give different answers.
 `tests/cases.json` and fails if they disagree, so the two copies of the rules
 cannot drift apart unnoticed.
 
+## Checking what is live
+
+`window.USGMeterSizing.VERSION` in the browser console returns a short hash of
+the sources the loaded bundle was built from. Run `python tools/build.py` in a
+clean checkout and the first line of `dist/usg-meter-sizing.js` carries the
+same stamp, so the two can be compared. It is deliberately not a git commit:
+the build must be reproducible or CI's staleness check could never pass.
+
 ## Publishing a change
 
 1. Edit `algorithm/meter_sizing.py` **and** `src/js/meter_sizing.js`. They are

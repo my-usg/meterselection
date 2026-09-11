@@ -25,6 +25,10 @@
   "use strict";
 
   var CAPACITIES = /*__CAPACITIES__*/ null;
+  // A short hash of the sources this bundle was built from, stamped by
+  // tools/build.py. Not a git commit: the build has to be reproducible or
+  // the staleness check in CI can never pass. Recompute it locally to
+  // confirm the live page is running the sources you think it is.
   var VERSION = /*__VERSION__*/ "dev";
 
   var FAMILIES = CAPACITIES.families;
