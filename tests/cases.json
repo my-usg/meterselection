@@ -4851,5 +4851,101 @@
       "rotary_roots.compensation": "None",
       "rotary_roots.radio": "No"
     }
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 250000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 250000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "No",
+      "rotary_roots.eagle_type": "Rotary Corrector"
+    }
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 400000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 400000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "No",
+      "rotary_roots.eagle_type": "Rotary Corrector"
+    }
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 700000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 700000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "No",
+      "rotary_roots.eagle_type": "Rotary Corrector"
+    }
+  },
+  {
+    "inlet": 12.75,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 3.5,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 7.5,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 17.5,
+    "inlet_units": "psi",
+    "flow": 3000,
+    "flow_units": "CFH"
   }
 ]

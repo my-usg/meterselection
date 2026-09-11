@@ -124,6 +124,17 @@
     return parts.join(".");
   }
 
+  // Capacities, always to the whole CFH. Interpolating between two tabulated
+  // rows lands on fractions - 2,698.5 CFH and the like - and a fraction of a
+  // cubic foot per hour is noise next to a meter's rating. fmt() is left alone
+  // because it also formats the entered pressure and flow, where a decimal the
+  // customer typed has to survive.
+  function fmtCfh(n) {
+    if (n === null || n === undefined) return "";
+    var s = String(Math.round(Number(n)));
+    return s.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
   // Does this meter work for the job? Returns a record either way, with the
   // reason it does not, which is what the "no meter available" copy quotes.
   function evaluate(model, inletPsi, flowCfh) {
@@ -160,16 +171,16 @@
     }
 
     if (cap + 1e-9 < required) {
-      result.reason = "capacity " + fmt(cap) + " CFH is below the " +
-        fmt(required) + " CFH required" +
+      result.reason = "capacity " + fmtCfh(cap) + " CFH is below the " +
+        fmtCfh(required) + " CFH required" +
         (oversize ? " (" + Math.round(oversize * 100) + "% oversize)" : "");
       return result;
     }
 
     var minCap = result.min_capacity_cfh;
     if (minCap && minCap > flowCfh + 1e-9) {
-      result.reason = "minimum capacity " + fmt(minCap) +
-        " CFH is above the " + fmt(flowCfh) + " CFH load";
+      result.reason = "minimum capacity " + fmtCfh(minCap) +
+        " CFH is above the " + fmtCfh(flowCfh) + " CFH load";
       return result;
     }
 
@@ -316,10 +327,52 @@
     DD1000: ["30LT", "45LT", "1-1/2"]
   };
   var CONNECTIONS = { DD10C25: ["30LT", "45LT", "1-1/2"] };
+
+  // Meters that ship with a pulse output as standard, reported as a fact
+  // rather than asked about. The Sonix IQ pair is deliberately absent: theirs
+  // is an option, so it stays a yes/no question (see optionQuestions).
+  var PULSE_OUTPUT_INCLUDED = ["Sonix600", "Sonix880", "DD800", "DD1000", "DD10C25"];
   var COMPENSATION = ["None", "Fix-Factored", "Live"];
   var EAGLE_INSTRUMENT = "Eagle MPplusII Instrument";
   var IMC = "IMC-W2-PTZ";
   var EAGLE_TYPES = ["Volume Corrector", "Rotary Corrector"];
+
+  // Roots meters from the 23M up are always corrected by a live Eagle volume
+  // corrector, so the compensation, correction and corrector-type questions
+  // are not asked for them - there is nothing to choose. Confirmed with
+  // Holland Supply.
+  //
+  // The cut-off is read off the tab rather than written out as a list of
+  // model codes: the columns run in ascending capacity, so "23M and larger" is
+  // "at or right of the 23M column", and a model added to the sheet later
+  // falls on the correct side of the line without this constant being
+  // touched.
+  var ROOTS_FORCED_EAGLE_FROM = "DR23M232";
+  var FORCED_COMPENSATION = "Live";
+  var FORCED_EAGLE_TYPE = "Volume Corrector";
+
+  // True when this roots meter's corrector is not a choice.
+  function rootsForcedEagle(model) {
+    if (BY_MODEL[model].family !== "roots") return false;
+    var meters = FAMILIES.roots.meters, mine = -1, cut = -1;
+    for (var i = 0; i < meters.length; i++) {
+      if (meters[i].model === model) mine = i;
+      if (meters[i].model === ROOTS_FORCED_EAGLE_FROM) cut = i;
+    }
+    if (cut === -1 || mine === -1) return false;
+    return mine >= cut;
+  }
+
+  // What was assumed for a forced meter, so the customer can see it. These
+  // meters ask no questions, and a selection that silently acquired a live
+  // Eagle would be a selection nobody could check.
+  function rootsAssumedFields(model) {
+    if (!rootsForcedEagle(model)) return [];
+    return [
+      { label: "Pressure compensation", value: FORCED_COMPENSATION },
+      { label: "Correction", value: EAGLE_INSTRUMENT }
+    ];
+  }
 
   function q(id, label, options, kind) {
     return { id: id, label: label, type: kind || "single_select", options: options.slice() };
@@ -341,6 +394,9 @@
     }
 
     if (fam === "roots") {
+      // A 23M or larger asks nothing: its compensation, correction and
+      // corrector type are all fixed. See rootsForcedEagle.
+      if (rootsForcedEagle(model)) return out;
       out.push(q(slug + ".compensation", "Pressure compensation", COMPENSATION));
       var comp = get("compensation");
       if (comp === "None") {
@@ -417,7 +473,10 @@
            ROOTS_EAGLE_INDEX_DEFAULT;
   }
 
-  function rootsIndex(slug, answers) {
+  function rootsIndex(slug, answers, model) {
+    if (model && rootsForcedEagle(model)) {
+      return ROOTS_EAGLE_INDEX[FORCED_EAGLE_TYPE];
+    }
     var comp = answers[slug + ".compensation"];
     if (comp === "None") {
       if (answers[slug + ".radio"] === "Yes") {
@@ -475,7 +534,7 @@
     if (fam === "roots") {
       token = rootsModelParts(model)[0];
       rating = rootsModelParts(model)[1];
-      index = rootsIndex(slug, answers);
+      index = rootsIndex(slug, answers, model);
       if (index === "ETC" || index === "ES3") { a = "CIR"; b = "LITH"; }
       else if (index === IMC) { a = "CIR"; b = "ALK"; }
       else { a = "NA"; b = "NA"; }
@@ -512,35 +571,51 @@
     return { part_number: null, quote_note: QUOTE_NOTE, warnings: warnings };
   }
 
+  // The display wording for the two part-number tokens that describe the
+  // hardware. Both are derived from the token rather than hard-coded, so if a
+  // part number ever carries a clockwise drive or the larger case, the printed
+  // description follows it instead of quietly contradicting it.
+  var EAGLE_ROTATION = { CCW: "Counterclockwise", CW: "Clockwise" };
+  var EAGLE_CASE = { "8X6": '8"x6"', "12X10": '12"x10"' };
+
   // The Eagle quotes as its own line item, not part of the meter.
   function eagleSelection(eagleType, inletPsi) {
     var p1 = eagleP1(inletPsi);
     var rotary = eagleType === "Rotary Corrector";
     var body = rotary ? "I.MPP-MRC" : "I.MPP-MVC";
-    var tail = rotary ? "INTEG" : "CVI";
-    var rotation = rotary ? "Integral" : "Counterclockwise rotation";
+    // Position 8 of the part number: the input the corrector reads. It says
+    // the same thing as the "Corrector" field above it, so it is not printed
+    // a second time as its own line.
+    var mount = rotary ? "INTEG" : "CVI";
+    var rotationToken = "CCW";
+    var caseToken = "8X6";
+    var rotation = EAGLE_ROTATION[rotationToken] || rotationToken;
+    var caseSize = EAGLE_CASE[caseToken] || caseToken;
     return {
       manufacturer: "Eagle",
       model: "MPplusII",
       type: eagleType,
       p1: p1,
-      part_number: body + "." + p1 + ".N.N.N.TC." + tail + ".CCW.N.ALK.8X6",
+      rotation: rotation,
+      "case": caseSize,
+      part_number: body + "." + p1 + ".N.N.N.TC." + mount + "." +
+                   rotationToken + ".N.ALK." + caseToken,
       fields: [
         { label: "Manufacturer", value: "Eagle" },
         { label: "Model", value: "MPplusII" },
         { label: "Corrector", value: eagleType },
         { label: "Rotation", value: rotation },
-        { label: "Pressure transducer", value: "0-" + p1 },
-        { label: "Temperature probe", value: "Included" },
+        { label: "Pressure Transducer", value: "0-" + p1 + " psi" },
+        { label: "Temperature Probe", value: "Included" },
         { label: "Battery", value: "Alkaline battery pack" },
-        { label: "Cellular communication", value: "None" },
-        { label: "Case", value: "8x6" }
+        { label: "Cellular Communication", value: "None" },
+        { label: "Case", value: caseSize }
       ],
       lines: [
         "Eagle", "MPplusII", eagleType, rotation,
-        "0-" + p1 + " pressure transducer",
+        "0-" + p1 + " psi Pressure Transducer",
         "Temperature Probe", "Alkaline battery pack",
-        "No Cellular communication", "8x6 case"
+        "No Cellular Communication", caseSize + " case"
       ]
     };
   }
@@ -555,6 +630,7 @@
       return (comp === "Fix-Factored" || comp === "Live") ? "Volume Corrector" : null;
     }
     if (fam === "roots") {
+      if (rootsForcedEagle(model)) return FORCED_EAGLE_TYPE;
       var picked = comp === "Fix-Factored" ? answers[slug + ".index"]
                  : comp === "Live" ? answers[slug + ".live"]
                  : null;
@@ -570,21 +646,27 @@
       { label: "Model", value: entry.model }
     ];
     if (entry.size) fields.push({ label: "Size", value: entry.size });
-    fields.push({ label: "Meter Capacity (CFH)", value: fmt(entry.capacity_cfh) });
+    if (contains(PULSE_OUTPUT_INCLUDED, entry.meter)) {
+      fields.push({ label: "Pulse Output", value: "Included" });
+    }
+    fields.push({ label: "Meter Capacity (CFH)", value: fmtCfh(entry.capacity_cfh) });
     if (entry.oversize_pct) {
       fields.push({
         label: "Required Capacity (CFH)",
-        value: fmt(entry.required_cfh) + " (" + entry.oversize_pct + "% oversize)"
+        value: fmtCfh(entry.required_cfh) + " (" + entry.oversize_pct + "% oversize)"
       });
     }
     if (entry.min_capacity_cfh) {
-      fields.push({ label: "Minimum Capacity (CFH)", value: fmt(entry.min_capacity_cfh) });
+      fields.push({ label: "Minimum Capacity (CFH)", value: fmtCfh(entry.min_capacity_cfh) });
     }
     return fields;
   }
   function identityLines(entry) {
     var lines = [entry.manufacturer, entry.model];
     if (entry.size) lines.push(entry.size);
+    if (contains(PULSE_OUTPUT_INCLUDED, entry.meter)) {
+      lines.push("Pulse output included");
+    }
     return lines;
   }
   function answerFields(questions, answers) {
@@ -737,7 +819,7 @@
       return extend(extend({}, base), {
         stage: "complete",
         selected: false,
-        message: "No meter in the capacity tables will handle " + fmt(flowCfh) +
+        message: "No meter in the capacity tables will handle " + fmtCfh(flowCfh) +
           " CFH at " + fmt(inletPsi) + " psi. Contact Holland Supply Company " +
           "to review the application.",
         questions: [],
@@ -828,7 +910,12 @@
       // not printed once as a field and again as a ticked radio; a caller
       // that just wants the finished selection as text (the chatbot, the PDF,
       // the PDF) reads `fields`.
-      entry.identity_fields = identityFields(entry);
+      // The assumed compensation goes in with the identity fields, not the
+      // answer fields: a caller that renders questions as widgets shows only
+      // the identity fields, and a forced meter has no widgets to carry the
+      // assumption. Putting it here is what makes it visible at all.
+      entry.identity_fields = identityFields(entry)
+        .concat(rootsAssumedFields(model));
       entry.answer_fields = answerFields(questions, answers);
       entry.fields = entry.identity_fields.concat(entry.answer_fields);
 
@@ -844,7 +931,12 @@
       entry.part_number = built.part_number;
       entry.quote_note = built.quote_note;
       entry.warnings = built.warnings;
-      entry.lines = identityLines(entry).concat(answerLines(questions, answers));
+      var assumed = rootsAssumedFields(model).map(function (f) {
+        return f.label + ": " + f.value;
+      });
+      entry.lines = identityLines(entry)
+        .concat(assumed)
+        .concat(answerLines(questions, answers));
       if (built.part_number) partNumbers.push(built.part_number);
       results.push(entry);
 

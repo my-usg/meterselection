@@ -185,7 +185,7 @@ def evaluate(model, inlet_psi, flow_cfh):
 
     if cap + 1e-9 < required:
         result["reason"] = (
-            f"capacity {_fmt(cap)} CFH is below the {_fmt(required)} CFH required"
+            f"capacity {_fmt_cfh(cap)} CFH is below the {_fmt_cfh(required)} CFH required"
             + (f" ({int(oversize * 100)}% oversize)" if oversize else "")
         )
         return result
@@ -193,7 +193,8 @@ def evaluate(model, inlet_psi, flow_cfh):
     min_cap = result["min_capacity_cfh"]
     if min_cap and min_cap > flow_cfh + 1e-9:
         result["reason"] = (
-            f"minimum capacity {_fmt(min_cap)} CFH is above the {_fmt(flow_cfh)} CFH load"
+            f"minimum capacity {_fmt_cfh(min_cap)} CFH is above the "
+            f"{_fmt_cfh(flow_cfh)} CFH load"
         )
         return result
 
@@ -209,6 +210,25 @@ def _fmt(n):
     if abs(n - round(n)) < 0.005:
         return f"{int(round(n)):,}"
     return f"{n:,.2f}".rstrip("0").rstrip(".")
+
+
+def _fmt_cfh(n):
+    """Capacities, always to the whole CFH.
+
+    Interpolating between two tabulated rows lands on fractions - 2,698.5 CFH
+    and the like - and a fraction of a cubic foot per hour is noise next to a
+    meter's rating. `_fmt` is left alone because it also formats the entered
+    pressure and flow, where a decimal the customer typed has to survive.
+
+    floor(n + 0.5) rather than round(): Python's round() is round-half-to-even,
+    so it takes 892.5 down to 892 while JavaScript's Math.round takes it up to
+    893. Interpolation lands on exact halves often enough that the two builds
+    disagreed on real capacities. Capacities are never negative, so this
+    matches Math.round throughout the range that occurs.
+    """
+    if n is None:
+        return ""
+    return f"{math.floor(float(n) + 0.5):,}"
 
 
 # --------------------------------------------------------------------------
@@ -377,10 +397,54 @@ FERRULES = {
 
 CONNECTIONS = {"DD10C25": ["30LT", "45LT", "1-1/2"]}
 
+# Meters that ship with a pulse output as standard, reported as a fact rather
+# than asked about. The Sonix IQ pair is deliberately absent: theirs is an
+# option, so it stays a yes/no question (see `option_questions`).
+PULSE_OUTPUT_INCLUDED = ("Sonix600", "Sonix880", "DD800", "DD1000", "DD10C25")
+
 COMPENSATION = ["None", "Fix-Factored", "Live"]
 EAGLE_INSTRUMENT = "Eagle MPplusII Instrument"
 IMC = "IMC-W2-PTZ"
 EAGLE_TYPES = ["Volume Corrector", "Rotary Corrector"]
+
+
+# Roots meters from the 23M up are always corrected by a live Eagle volume
+# corrector, so the compensation, correction and corrector-type questions are
+# not asked for them - there is nothing to choose. Confirmed with Holland
+# Supply.
+#
+# The cut-off is read off the tab rather than written out as a list of model
+# codes: the columns run in ascending capacity, so "23M and larger" is
+# "at or right of the 23M column", and a model added to the sheet later falls
+# on the correct side of the line without this constant being touched.
+ROOTS_FORCED_EAGLE_FROM = "DR23M232"
+
+FORCED_COMPENSATION = "Live"
+FORCED_EAGLE_TYPE = "Volume Corrector"
+
+
+def roots_forced_eagle(model):
+    """True when this roots meter's corrector is not a choice."""
+    if BY_MODEL[model]["family"] != "roots":
+        return False
+    order = [m["model"] for m in FAMILIES["roots"]["meters"]]
+    if ROOTS_FORCED_EAGLE_FROM not in order:
+        return False
+    return order.index(model) >= order.index(ROOTS_FORCED_EAGLE_FROM)
+
+
+def roots_assumed_fields(model):
+    """What was assumed for a forced meter, so the customer can see it.
+
+    These meters ask no questions, and a selection that silently acquired a
+    live Eagle would be a selection nobody could check.
+    """
+    if not roots_forced_eagle(model):
+        return []
+    return [
+        {"label": "Pressure compensation", "value": FORCED_COMPENSATION},
+        {"label": "Correction", "value": EAGLE_INSTRUMENT},
+    ]
 
 
 def _q(qid, label, options, kind="single_select"):
@@ -409,6 +473,10 @@ def option_questions(slug, model, answers):
         out.append(_q(f"{slug}.pulse", "Pulse output", ["Yes", "No"], "yes_no"))
 
     if fam == "roots":
+        # A 23M or larger asks nothing: its compensation, correction and
+        # corrector type are all fixed. See roots_forced_eagle.
+        if roots_forced_eagle(model):
+            return out
         out.append(_q(f"{slug}.compensation", "Pressure compensation", COMPENSATION))
         comp = get("compensation")
         if comp == "None":
@@ -533,7 +601,7 @@ def build_part_number(model, slug, answers, inlet_psi):
 
     if fam == "roots":
         token, rating = roots_model_parts(model)
-        index = roots_index(slug, answers)
+        index = roots_index(slug, answers, model)
         if index in ("ETC", "ES3"):
             a, b = "CIR", "LITH"
         elif index == IMC:
@@ -574,8 +642,10 @@ def build_part_number(model, slug, answers, inlet_psi):
     return None, QUOTE_NOTE, warnings
 
 
-def roots_index(slug, answers):
+def roots_index(slug, answers, model=None):
     """The index token for a roots part number, from the compensation branch."""
+    if model is not None and roots_forced_eagle(model):
+        return ROOTS_EAGLE_INDEX[FORCED_EAGLE_TYPE]
     comp = answers.get(f"{slug}.compensation")
     if comp == "None":
         if answers.get(f"{slug}.radio") == "Yes":
@@ -595,39 +665,56 @@ def roots_index(slug, answers):
     return "TC"
 
 
+# The display wording for the two part-number tokens that describe the
+# hardware. Both are derived from the token rather than hard-coded, so if a
+# part number ever carries a clockwise drive or the larger case, the printed
+# description follows it instead of quietly contradicting it.
+EAGLE_ROTATION = {"CCW": "Counterclockwise", "CW": "Clockwise"}
+EAGLE_CASE = {"8X6": '8"x6"', "12X10": '12"x10"'}
+
+
 def eagle_selection(eagle_type, inlet_psi):
     """The Eagle block. It quotes as its own line item, not part of the meter."""
     p1 = eagle_p1(inlet_psi)
     rotary = eagle_type == "Rotary Corrector"
     body = "I.MPP-MRC" if rotary else "I.MPP-MVC"
-    tail = "INTEG" if rotary else "CVI"
+    # Position 8 of the part number: the input the corrector reads. It says
+    # the same thing as the "Corrector" field above it, so it is not printed
+    # a second time as its own line.
+    mount = "INTEG" if rotary else "CVI"
+    rotation_token = "CCW"
+    case_token = "8X6"
+    rotation = EAGLE_ROTATION.get(rotation_token, rotation_token)
+    case = EAGLE_CASE.get(case_token, case_token)
     return {
         "manufacturer": "Eagle",
         "model": "MPplusII",
         "type": eagle_type,
         "p1": p1,
-        "part_number": f"{body}.{p1}.N.N.N.TC.{tail}.CCW.N.ALK.8X6",
+        "rotation": rotation,
+        "case": case,
+        "part_number": f"{body}.{p1}.N.N.N.TC.{mount}.{rotation_token}.N.ALK.{case_token}",
         "fields": [
             {"label": "Manufacturer", "value": "Eagle"},
             {"label": "Model", "value": "MPplusII"},
             {"label": "Corrector", "value": eagle_type},
-            {"label": "Rotation", "value": "Integral" if rotary else "Counterclockwise rotation"},
-            {"label": "Pressure transducer", "value": f"0-{p1}"},
-            {"label": "Temperature probe", "value": "Included"},
+            {"label": "Rotation", "value": rotation},
+            {"label": "Pressure Transducer", "value": f"0-{p1} psi"},
+            {"label": "Temperature Probe", "value": "Included"},
             {"label": "Battery", "value": "Alkaline battery pack"},
-            {"label": "Cellular communication", "value": "None"},
-            {"label": "Case", "value": "8x6"},
+            {"label": "Cellular Communication", "value": "None"},
+            {"label": "Case", "value": case},
         ],
         "lines": [
             "Eagle",
             "MPplusII",
             eagle_type,
-            "Integral" if rotary else "Counterclockwise rotation",
-            f"0-{p1} pressure transducer",
+            rotation,
+            f"0-{p1} psi Pressure Transducer",
             "Temperature Probe",
             "Alkaline battery pack",
-            "No Cellular communication",
-            "8x6 case",
+            "No Cellular Communication",
+            f"{case} case",
         ],
     }
 
@@ -642,6 +729,8 @@ def eagle_type_for(slug, model, answers):
             return "Volume Corrector"
         return None
     if fam == "roots":
+        if roots_forced_eagle(model):
+            return FORCED_EAGLE_TYPE
         comp = answers.get(f"{slug}.compensation")
         picked = (
             answers.get(f"{slug}.index") if comp == "Fix-Factored"
@@ -745,7 +834,7 @@ def size_meters(payload):
             selected=False,
             message=(
                 "No meter in the capacity tables will handle "
-                f"{_fmt(flow_cfh)} CFH at {_fmt(inlet_psi)} psi. Contact Holland "
+                f"{_fmt_cfh(flow_cfh)} CFH at {_fmt(inlet_psi)} psi. Contact Holland "
                 "Supply Company to review the application."
             ),
             questions=[],
@@ -838,7 +927,13 @@ def size_meters(payload):
         # not printed once as a field and again as a ticked radio; a caller
         # that just wants the finished selection as text (the chatbot, the
         # PDF, the PDF) reads `fields`.
-        entry["identity_fields"] = _identity_fields(entry)
+        # The assumed compensation goes in with the identity fields, not the
+        # answer fields: a caller that renders questions as widgets shows only
+        # the identity fields, and a forced meter has no widgets to carry the
+        # assumption. Putting it here is what makes it visible at all.
+        entry["identity_fields"] = (
+            _identity_fields(entry) + roots_assumed_fields(model)
+        )
         entry["answer_fields"] = _answer_fields(questions, answers)
         entry["fields"] = entry["identity_fields"] + entry["answer_fields"]
 
@@ -853,7 +948,11 @@ def size_meters(payload):
         entry["part_number"] = pn
         entry["quote_note"] = quote_note
         entry["warnings"] = pn_warnings
-        entry["lines"] = _identity_lines(entry) + _answer_lines(questions, answers)
+        entry["lines"] = (
+            _identity_lines(entry)
+            + [f["label"] + ": " + f["value"] for f in roots_assumed_fields(model)]
+            + _answer_lines(questions, answers)
+        )
         if pn:
             part_numbers.append(pn)
         results.append(entry)
@@ -938,20 +1037,22 @@ def _identity_fields(entry):
     ]
     if entry.get("size"):
         fields.append({"label": "Size", "value": entry["size"]})
+    if entry.get("meter") in PULSE_OUTPUT_INCLUDED:
+        fields.append({"label": "Pulse Output", "value": "Included"})
     fields.append(
-        {"label": "Meter Capacity (CFH)", "value": _fmt(entry["capacity_cfh"])}
+        {"label": "Meter Capacity (CFH)", "value": _fmt_cfh(entry["capacity_cfh"])}
     )
     if entry.get("oversize_pct"):
         fields.append(
             {
                 "label": "Required Capacity (CFH)",
-                "value": f"{_fmt(entry['required_cfh'])} "
+                "value": f"{_fmt_cfh(entry['required_cfh'])} "
                          f"({entry['oversize_pct']}% oversize)",
             }
         )
     if entry.get("min_capacity_cfh"):
         fields.append(
-            {"label": "Minimum Capacity (CFH)", "value": _fmt(entry["min_capacity_cfh"])}
+            {"label": "Minimum Capacity (CFH)", "value": _fmt_cfh(entry["min_capacity_cfh"])}
         )
     return fields
 
@@ -960,6 +1061,8 @@ def _identity_lines(entry):
     lines = [entry["manufacturer"], entry["model"]]
     if entry.get("size"):
         lines.append(entry["size"])
+    if entry.get("meter") in PULSE_OUTPUT_INCLUDED:
+        lines.append("Pulse output included")
     return lines
 
 

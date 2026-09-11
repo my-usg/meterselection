@@ -127,6 +127,25 @@ function partNumbers(dom) {
   return [...out(dom).querySelectorAll("code.usg-pn")].map((e) => e.textContent);
 }
 
+// Answer the price lookup from a fixture rather than the network. The block
+// fires it after the result is on screen, so it has to be in place before the
+// selection is made.
+function stubPrices(dom, bySku) {
+  dom.window.fetch = function (url, opts) {
+    const s = String(url);
+    if (s.indexOf("/api/chatbot/products") === 0 || s.indexOf("products?sku=") !== -1) {
+      const sku = decodeURIComponent(s.split("sku=")[1] || "");
+      const body = bySku[sku];
+      return Promise.resolve({
+        ok: !!body,
+        json: () => Promise.resolve(body || null),
+      });
+    }
+    // Lead times: answer with an empty list so nothing else renders.
+    return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+  };
+}
+
 async function main() {
   console.log("block/block.html in jsdom\n");
 
@@ -237,6 +256,11 @@ async function main() {
   check(
     "both go in the cart",
     (out(dom).querySelector(".usg-cart").getAttribute("data-items").match(/\|/g) || []).length === 1
+  );
+  check(
+    "both report their standard pulse output",
+    (text(dom).match(/Pulse Output: Included/g) || []).length === 2,
+    text(dom).slice(0, 600)
   );
   check(
     "straight pipe is offered but reports why it will not work",
@@ -398,8 +422,8 @@ async function main() {
   answer(dom, "rotary_roots.live", "Eagle MPplusII Instrument");
   answer(dom, "rotary_roots.eagle_type", "Volume Corrector");
   check(
-    "4 psi gives a 0-10 transducer",
-    /Pressure transducer: 0-10/.test(text(dom)),
+    "4 psi gives a 0-10 psi transducer",
+    /Pressure Transducer: 0-10 psi/.test(text(dom)),
     text(dom).slice(0, 400)
   );
 
@@ -432,8 +456,79 @@ async function main() {
   check(
     "re-running clears the warning and gives 40 psi its 0-51 transducer",
     dom.window.document.getElementById("usgm-stale") === null &&
-      /Pressure transducer: 0-51/.test(text(dom)),
+      /Pressure Transducer: 0-51 psi/.test(text(dom)),
     text(dom).slice(0, 400)
+  );
+
+  // ---- a zero price is not a price --------------------------------
+  console.log("\nprice of 0.00");
+  dom = build();
+  stubPrices(dom, {
+    "M.R275.TC.5.D/R.1-1/4.TOP.NA": {
+      sku: "M.R275.TC.5.D/R.1-1/4.TOP.NA",
+      price: { amount: "0.00", currency: "USD" },
+      list_price: { amount: "0.00", currency: "USD" },
+    },
+  });
+  await run(dom, { inlet: 7, inlet_units: "in wc", flow: 250 });
+  tickType(dom, "Diaphragm");
+  answer(dom, "diaphragm.ferrule", "1-1/4");
+  await new Promise((r) => setTimeout(r, 60));
+  check(
+    "a 0.00 price is not shown",
+    !/\$0\.00/.test(text(dom)),
+    text(dom).slice(0, 400)
+  );
+  check(
+    "and no line total is shown for it either",
+    !/Total \$0/.test(text(dom))
+  );
+
+  console.log("\na real price");
+  dom = build();
+  stubPrices(dom, {
+    "M.R275.TC.5.D/R.1-1/4.TOP.NA": {
+      sku: "M.R275.TC.5.D/R.1-1/4.TOP.NA",
+      price: { amount: "1507.54", currency: "USD" },
+      list_price: { amount: "1507.54", currency: "USD" },
+    },
+  });
+  await run(dom, { inlet: 7, inlet_units: "in wc", flow: 250 });
+  tickType(dom, "Diaphragm");
+  answer(dom, "diaphragm.ferrule", "1-1/4");
+  await new Promise((r) => setTimeout(r, 60));
+  check(
+    "a non-zero price still shows",
+    /\$1,507\.54/.test(text(dom)),
+    text(dom).slice(0, 400)
+  );
+
+  // ---- the 23M asks nothing ---------------------------------------
+  console.log("\n23M roots meter: no questions");
+  dom = build();
+  await run(dom, { inlet: 200, flow: 250000 });
+  tickType(dom, "Rotary (roots)");
+  check(
+    "ticking it produces a part number with no questions in between",
+    pendingIds(dom).length === 0 &&
+      partNumbers(dom).indexOf("M.RT23M-232.FLG.CD.NA.VDN.NA.NA.NA") !== -1,
+    JSON.stringify(partNumbers(dom))
+  );
+  check(
+    "the assumed compensation is stated on screen",
+    /Pressure compensation: Live/.test(text(dom)) &&
+      /Correction: Eagle MPplusII Instrument/.test(text(dom))
+  );
+  check(
+    "the Eagle is a volume corrector with a psi transducer range",
+    /Corrector: Volume Corrector/.test(text(dom)) &&
+      /Pressure Transducer: 0-290 psi/.test(text(dom)),
+    text(dom).slice(0, 600)
+  );
+  check(
+    'the case carries inch marks and rotation is a bare direction',
+    /Case: 8"x6"/.test(text(dom)) && /Rotation: Counterclockwise/.test(text(dom)) &&
+      !/Counterclockwise rotation/.test(text(dom))
   );
 
   console.log(

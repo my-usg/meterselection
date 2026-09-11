@@ -230,6 +230,28 @@ def answer_cases():
             "answers": {"rotary_roots.compensation": "None", "rotary_roots.radio": "No"},
         })
 
+    # The 23M and larger ask no questions. Sized with an empty answer set, and
+    # again with answers that contradict the forced choice - which must be
+    # ignored rather than followed.
+    for flow in [250000, 400000, 700000]:
+        cases.append({
+            "inlet": 100, "inlet_units": "psi", "flow": flow, "flow_units": "CFH",
+            "meter_types": ["Rotary (roots)"], "answers": {},
+        })
+        cases.append({
+            "inlet": 100, "inlet_units": "psi", "flow": flow, "flow_units": "CFH",
+            "meter_types": ["Rotary (roots)"],
+            "answers": {"rotary_roots.compensation": "None",
+                        "rotary_roots.radio": "No",
+                        "rotary_roots.eagle_type": "Rotary Corrector"},
+        })
+
+    # Pressures that interpolate onto an exact half, where the two builds'
+    # rounding has to agree.
+    for p, f in [(12.75, 2000), (3.5, 900), (7.5, 1500), (17.5, 3000)]:
+        cases.append({"inlet": p, "inlet_units": "psi", "flow": f,
+                      "flow_units": "CFH"})
+
     return cases
 
 

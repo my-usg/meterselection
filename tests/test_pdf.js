@@ -171,6 +171,22 @@ async function main() {
   );
 
   // The two removed sections.
+  // A Sonix 600 in the PDF, to confirm the standard pulse output reaches the
+  // saved document and not just the screen.
+  const dom3 = build();
+  el(dom3, "usgm-inlet").value = "10";
+  el(dom3, "usgm-flow").value = "1800";
+  el(dom3, "usgm-run-btn").click();
+  await new Promise((r) => setTimeout(r, 80));
+  tickType(dom3, "Ultrasonic");
+  answer(dom3, "ultrasonic.ferrule", "30LT");
+  const text3 = pdfText(renderPdf(dom3));
+  check(
+    "the standard pulse output is printed in the PDF",
+    /Pulse Output/.test(text3) && /Included/.test(text3),
+    text3
+  );
+
   check(
     "there is no consolidated Part Number(s) section",
     !/Part Number\(s\)/.test(text),

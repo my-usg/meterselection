@@ -233,6 +233,36 @@ implementations.
 **Fix-factored roots with an Eagle** also asks the corrector-type question that
 the live path asks, since the Eagle part number cannot be built without it.
 
+**Roots meters from the 23M up ask nothing at all.** Their compensation is
+always live, their correction always an Eagle, and the corrector always a
+volume corrector, so the three questions are skipped and the assumption is
+printed with the selection instead. The cut-off is read off the roots tab
+(`ROOTS_FORCED_EAGLE_FROM`) rather than written out as a list of model codes:
+the columns run in ascending capacity, so a model added to the sheet later
+falls on the correct side of the line on its own.
+
+**The Sonix 600/880, D800, D1000 and 10C25 report `Pulse Output: Included`**
+directly below the size. It is stated rather than asked, because on those
+meters it is standard. The Sonix IQ pair is not in that list: theirs is an
+option, so it stays a yes/no question. `PULSE_OUTPUT_INCLUDED` in both
+implementations.
+
+**A price of 0.00 is treated as unpriced, not free.** It is hidden, and the
+line-item total stays hidden too rather than understating the order. The
+console says which of the two happened. `priceOf` in the block.
+
+**Capacities print to the whole CFH.** Interpolation lands on fractions and a
+fraction of a cubic foot per hour is noise. `_fmt_cfh` / `fmtCfh`, which use
+`floor(n + 0.5)` rather than a language `round` so the two builds agree on
+exact halves - Python rounds those to even and JavaScript rounds them up.
+
+**The Eagle's rotation and case size are read from the part-number tokens**
+(`CCW` / `CW` and `8X6` / `12X10`) rather than hard-coded, so a printed
+description cannot contradict the number beside it. Today every Eagle is
+built `CCW` and `8X6`; nothing in the sizing instructions selects the
+clockwise drive or the 12"x10" case, so if either is a real option something
+has to choose it.
+
 Two places where the sizing instructions did not fully determine the behaviour:
 
 **Inlet pressure below 0.25 psi.** The tables start at 0.25 psi (about 7 in wc)
@@ -267,7 +297,7 @@ block/block.html              the Concrete CMS block
 tools/extract_capacities.py   workbook -> JSON
 tools/build.py                template + JSON -> dist bundle
 tools/gen_cases.py            regenerate the test case set
-tests/cases.json              601 cases: every tier, family and answer branch
+tests/cases.json              611 cases: every tier, family and answer branch
 tests/test_parity.py          Python vs JS, plus fixed expected outputs
 tests/test_block.js           drives block.html in jsdom
 tests/test_pdf.js             renders the PDF and reads the text back

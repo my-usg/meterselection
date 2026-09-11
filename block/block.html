@@ -26,10 +26,21 @@
      REQUIRED: the site Content Security Policy must allow
          script-src ... https://cdn.jsdelivr.net
      ============================================================ -->
-<!-- Sizing algorithm, generated from the Python source. Pin a release tag
-     (@v1.0.0) for strict change control, or track @main to pick up pushes
-     automatically. -->
-<script src="https://cdn.jsdelivr.net/gh/my-usg/meterselection@main/dist/usg-meter-sizing.js"></script>
+<!-- Sizing algorithm, generated from the Python source.
+
+     PINNED TO A COMMIT ON PURPOSE. A @main URL is cached by jsDelivr for up
+     to 12 hours, and its purge endpoint has reported success while the edge
+     carried on serving the old file - which cost an afternoon of chasing a
+     part number that had already been fixed in the repo. A commit URL is
+     immutable, so what you pin is what every visitor gets, immediately and
+     forever.
+
+     TO SHIP A CHANGE: push it, copy the new commit's short hash from
+     https://github.com/my-usg/meterselection/commits/main, and replace the
+     hash below. Then reload the page and check
+     window.USGMeterSizing.sizeMeters(...) in the console actually reflects
+     the change before trusting it. -->
+<script src="https://cdn.jsdelivr.net/gh/my-usg/meterselection@1969146/dist/usg-meter-sizing.js"></script>
 
 <div id="usg-meter-tool">
   <h1 class="usg-h1">Meter Sizing Tool</h1>
@@ -653,10 +664,16 @@ function amountOf(slot) {
   var n = Number(String(v).replace(/[$,\s]/g, ''));
   return isFinite(n) ? n : undefined;
 }
+// A part the endpoints answer for with 0.00 is not free - it is unpriced in
+// the catalogue, usually a made-to-order item. Returning undefined for it
+// means everything downstream treats it as missing: no price line, and no
+// line-item total (the total only shows when every part on screen has a
+// price, so a zero would otherwise understate the order).
 function priceOf(rec) {
   if (!rec) return undefined;
   var v = amountOf(rec.price);
-  return (v === undefined) ? amountOf(rec.list_price) : v;
+  if (v === undefined) v = amountOf(rec.list_price);
+  return (v === 0) ? undefined : v;
 }
 function currencyOf(rec) {
   if (!rec) return 'USD';
@@ -804,7 +821,14 @@ function fetchPrice(sku, token, root) {
     .then(function (data) {
       priceCache[sku] = data || null;
       if (data && priceOf(data) === undefined) {
-        lookupWarn('price response carried no amount for ' + sku + ': ' + JSON.stringify(data));
+        // A 0.00 is deliberately hidden rather than shown as free, so say
+        // which of the two happened - otherwise this reads as a broken
+        // endpoint when it is an unpriced part.
+        var zero = amountOf(data.price) === 0 || amountOf(data.list_price) === 0;
+        lookupWarn('no price shown for ' + sku +
+          (zero ? ' - the endpoint returned 0.00, which is treated as unpriced'
+                : ' - the response carried no amount') +
+          ': ' + JSON.stringify(data));
       }
       if (token === lookupToken) paintInfo(root);
     })

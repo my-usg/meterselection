@@ -23,7 +23,11 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
-from algorithm.meter_sizing import eagle_p1, size_meters  # noqa: E402
+from algorithm.meter_sizing import (  # noqa: E402
+    eagle_p1,
+    roots_forced_eagle,
+    size_meters,
+)
 
 CASES = REPO / "tests" / "cases.json"
 BUNDLE = REPO / "dist" / "usg-meter-sizing.js"
@@ -188,27 +192,31 @@ EXPECTED = [
         {"part_number": "M.RT3M-175.FLG.CTR.NA.175.VDN.NA.NA.NA"},
     ),
     (
+        # A 23M or larger cannot reach CTR - it is forced to a volume
+        # corrector - so this is checked on a meter that still asks.
         "CTR takes the same NA / NA segments as CD",
-        {"inlet": 200, "flow": 250000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Rotary Corrector"}},
-        {"part_number": "M.RT23M-232.FLG.CTR.NA.VDN.NA.NA.NA"},
+        {"part_number": "M.RT3M-175.FLG.CTR.NA.175.VDN.NA.NA.NA"},
     ),
     (
+        # The 23M is a forced-Eagle meter, so CD is the only index it can
+        # carry; the rule being checked here is the missing rating segment.
         "the 232 psi roots meter drops the rating segment entirely",
-        {"inlet": 200, "flow": 250000, "meter_types": ["Rotary (roots)"],
-         "answers": {"rotary_roots.compensation": "None",
-                     "rotary_roots.radio": "No"}},
+        {"inlet": 200, "flow": 250000, "meter_types": ["Rotary (roots)"]},
         {"model": "23M232",
-         "part_number": "M.RT23M-232.FLG.TC.NA.VDN.NA.NA.NA"},
+         "part_number": "M.RT23M-232.FLG.CD.NA.VDN.NA.NA.NA"},
     ),
     (
-        "and drops it on an index that fills the CIR / LITH fields too",
-        {"inlet": 200, "flow": 250000, "meter_types": ["Rotary (roots)"],
-         "answers": {"rotary_roots.compensation": "Fix-Factored",
-                     "rotary_roots.index": "ETC"}},
-        {"part_number": "M.RT23M-232.FLG.ETC.CIR.VDN.NA.LITH.NA"},
+        "a 175-rated meter on the same CD index keeps its rating segment",
+        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+         "answers": {"rotary_roots.compensation": "Live",
+                     "rotary_roots.live": "Eagle MPplusII Instrument",
+                     "rotary_roots.eagle_type": "Volume Corrector"}},
+        {"model": "3M175",
+         "part_number": "M.RT3M-175.FLG.CD.NA.175.VDN.NA.NA.NA"},
     ),
     (
         "a 175-rated roots meter still carries its rating segment",
@@ -325,6 +333,138 @@ EXPECTED_TOP = [
         {"inlet": 1440, "flow": 100000},
         lambda r: r["ok"] is True
         and size_meters({"inlet": 1441, "flow": 100000})["ok"] is False,
+    ),
+    (
+        "a 23M or larger roots meter asks nothing and completes at once",
+        {"inlet": 200, "flow": 250000, "meter_types": ["Rotary (roots)"]},
+        lambda r: r["stage"] == "complete" and r["questions"] == []
+        and r["results"][0]["questions"] == [],
+    ),
+    (
+        "every roots meter from the 23M up is forced, and none below it",
+        {"inlet": 200, "flow": 250000},
+        lambda r: [
+            m for m in ["DR8C175", "DR11C175", "DR15C175", "DR2M175", "DR3M175",
+                        "DR5M175", "DR7M175", "DR11M175", "DR16M175",
+                        "DR23M232", "DR38M175", "DR56M175"]
+            if roots_forced_eagle(m)
+        ] == ["DR23M232", "DR38M175", "DR56M175"],
+    ),
+    (
+        "a forced meter comes with a live Eagle volume corrector",
+        {"inlet": 200, "flow": 250000, "meter_types": ["Rotary (roots)"]},
+        lambda r: r["eagle"]["type"] == "Volume Corrector"
+        and r["eagle"]["part_number"].startswith("I.MPP-MVC."),
+    ),
+    (
+        "and says on screen what was assumed for it",
+        {"inlet": 200, "flow": 250000, "meter_types": ["Rotary (roots)"]},
+        lambda r: {f["label"]: f["value"] for f in r["results"][0]["fields"]}.get(
+            "Pressure compensation"
+        ) == "Live"
+        and {f["label"]: f["value"] for f in r["results"][0]["fields"]}.get(
+            "Correction"
+        ) == "Eagle MPplusII Instrument",
+    ),
+    (
+        "a 16M or smaller still asks for its compensation",
+        {"inlet": 60, "flow": 14000, "meter_types": ["Rotary (roots)"]},
+        lambda r: r["stage"] == "options"
+        and r["questions"][0]["id"] == "rotary_roots.compensation",
+    ),
+    (
+        "capacities are whole CFH, with no interpolated fraction left on show",
+        # DD800 at 12.75 psi interpolates to exactly 3,133.5 CFH - a half-way
+        # value, which also pins the rounding direction the two builds share.
+        {"inlet": 12.75, "flow": 2000, "meter_types": ["Rotary (meter bar)"],
+         "answers": {"rotary_meter_bar.ferrule": "30LT"}},
+        lambda r: {f["label"]: f["value"] for f in r["results"][0]["fields"]}[
+            "Meter Capacity (CFH)"
+        ] == "3,134",
+    ),
+    (
+        "a capacity in a failure reason is whole CFH too",
+        {"inlet": 2, "flow": 500000},
+        lambda r: all(
+            "." not in e["reason"].split(" CFH")[0]
+            for e in r["evaluations"] if e["reason"] and "capacity" in e["reason"]
+        ),
+    ),
+    (
+        "the Eagle transducer range carries its unit",
+        {"inlet": 300, "flow": 100000, "meter_types": ["Turbine"],
+         "answers": {"turbine.compensation": "Live"}},
+        lambda r: {f["label"]: f["value"] for f in r["eagle"]["fields"]}[
+            "Pressure Transducer"
+        ] == "0-508 psi",
+    ),
+    (
+        "the Eagle labels are capitalised and the case carries inch marks",
+        {"inlet": 300, "flow": 100000, "meter_types": ["Turbine"],
+         "answers": {"turbine.compensation": "Live"}},
+        lambda r: [f["label"] for f in r["eagle"]["fields"]] == [
+            "Manufacturer", "Model", "Corrector", "Rotation",
+            "Pressure Transducer", "Temperature Probe", "Battery",
+            "Cellular Communication", "Case",
+        ]
+        and {f["label"]: f["value"] for f in r["eagle"]["fields"]}["Case"] == '8"x6"',
+    ),
+    (
+        "rotation reads as a direction alone, for both correctors",
+        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+         "answers": {"rotary_roots.compensation": "Live",
+                     "rotary_roots.live": "Eagle MPplusII Instrument",
+                     "rotary_roots.eagle_type": "Rotary Corrector"}},
+        lambda r: {f["label"]: f["value"] for f in r["eagle"]["fields"]}[
+            "Rotation"
+        ] == "Counterclockwise",
+    ),
+    (
+        "the five meters with a standard pulse output all report it",
+        {"inlet": 1, "flow": 100},   # payload unused; see the predicate
+        lambda r: all(
+            {f["label"]: f["value"] for f in [
+                e for e in size_meters(payload)["results"] if e.get("available")
+            ][0]["fields"]}.get("Pulse Output") == "Included"
+            for payload in [
+                # Sonix 600, Sonix 880, D800, D1000, 10C25 in turn. The two
+                # Dresser meter-bar models share a capacity above 1 psi, so
+                # the D1000 is reached at 0.25 psi with a load the D800 cannot
+                # carry.
+                {"inlet": 10, "flow": 1800, "meter_types": ["Ultrasonic"],
+                 "answers": {"ultrasonic.ferrule": "30LT"}},
+                {"inlet": 10, "flow": 2000, "meter_types": ["Ultrasonic"],
+                 "answers": {"ultrasonic.ferrule": "30LT"}},
+                {"inlet": 20, "flow": 3900, "meter_types": ["Rotary (meter bar)"],
+                 "answers": {"rotary_meter_bar.ferrule": "45LT"}},
+                {"inlet": 0.25, "flow": 900, "meter_types": ["Rotary (meter bar)"],
+                 "answers": {"rotary_meter_bar.ferrule": "45LT"}},
+                {"inlet": 20, "flow": 2000, "meter_types": ["Rotary (straight pipe)"],
+                 "answers": {"rotary_straight_pipe.connection": "1-1/2"}},
+            ]
+        ),
+    ),
+    (
+        "it sits directly below the size",
+        {"inlet": 20, "flow": 3900, "meter_types": ["Rotary (meter bar)"],
+         "answers": {"rotary_meter_bar.ferrule": "45LT"}},
+        lambda r: [f["label"] for f in r["results"][0]["identity_fields"]][:4]
+        == ["Manufacturer", "Model", "Size", "Pulse Output"],
+    ),
+    (
+        "the R275 does not claim one",
+        {"inlet": 0.25, "flow": 250, "meter_types": ["Diaphragm"],
+         "answers": {"diaphragm.ferrule": "1-1/4"}},
+        lambda r: not any(f["label"] == "Pulse Output"
+                          for f in r["results"][0]["fields"]),
+    ),
+    (
+        "and a Sonix IQ still asks rather than assuming",
+        {"inlet": 2, "flow": 380, "meter_types": ["Sonix IQ"],
+         "answers": {"sonix_iq.ferrule": "20LT"}},
+        lambda r: any(q["id"] == "sonix_iq.pulse" for q in r["questions"])
+        and not any(f["label"] == "Pulse Output"
+                    for f in r["results"][0]["identity_fields"]),
     ),
     (
         "no Eagle when a turbo has no compensation",
