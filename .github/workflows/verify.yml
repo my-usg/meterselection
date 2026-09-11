@@ -1,0 +1,69 @@
+name: verify
+
+# The website loads dist/usg-meter-sizing.js straight from this branch through
+# jsDelivr, so whatever is committed here is in front of customers within the
+# hour. These checks are the gate: the bundle has to be rebuilt from the
+# sources, and the two implementations of the rules have to agree.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      # The capacity tables ship as JSON but are maintained as a workbook.
+      # Re-extracting proves the two have not been edited apart.
+      - name: Capacity tables match the workbook
+        run: |
+          python tools/extract_capacities.py data/capacities.xlsx
+          git diff --exit-code -- data/capacities.json \
+            || (echo "::error::data/capacities.json does not match data/capacities.xlsx. Run tools/extract_capacities.py and commit the result." && exit 1)
+
+      # A rules change in the Python without the rebuilt bundle beside it
+      # would leave the website running the old rules. This is what stops it.
+      - name: Bundle is up to date
+        run: python tools/build.py --check
+
+      - name: Python and JavaScript agree
+        run: python tests/test_parity.py
+
+      - name: The page reaches an answer
+        run: node tests/test_block.js
+
+      - name: API smoke test
+        run: |
+          python -c "
+          from fastapi.testclient import TestClient
+          from api.main import app
+          c = TestClient(app)
+          assert c.get('/health').json()['probe_passed'] is True
+          r = c.post('/api/meter-sizing', json={'inlet': 60, 'flow': 9000}).json()
+          assert r['stage'] == 'meter_type', r
+          print('api ok')
+          "
+
+      # The bundle is served to every visitor, so a size jump is worth
+      # noticing even when nothing is wrong with it.
+      - name: Report bundle size
+        run: |
+          echo "dist/usg-meter-sizing.js: $(wc -c < dist/usg-meter-sizing.js) bytes" >> "$GITHUB_STEP_SUMMARY"
