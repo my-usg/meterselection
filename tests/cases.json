@@ -1,0 +1,4489 @@
+[
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 1500000,
+    "flow_units": "BTUH"
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 42,
+    "flow_units": "CMH"
+  },
+  {
+    "inlet": 7,
+    "inlet_units": "in wc",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 7,
+    "inlet_units": "in wc",
+    "flow": 1500000,
+    "flow_units": "BTUH"
+  },
+  {
+    "inlet": 7,
+    "inlet_units": "in wc",
+    "flow": 42,
+    "flow_units": "CMH"
+  },
+  {
+    "inlet": 8,
+    "inlet_units": "oz",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 8,
+    "inlet_units": "oz",
+    "flow": 1500000,
+    "flow_units": "BTUH"
+  },
+  {
+    "inlet": 8,
+    "inlet_units": "oz",
+    "flow": 42,
+    "flow_units": "CMH"
+  },
+  {
+    "inlet": 0.5,
+    "inlet_units": "bar",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.5,
+    "inlet_units": "bar",
+    "flow": 1500000,
+    "flow_units": "BTUH"
+  },
+  {
+    "inlet": 0.5,
+    "inlet_units": "bar",
+    "flow": 42,
+    "flow_units": "CMH"
+  },
+  {
+    "inlet": 40,
+    "inlet_units": "kPa",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 40,
+    "inlet_units": "kPa",
+    "flow": 1500000,
+    "flow_units": "BTUH"
+  },
+  {
+    "inlet": 40,
+    "inlet_units": "kPa",
+    "flow": 42,
+    "flow_units": "CMH"
+  },
+  {
+    "inlet": 0.1,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.1,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.1,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.1,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.1,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.1,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.1,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.1,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.1,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.1,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.1,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.1,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.1,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.1,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.1,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.25,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.25,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.25,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.25,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.25,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.25,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.25,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.25,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.25,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.25,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.25,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.25,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.25,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.25,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 0.25,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 2,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 2,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 2,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 2,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 2,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 2,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 2,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 2,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 2,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 2,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 2,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 2,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 2,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 2,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 2,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 3.5,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 3.5,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 3.5,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 3.5,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 3.5,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 3.5,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 3.5,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 3.5,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 3.5,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 3.5,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 3.5,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 3.5,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 3.5,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 3.5,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 3.5,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 7.5,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 7.5,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 7.5,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 7.5,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 7.5,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 7.5,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 7.5,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 7.5,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 7.5,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 7.5,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 7.5,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 7.5,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 7.5,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 7.5,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 7.5,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 10,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 10,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 10,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 10,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 10,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 10,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 10,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 10,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 10,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 10,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 10,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 10,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 10,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 10,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 10,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 15,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 15,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 15,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 15,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 15,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 15,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 15,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 15,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 15,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 15,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 15,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 15,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 15,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 15,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 15,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 20,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 20,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 20,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 20,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 20,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 20,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 20,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 20,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 20,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 20,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 20,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 20,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 20,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 20,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 20,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 25,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 25,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 25,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 25,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 25,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 25,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 25,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 25,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 25,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 25,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 25,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 25,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 25,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 25,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 25,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 26,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 26,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 26,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 26,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 26,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 26,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 26,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 26,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 26,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 26,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 26,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 26,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 26,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 26,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 26,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 60,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 60,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 60,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 60,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 60,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 60,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 60,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 60,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 60,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 60,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 60,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 60,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 60,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 60,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 60,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 175,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 175,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 175,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 175,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 175,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 175,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 175,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 175,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 175,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 175,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 175,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 175,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 175,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 175,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 175,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 176,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 176,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 176,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 176,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 176,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 176,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 176,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 176,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 176,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 176,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 176,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 176,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 176,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 176,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 176,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 232,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 232,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 232,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 232,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 232,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 232,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 232,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 232,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 232,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 232,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 232,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 232,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 232,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 232,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 232,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 290,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 290,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 290,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 290,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 290,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 290,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 290,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 290,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 290,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 290,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 290,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 290,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 290,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 290,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 290,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 300,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 300,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 300,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 300,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 300,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 300,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 300,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 300,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 300,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 300,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 300,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 300,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 300,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 300,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 300,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 720,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 720,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 720,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 720,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 720,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 720,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 720,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 720,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 720,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 720,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 720,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 720,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 720,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 720,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 720,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1000,
+    "inlet_units": "psi",
+    "flow": 1,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1000,
+    "inlet_units": "psi",
+    "flow": 250,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1000,
+    "inlet_units": "psi",
+    "flow": 275,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1000,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1000,
+    "inlet_units": "psi",
+    "flow": 900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1000,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1000,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1000,
+    "inlet_units": "psi",
+    "flow": 3900,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1000,
+    "inlet_units": "psi",
+    "flow": 4600,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1000,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1000,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1000,
+    "inlet_units": "psi",
+    "flow": 120000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1000,
+    "inlet_units": "psi",
+    "flow": 500000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1000,
+    "inlet_units": "psi",
+    "flow": 3000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1000,
+    "inlet_units": "psi",
+    "flow": 50000000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5.01,
+    "inlet_units": "psi",
+    "flow": 1500,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 10,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 10.01,
+    "inlet_units": "psi",
+    "flow": 400,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 20,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 20.01,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 25,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 25.01,
+    "inlet_units": "psi",
+    "flow": 2000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 175,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 175.01,
+    "inlet_units": "psi",
+    "flow": 25000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 232,
+    "inlet_units": "psi",
+    "flow": 250000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 232.01,
+    "inlet_units": "psi",
+    "flow": 250000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 290,
+    "inlet_units": "psi",
+    "flow": 50000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 290.01,
+    "inlet_units": "psi",
+    "flow": 50000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 1440,
+    "inlet_units": "psi",
+    "flow": 200000,
+    "flow_units": "CFH"
+  },
+  {
+    "inlet": 5,
+    "flow": 1500,
+    "maop": 250
+  },
+  {
+    "inlet": 0,
+    "flow": 100
+  },
+  {
+    "inlet": 5,
+    "flow": 0
+  },
+  {
+    "inlet": -1,
+    "flow": 100
+  },
+  {
+    "inlet": 1001,
+    "flow": 100
+  },
+  {
+    "inlet": 5,
+    "flow": 100000001
+  },
+  {
+    "inlet": 5,
+    "flow": 100,
+    "inlet_units": "furlongs"
+  },
+  {
+    "inlet": 5,
+    "flow": 100,
+    "flow_units": "gallons"
+  },
+  {
+    "inlet": null,
+    "flow": null
+  },
+  {},
+  {
+    "inlet": 0.25,
+    "flow": 250,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Diaphragm"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 0.25,
+    "flow": 250,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Diaphragm"
+    ],
+    "answers": {
+      "diaphragm.ferrule": "10LT"
+    }
+  },
+  {
+    "inlet": 0.25,
+    "flow": 250,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Diaphragm"
+    ],
+    "answers": {
+      "diaphragm.ferrule": "1-1/4"
+    }
+  },
+  {
+    "inlet": 0.25,
+    "flow": 250,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Diaphragm"
+    ],
+    "answers": {
+      "diaphragm.ferrule": "45LT"
+    }
+  },
+  {
+    "inlet": 0.25,
+    "flow": 250,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Sonix IQ"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 0.25,
+    "flow": 250,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Sonix IQ"
+    ],
+    "answers": {
+      "sonix_iq.ferrule": "20LT"
+    }
+  },
+  {
+    "inlet": 0.25,
+    "flow": 250,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Sonix IQ"
+    ],
+    "answers": {
+      "sonix_iq.ferrule": "20LT",
+      "sonix_iq.pulse": "Yes"
+    }
+  },
+  {
+    "inlet": 0.25,
+    "flow": 250,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Sonix IQ"
+    ],
+    "answers": {
+      "sonix_iq.ferrule": "1A",
+      "sonix_iq.pulse": "No"
+    }
+  },
+  {
+    "inlet": 0.25,
+    "flow": 250,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Diaphragm",
+      "Sonix IQ"
+    ],
+    "answers": {
+      "diaphragm.ferrule": "45LT",
+      "sonix_iq.ferrule": "1A",
+      "sonix_iq.pulse": "No"
+    }
+  },
+  {
+    "inlet": 0.25,
+    "flow": 250,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Sonix IQ",
+      "Diaphragm"
+    ],
+    "answers": {
+      "diaphragm.ferrule": "45LT",
+      "sonix_iq.ferrule": "1A",
+      "sonix_iq.pulse": "No"
+    }
+  },
+  {
+    "inlet": 0.25,
+    "flow": 250,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 0.25,
+    "flow": 250,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Diaphragm",
+      "Ultrasonic"
+    ],
+    "answers": {
+      "diaphragm.ferrule": "45LT",
+      "sonix_iq.ferrule": "1A",
+      "sonix_iq.pulse": "No"
+    }
+  },
+  {
+    "inlet": 2,
+    "flow": 500,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Sonix IQ"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 2,
+    "flow": 500,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Sonix IQ"
+    ],
+    "answers": {
+      "sonix_iq.ferrule": "20LT"
+    }
+  },
+  {
+    "inlet": 2,
+    "flow": 500,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Sonix IQ"
+    ],
+    "answers": {
+      "sonix_iq.ferrule": "20LT",
+      "sonix_iq.pulse": "Yes"
+    }
+  },
+  {
+    "inlet": 2,
+    "flow": 500,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Sonix IQ"
+    ],
+    "answers": {
+      "sonix_iq.ferrule": "1A",
+      "sonix_iq.pulse": "No"
+    }
+  },
+  {
+    "inlet": 2,
+    "flow": 500,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 2,
+    "flow": 500,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.ferrule": "30LT"
+    }
+  },
+  {
+    "inlet": 2,
+    "flow": 500,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.ferrule": "45LT"
+    }
+  },
+  {
+    "inlet": 2,
+    "flow": 500,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.compensation": "None"
+    }
+  },
+  {
+    "inlet": 2,
+    "flow": 500,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.compensation": "Fix-Factored"
+    }
+  },
+  {
+    "inlet": 2,
+    "flow": 500,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 2,
+    "flow": 500,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Sonix IQ",
+      "Ultrasonic"
+    ],
+    "answers": {
+      "sonix_iq.ferrule": "1A",
+      "sonix_iq.pulse": "No",
+      "ultrasonic.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 2,
+    "flow": 500,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic",
+      "Sonix IQ"
+    ],
+    "answers": {
+      "sonix_iq.ferrule": "1A",
+      "sonix_iq.pulse": "No",
+      "ultrasonic.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 2,
+    "flow": 500,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Diaphragm"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 2,
+    "flow": 500,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Sonix IQ",
+      "Diaphragm"
+    ],
+    "answers": {
+      "sonix_iq.ferrule": "1A",
+      "sonix_iq.pulse": "No",
+      "ultrasonic.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 10,
+    "flow": 2000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 10,
+    "flow": 2000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.ferrule": "30LT"
+    }
+  },
+  {
+    "inlet": 10,
+    "flow": 2000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.ferrule": "45LT"
+    }
+  },
+  {
+    "inlet": 10,
+    "flow": 2000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.compensation": "None"
+    }
+  },
+  {
+    "inlet": 10,
+    "flow": 2000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.compensation": "Fix-Factored"
+    }
+  },
+  {
+    "inlet": 10,
+    "flow": 2000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 10,
+    "flow": 2000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (meter bar)"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 10,
+    "flow": 2000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (meter bar)"
+    ],
+    "answers": {
+      "rotary_meter_bar.ferrule": "30LT"
+    }
+  },
+  {
+    "inlet": 10,
+    "flow": 2000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (meter bar)"
+    ],
+    "answers": {
+      "rotary_meter_bar.ferrule": "1-1/2"
+    }
+  },
+  {
+    "inlet": 10,
+    "flow": 2000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (straight pipe)"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 10,
+    "flow": 2000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (straight pipe)"
+    ],
+    "answers": {
+      "rotary_straight_pipe.connection": "45LT"
+    }
+  },
+  {
+    "inlet": 10,
+    "flow": 2000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (straight pipe)"
+    ],
+    "answers": {
+      "rotary_straight_pipe.connection": "1-1/2"
+    }
+  },
+  {
+    "inlet": 10,
+    "flow": 2000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic",
+      "Rotary (meter bar)",
+      "Rotary (straight pipe)"
+    ],
+    "answers": {
+      "ultrasonic.compensation": "Live",
+      "rotary_meter_bar.ferrule": "1-1/2",
+      "rotary_straight_pipe.connection": "1-1/2"
+    }
+  },
+  {
+    "inlet": 10,
+    "flow": 2000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (straight pipe)",
+      "Rotary (meter bar)",
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.compensation": "Live",
+      "rotary_meter_bar.ferrule": "1-1/2",
+      "rotary_straight_pipe.connection": "1-1/2"
+    }
+  },
+  {
+    "inlet": 10,
+    "flow": 2000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Diaphragm"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 10,
+    "flow": 2000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic",
+      "Diaphragm"
+    ],
+    "answers": {
+      "ultrasonic.compensation": "Live",
+      "rotary_meter_bar.ferrule": "1-1/2",
+      "rotary_straight_pipe.connection": "1-1/2"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (meter bar)"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (meter bar)"
+    ],
+    "answers": {
+      "rotary_meter_bar.ferrule": "30LT"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (meter bar)"
+    ],
+    "answers": {
+      "rotary_meter_bar.ferrule": "1-1/2"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (straight pipe)"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (straight pipe)"
+    ],
+    "answers": {
+      "rotary_straight_pipe.connection": "45LT"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (straight pipe)"
+    ],
+    "answers": {
+      "rotary_straight_pipe.connection": "1-1/2"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "No"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "Yes",
+      "rotary_roots.index": "TC/AMR"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "Yes",
+      "rotary_roots.index": "ETC"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "Yes",
+      "rotary_roots.index": "ES3"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "ETC"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "ES3"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "IMC-W2-PTZ"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "Eagle MPplusII Instrument"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Volume Corrector"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "IMC-W2-PTZ index"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Volume Corrector"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (meter bar)",
+      "Rotary (straight pipe)",
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_meter_bar.ferrule": "1-1/2",
+      "rotary_straight_pipe.connection": "1-1/2",
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)",
+      "Rotary (straight pipe)",
+      "Rotary (meter bar)"
+    ],
+    "answers": {
+      "rotary_meter_bar.ferrule": "1-1/2",
+      "rotary_straight_pipe.connection": "1-1/2",
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector"
+    }
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Diaphragm"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 20,
+    "flow": 3900,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (meter bar)",
+      "Diaphragm"
+    ],
+    "answers": {
+      "rotary_meter_bar.ferrule": "1-1/2",
+      "rotary_straight_pipe.connection": "1-1/2",
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "No"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "Yes",
+      "rotary_roots.index": "TC/AMR"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "Yes",
+      "rotary_roots.index": "ETC"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "Yes",
+      "rotary_roots.index": "ES3"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "ETC"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "ES3"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "IMC-W2-PTZ"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "Eagle MPplusII Instrument"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Volume Corrector"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "IMC-W2-PTZ index"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Volume Corrector"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.ferrule": "30LT"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.ferrule": "45LT"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.compensation": "None"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.compensation": "Fix-Factored"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "None",
+      "turbine.slot": "None"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "None",
+      "turbine.slot": "Conduit Connection"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "None",
+      "turbine.slot": "Bendix Plug In Connection"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Fix-Factored"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)",
+      "Ultrasonic",
+      "Turbine"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector",
+      "ultrasonic.compensation": "Live",
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine",
+      "Ultrasonic",
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector",
+      "ultrasonic.compensation": "Live",
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Diaphragm"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 60,
+    "flow": 9000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)",
+      "Diaphragm"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector",
+      "ultrasonic.compensation": "Live",
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "No"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "Yes",
+      "rotary_roots.index": "TC/AMR"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "Yes",
+      "rotary_roots.index": "ETC"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "Yes",
+      "rotary_roots.index": "ES3"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "ETC"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "ES3"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "IMC-W2-PTZ"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "Eagle MPplusII Instrument"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Volume Corrector"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "IMC-W2-PTZ index"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Volume Corrector"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.ferrule": "30LT"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.ferrule": "45LT"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.compensation": "None"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.compensation": "Fix-Factored"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "None",
+      "turbine.slot": "None"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "None",
+      "turbine.slot": "Conduit Connection"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "None",
+      "turbine.slot": "Bendix Plug In Connection"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Fix-Factored"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)",
+      "Ultrasonic",
+      "Turbine"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector",
+      "ultrasonic.compensation": "Live",
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine",
+      "Ultrasonic",
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector",
+      "ultrasonic.compensation": "Live",
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Diaphragm"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 300,
+    "flow": 400000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)",
+      "Diaphragm"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector",
+      "ultrasonic.compensation": "Live",
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "No"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "Yes",
+      "rotary_roots.index": "TC/AMR"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "Yes",
+      "rotary_roots.index": "ETC"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "Yes",
+      "rotary_roots.index": "ES3"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "ETC"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "ES3"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "IMC-W2-PTZ"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "Eagle MPplusII Instrument"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Volume Corrector"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Fix-Factored",
+      "rotary_roots.index": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "IMC-W2-PTZ index"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Volume Corrector"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.ferrule": "30LT"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.ferrule": "45LT"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.compensation": "None"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.compensation": "Fix-Factored"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Ultrasonic"
+    ],
+    "answers": {
+      "ultrasonic.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "None",
+      "turbine.slot": "None"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "None",
+      "turbine.slot": "Conduit Connection"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "None",
+      "turbine.slot": "Bendix Plug In Connection"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Fix-Factored"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)",
+      "Ultrasonic",
+      "Turbine"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector",
+      "ultrasonic.compensation": "Live",
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine",
+      "Ultrasonic",
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector",
+      "ultrasonic.compensation": "Live",
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Diaphragm"
+    ],
+    "answers": {}
+  },
+  {
+    "inlet": 1000,
+    "flow": 3000000,
+    "inlet_units": "psi",
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)",
+      "Diaphragm"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector",
+      "ultrasonic.compensation": "Live",
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 60,
+    "inlet_units": "psi",
+    "flow": 9000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)",
+      "Turbine"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "Live",
+      "rotary_roots.live": "Eagle MPplusII Instrument",
+      "rotary_roots.eagle_type": "Rotary Corrector",
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 5,
+    "inlet_units": "psi",
+    "flow": 200000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 9.9,
+    "inlet_units": "psi",
+    "flow": 200000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 10,
+    "inlet_units": "psi",
+    "flow": 200000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 49,
+    "inlet_units": "psi",
+    "flow": 200000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 50,
+    "inlet_units": "psi",
+    "flow": 200000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 99,
+    "inlet_units": "psi",
+    "flow": 200000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 100,
+    "inlet_units": "psi",
+    "flow": 200000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 289,
+    "inlet_units": "psi",
+    "flow": 200000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 290,
+    "inlet_units": "psi",
+    "flow": 200000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 499,
+    "inlet_units": "psi",
+    "flow": 200000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 500,
+    "inlet_units": "psi",
+    "flow": 200000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 1049,
+    "inlet_units": "psi",
+    "flow": 200000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 1000,
+    "inlet_units": "psi",
+    "flow": 200000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "Live"
+    }
+  },
+  {
+    "inlet": 1,
+    "inlet_units": "psi",
+    "flow": 100000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "None",
+      "turbine.slot": "None"
+    }
+  },
+  {
+    "inlet": 149,
+    "inlet_units": "psi",
+    "flow": 100000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "None",
+      "turbine.slot": "None"
+    }
+  },
+  {
+    "inlet": 150,
+    "inlet_units": "psi",
+    "flow": 100000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "None",
+      "turbine.slot": "None"
+    }
+  },
+  {
+    "inlet": 274,
+    "inlet_units": "psi",
+    "flow": 100000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "None",
+      "turbine.slot": "None"
+    }
+  },
+  {
+    "inlet": 275,
+    "inlet_units": "psi",
+    "flow": 100000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "None",
+      "turbine.slot": "None"
+    }
+  },
+  {
+    "inlet": 719,
+    "inlet_units": "psi",
+    "flow": 100000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "None",
+      "turbine.slot": "None"
+    }
+  },
+  {
+    "inlet": 720,
+    "inlet_units": "psi",
+    "flow": 100000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "None",
+      "turbine.slot": "None"
+    }
+  },
+  {
+    "inlet": 1000,
+    "inlet_units": "psi",
+    "flow": 100000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Turbine"
+    ],
+    "answers": {
+      "turbine.compensation": "None",
+      "turbine.slot": "None"
+    }
+  },
+  {
+    "inlet": 175,
+    "inlet_units": "psi",
+    "flow": 250000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "No"
+    }
+  },
+  {
+    "inlet": 200,
+    "inlet_units": "psi",
+    "flow": 250000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "No"
+    }
+  },
+  {
+    "inlet": 232,
+    "inlet_units": "psi",
+    "flow": 250000,
+    "flow_units": "CFH",
+    "meter_types": [
+      "Rotary (roots)"
+    ],
+    "answers": {
+      "rotary_roots.compensation": "None",
+      "rotary_roots.radio": "No"
+    }
+  }
+]

@@ -1,0 +1,1454 @@
+<!-- ============================================================
+     USG Meter Sizing Tool
+     Concrete CMS HTML block
+
+     This block contains NO sizing logic. The algorithm is maintained in
+     Python on GitHub and published as a JavaScript build that the script
+     tag below loads from jsDelivr:
+
+         https://github.com/my-usg/meterselection
+
+     To publish a change: edit algorithm/meter_sizing.py and
+     src/js/meter_sizing.js in that repository and push. CI rebuilds the
+     bundle, checks the two implementations still agree, and this page picks
+     it up automatically (jsDelivr caches a branch URL for up to 12 hours).
+
+     The same Python module is served over HTTP for the chatbot, so the bot
+     and this page run identical rules. See the repository README.
+
+     UNLIKE THE REGULATOR TOOL, sizing a meter is a conversation: once the
+     tool knows which meters have the capacity it has to ask which meter TYPE
+     the customer wants, then a different set of follow-up questions depending
+     on the answer. The algorithm handles that by returning the questions that
+     are still outstanding, so this block re-runs it on every answer and
+     re-renders. There is no wizard state machine here to keep in step.
+
+     REQUIRED: the site Content Security Policy must allow
+         script-src ... https://cdn.jsdelivr.net
+     ============================================================ -->
+<!-- Sizing algorithm, generated from the Python source. Pin a release tag
+     (@v1.0.0) for strict change control, or track @main to pick up pushes
+     automatically. -->
+<script src="https://cdn.jsdelivr.net/gh/my-usg/meterselection@main/dist/usg-meter-sizing.js"></script>
+
+<div id="usg-meter-tool">
+  <h1 class="usg-h1">Meter Sizing Tool</h1>
+  <p class="usg-sub">Fill in the inputs above and click <strong>Run Sizing</strong>.</p>
+
+  <h2 class="usg-h2">&#128203; Inputs</h2>
+
+  <p class="usg-group-label"><strong>Pressure &amp; Flow</strong></p>
+  <div class="usg-row usg-cols-4">
+    <div class="usg-widget">
+      <label class="usg-label" id="usgm-label-inlet">Inlet pressure</label>
+      <div class="usg-numwrap">
+        <input type="number" id="usgm-inlet" min="0" max="1000" step="0.1" value="0.0">
+      </div>
+    </div>
+    <div class="usg-widget">
+      <label class="usg-label">Inlet pressure units</label>
+      <select id="usgm-inlet-units">
+        <option>psi</option><option>in wc</option><option>oz</option><option>bar</option><option>kPa</option>
+      </select>
+    </div>
+    <div class="usg-widget">
+      <label class="usg-label" id="usgm-label-flow">Flow rate</label>
+      <div class="usg-numwrap">
+        <input type="number" id="usgm-flow" min="0" max="100000000" step="1" value="0">
+      </div>
+    </div>
+    <div class="usg-widget">
+      <label class="usg-label">Flow rate units</label>
+      <select id="usgm-flow-units">
+        <option>CFH</option><option>BTUH</option><option>CMH</option>
+      </select>
+    </div>
+  </div>
+
+  <button type="button" class="usg-btn usg-btn-primary" id="usgm-run-btn">&#9654;&nbsp; Run Sizing</button>
+  <hr class="usg-hr">
+
+  <div id="usgm-output">
+    <div class="usg-alert usg-info">&#11014;&#65039;&nbsp; Fill in the inputs above and click <strong>Run Sizing</strong>.</div>
+  </div>
+</div>
+
+<style>
+/* All sizes in px on purpose: the site theme sets a non-16px root font size,
+   so rem-based sizing shrinks. !important guards beat theme heading/link rules.
+
+   Everything down to the "METER TOOL ADDITIONS" marker is the regulator
+   tool's stylesheet with the root selector changed, so the two tools stay
+   visually identical. Keep them in step: a change worth making to one is
+   almost always worth making to the other. Element IDs carry a `usgm-`
+   prefix rather than `usg-` so both blocks can sit on one page without
+   colliding. */
+#usg-meter-tool {
+  font-family: "Source Sans Pro", "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: rgb(49, 51, 63);
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 16px 16px 64px;
+  font-size: 16px;
+  line-height: 1.6;
+  box-sizing: border-box;
+  position: relative;
+}
+#usg-meter-tool *, #usg-meter-tool *::before, #usg-meter-tool *::after { box-sizing: border-box; }
+#usg-meter-tool h1.usg-h1 {
+  font-size: 36px !important; font-weight: 700 !important; color: rgb(49, 51, 63) !important;
+  font-family: inherit !important; text-transform: none !important; letter-spacing: normal !important;
+  padding: 20px 0 16px !important; margin: 0 !important; line-height: 1.2 !important;
+}
+#usg-meter-tool h2.usg-h2, #usg-meter-tool h3.usg-h3 {
+  font-size: 28px !important; font-weight: 600 !important; color: rgb(49, 51, 63) !important;
+  font-family: inherit !important; text-transform: none !important; letter-spacing: normal !important;
+  padding: 16px 0 8px !important; margin: 0 !important; line-height: 1.25 !important;
+}
+#usg-meter-tool .usg-sub { font-size: 16px !important; color: rgb(49, 51, 63) !important; margin: 0 0 16px !important; }
+#usg-meter-tool .usg-group-label { font-size: 17px !important; color: rgb(49, 51, 63) !important; margin: 0 0 10px !important; }
+#usg-meter-tool .usg-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+#usg-meter-tool .usg-cols-4 > .usg-widget { flex: 1 1 0; min-width: 190px; }
+#usg-meter-tool .usg-cols-2 > .usg-col { flex: 1 1 0; min-width: 320px; }
+#usg-meter-tool .usg-top-gap { margin-top: 8px; }
+#usg-meter-tool .usg-widget { margin-bottom: 16px; }
+#usg-meter-tool .usg-halfwidth { max-width: 50%; min-width: 170px; }
+#usg-meter-tool .usg-label {
+  display: block; font-size: 15px !important; font-weight: 400 !important;
+  color: rgb(49, 51, 63) !important; margin: 0 0 6px !important; min-height: 22px;
+}
+#usg-meter-tool .usg-req { color: rgb(255, 43, 43) !important; }
+#usg-meter-tool .usg-req::after { content: " \2757"; }
+#usg-meter-tool .usg-help {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 17px; height: 17px; border-radius: 50%;
+  border: 1px solid rgba(49, 51, 63, 0.45); color: rgba(49, 51, 63, 0.65);
+  font-size: 11px !important; font-weight: 700; font-style: normal;
+  font-family: Georgia, "Times New Roman", serif;
+  cursor: pointer; vertical-align: middle; margin-left: 4px;
+  user-select: none; -webkit-tap-highlight-color: transparent;
+}
+#usg-meter-tool .usg-help:hover,
+#usg-meter-tool .usg-help:focus,
+#usg-meter-tool .usg-help.usg-tip-on {
+  border-color: rgb(255, 75, 75); color: rgb(255, 75, 75);
+  outline: none;
+}
+#usg-meter-tool .usg-tipbox {
+  display: none; position: absolute; z-index: 99999;
+  background: rgb(38, 39, 48); color: #fff !important;
+  border-radius: 8px; padding: 10px 14px;
+  font-size: 14px !important; line-height: 1.5; font-weight: 400;
+  max-width: 320px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+#usg-meter-tool .usg-tipbox.usg-show { display: block; }
+#usg-meter-tool .usg-numwrap { display: flex; align-items: stretch; }
+#usg-meter-tool input[type="number"] {
+  flex: 1 1 auto; width: 100%; height: 44px;
+  background: rgb(240, 242, 246); color: rgb(49, 51, 63);
+  border: 1px solid rgb(240, 242, 246); border-radius: 8px;
+  padding: 8px 12px; font-size: 16px !important; font-family: inherit;
+  min-width: 0; -moz-appearance: textfield; appearance: textfield;
+}
+#usg-meter-tool input[type="number"]::-webkit-outer-spin-button,
+#usg-meter-tool input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+#usg-meter-tool input[type="number"]:focus { outline: none; border-color: rgb(255, 75, 75); }
+#usg-meter-tool select {
+  width: 100%; height: 44px; background: rgb(240, 242, 246); color: rgb(49, 51, 63);
+  border: 1px solid rgb(240, 242, 246); border-radius: 8px;
+  padding: 8px 12px; font-size: 16px !important; font-family: inherit; cursor: pointer;
+}
+#usg-meter-tool select:focus { outline: none; border-color: rgb(255, 75, 75); }
+#usg-meter-tool .usg-radio-group { display: flex; flex-direction: column; gap: 7px; }
+#usg-meter-tool .usg-radio { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 16px !important; color: rgb(49, 51, 63) !important; font-weight: 400 !important; margin: 0 !important; }
+#usg-meter-tool .usg-radio input { accent-color: rgb(255, 75, 75); width: 18px; height: 18px; margin: 0; cursor: pointer; flex: 0 0 auto; }
+#usg-meter-tool .usg-btn {
+  font-family: inherit !important; font-size: 16px !important; font-weight: 400 !important;
+  padding: 8px 16px !important; border-radius: 8px !important; text-transform: none !important;
+  border: 1px solid rgba(49, 51, 63, 0.2); background: #fff; color: rgb(49, 51, 63) !important;
+  cursor: pointer; line-height: 1.6 !important; letter-spacing: normal !important;
+}
+#usg-meter-tool .usg-btn:hover { border-color: rgb(255, 75, 75); color: rgb(255, 75, 75) !important; background: #fff; }
+#usg-meter-tool .usg-btn-primary { background: rgb(255, 75, 75) !important; border-color: rgb(255, 75, 75) !important; color: #fff !important; }
+#usg-meter-tool .usg-btn-primary:hover { background: rgb(255, 51, 51) !important; border-color: rgb(255, 51, 51) !important; color: #fff !important; }
+/* Part numbers read like the product-page title: the site's own blue, the
+   body font, and on their own line under the label. The colour is sampled
+   from a product page, so it matches by value rather than by inheriting -
+   nothing in the theme exposes it as a variable. */
+#usg-meter-tool code.usg-pn {
+  display: block; margin-top: 2px;
+  font-family: inherit !important;
+  font-size: 24px !important; font-weight: 600 !important;
+  color: rgb(49, 65, 122) !important;
+  background: none !important; border: 0 !important;
+  padding: 0 !important; border-radius: 0;
+  overflow-wrap: break-word;
+}
+/* ---- Add to Cart ----
+   Deliberately UNSTYLED, the same way the 441 configurator does it: the cart
+   control is a plain <button>, so the site theme's own button rules give it
+   its colour, border, radius, padding and type case and it matches every
+   other button on the site. Do not add any of those here - every rule in this
+   block is #usg-meter-tool-scoped, so it would out-specify the theme. */
+#usg-meter-tool .usg-cart {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+  margin: 14px 0 0 !important;
+  font-family: var(--bs-body-font-family, inherit);
+}
+#usg-meter-tool .usg-btn-cart { cursor: pointer; }
+#usg-meter-tool [hidden] { display: none !important; }
+#usg-meter-tool .usg-pricebox {
+  background: #fafafa; padding: 16px 18px; margin: 0 0 14px;
+}
+#usg-meter-tool .usg-price {
+  font-size: 30px !important; font-weight: 600 !important;
+  color: rgb(49, 51, 63) !important; margin: 0 !important;
+}
+#usg-meter-tool .usg-price + .usg-avail { margin-top: 14px; }
+#usg-meter-tool .usg-price[hidden] + .usg-avail { margin-top: 0; }
+#usg-meter-tool .usg-price small {
+  font-size: 15px !important; font-weight: 400;
+  color: rgba(49, 51, 63, 0.65) !important; margin-left: 7px;
+}
+#usg-meter-tool .usg-qty { display: block; margin: 10px 0 12px; }
+#usg-meter-tool .usg-qty > span {
+  display: block; margin-bottom: 5px;
+  font-size: 15px !important; color: rgb(49, 51, 63);
+}
+#usg-meter-tool .usg-qty .usg-numwrap { max-width: 120px; }
+#usg-meter-tool .usg-avail {
+  background: #f7f7f7; border-left: 3px solid #b4741d; border-radius: 0 4px 4px 0;
+  padding: 9px 15px; margin: 0; font-size: 15px !important; line-height: 1.5;
+}
+#usg-meter-tool .usg-avail strong {
+  display: block; font-size: 13px !important; font-weight: 700 !important;
+  text-transform: uppercase; letter-spacing: 0.06em; color: #b4741d !important;
+}
+#usg-meter-tool .usg-avail span { display: block; }
+#usg-meter-tool .usg-avail a { color: inherit !important; }
+#usg-meter-tool .usg-avail.is-stock { border-left-color: #1e7d3a; }
+#usg-meter-tool .usg-avail.is-stock strong { color: #1e7d3a !important; }
+#usg-meter-tool .usg-avail.is-stale { opacity: 0.45; }
+#usg-meter-tool .usg-total {
+  font-size: 30px !important; font-weight: 700; white-space: nowrap;
+}
+#usg-meter-tool .usg-signin {
+  font-size: 16px !important; line-height: 1.6;
+  color: rgb(49, 51, 63); max-width: 620px;
+}
+#usg-meter-tool .usg-hr { border: none; border-top: 1px solid rgba(49, 51, 63, 0.2); margin: 24px 0; }
+#usg-meter-tool .usg-alert { border-radius: 8px; padding: 16px; margin: 8px 0 16px; font-size: 16px !important; line-height: 1.6; }
+#usg-meter-tool .usg-error { background: rgba(255, 43, 43, 0.09); color: rgb(125, 53, 59) !important; }
+#usg-meter-tool .usg-warning { background: rgba(255, 227, 18, 0.1); color: rgb(146, 108, 5) !important; }
+#usg-meter-tool .usg-success { background: rgba(33, 195, 84, 0.1); color: rgb(23, 114, 51) !important; }
+#usg-meter-tool .usg-info { background: rgba(28, 131, 225, 0.1); color: rgb(0, 66, 128) !important; }
+#usg-meter-tool .usg-field { font-size: 16px !important; color: rgb(49, 51, 63) !important; margin: 0 0 12px !important; }
+#usg-meter-tool .usg-field strong { color: rgb(49, 51, 63) !important; font-weight: 600; }
+#usg-meter-tool .usg-table { border-collapse: collapse; margin: 8px 0 16px; min-width: 50%; font-size: 15px !important; }
+#usg-meter-tool .usg-table th, #usg-meter-tool .usg-table td {
+  border: 1px solid rgba(49, 51, 63, 0.1); padding: 8px 16px; text-align: left;
+  color: rgb(49, 51, 63) !important; font-size: 15px !important;
+}
+#usg-meter-tool .usg-table th { background: rgb(240, 242, 246); font-weight: 600; }
+#usg-meter-tool .usg-spinner { display: flex; align-items: center; gap: 10px; padding: 16px 0; font-size: 16px; }
+#usg-meter-tool .usg-spin {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid rgba(49, 51, 63, 0.2); border-top-color: rgb(255, 75, 75);
+  animation: usgm-rotate 0.8s linear infinite;
+}
+@keyframes usgm-rotate { to { transform: rotate(360deg); } }
+
+/* ============ METER TOOL ADDITIONS ============
+   The regulator tool answers in one shot, so it needs no question widgets in
+   its output. These are the only rules that exist here and not there. */
+
+/* The meter-type question. Checkboxes rather than radios: the customer can
+   price more than one type side by side, which is what the sample outputs
+   show ("Diaphragm Option", "Sonix IQ Option" and so on, one after another).
+   Styled to match .usg-radio exactly so the form reads as one form. */
+#usg-meter-tool .usg-check-group { display: flex; flex-direction: column; gap: 7px; }
+#usg-meter-tool .usg-check {
+  display: flex; align-items: center; gap: 8px; cursor: pointer;
+  font-size: 16px !important; color: rgb(49, 51, 63) !important;
+  font-weight: 400 !important; margin: 0 !important;
+}
+#usg-meter-tool .usg-check input {
+  accent-color: rgb(255, 75, 75); width: 18px; height: 18px;
+  margin: 0; cursor: pointer; flex: 0 0 auto;
+}
+/* One block per selected meter type. The left rule is what makes several
+   options on the page read as separate quotes rather than one long list. */
+#usg-meter-tool .usg-option {
+  border-left: 3px solid rgba(49, 51, 63, 0.15);
+  padding: 0 0 4px 18px; margin: 0 0 8px;
+}
+#usg-meter-tool .usg-option.is-ready { border-left-color: rgb(49, 65, 122); }
+#usg-meter-tool .usg-option.is-unavailable { border-left-color: rgba(255, 43, 43, 0.35); }
+#usg-meter-tool h3.usg-option-h {
+  font-size: 22px !important; font-weight: 600 !important;
+  color: rgb(49, 51, 63) !important; font-family: inherit !important;
+  text-transform: none !important; letter-spacing: normal !important;
+  padding: 8px 0 8px !important; margin: 0 !important; line-height: 1.25 !important;
+}
+/* Outstanding option questions sit in a tinted well so it is obvious the
+   selection is not finished and the part number is still to come. */
+#usg-meter-tool .usg-pending {
+  background: rgb(248, 249, 251); border-radius: 8px;
+  padding: 16px 18px 4px; margin: 4px 0 14px;
+}
+/* Once every question is answered the widgets stay on screen and stay live -
+   a customer who picked the wrong ferrule changes it here rather than
+   re-running the sizing - but the tint comes off, so a finished selection
+   reads as finished. */
+#usg-meter-tool .usg-answered { padding: 4px 0 0; margin: 4px 0 8px; }
+#usg-meter-tool .usg-pending .usg-widget:last-child,
+#usg-meter-tool .usg-answered .usg-widget:last-child { margin-bottom: 4px; }
+/* A meter that quotes rather than carrying a part number. Same weight and
+   colour as a part number so it reads as the answer, not a footnote. */
+#usg-meter-tool .usg-quote {
+  font-size: 20px !important; font-weight: 600 !important;
+  color: rgb(49, 65, 122) !important; margin: 2px 0 12px !important;
+  overflow-wrap: break-word;
+}
+@media (max-width: 720px) {
+  #usg-meter-tool .usg-cols-4 > .usg-widget { flex-basis: 46%; }
+  #usg-meter-tool .usg-halfwidth { max-width: 100%; }
+  #usg-meter-tool h1.usg-h1 { font-size: 30px !important; }
+  #usg-meter-tool h2.usg-h2, #usg-meter-tool h3.usg-h3 { font-size: 24px !important; }
+  #usg-meter-tool .usg-option { padding-left: 12px; }
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function () {
+"use strict";
+
+/* ==============================================================
+   UI LAYER
+   ==============================================================
+   The algorithm itself is not in this file. It is loaded from GitHub via
+   jsDelivr (see the <script> tag above) and exposed as window.USGMeterSizing.
+
+   The flow this layer has to support, and the reason it differs from the
+   regulator block:
+
+     Run Sizing  -> the algorithm returns the meter TYPES that apply
+     pick types  -> it returns the option questions for each
+     answer them -> it returns the part numbers
+
+   Rather than track which step we are on, this keeps one `state` object of
+   the answers so far and re-runs the whole algorithm on every change. The
+   algorithm is stateless and returns whatever is still outstanding, so the
+   page is always rendering the truth rather than a step counter's idea of it.
+   ============================================================== */
+
+var $root = document.getElementById('usg-meter-tool');
+function $(id) { return document.getElementById('usgm-' + id); }
+
+// ---- widget state readers ----
+function numVal(id) {
+  var v = parseFloat($(id).value);
+  return isNaN(v) ? 0 : v;
+}
+
+// Everything the customer has told us. `inputs` is frozen when Run Sizing is
+// clicked, so editing a pressure afterwards does not silently re-price the
+// answers already given - the customer has to click Run Sizing again, exactly
+// as on the regulator tool.
+var state = null;
+
+function readInputs() {
+  return {
+    inlet: numVal('inlet'),
+    inlet_units: $('inlet-units').value,
+    flow: numVal('flow'),
+    flow_units: $('flow-units').value
+  };
+}
+
+function payload() {
+  var p = {};
+  var k;
+  for (k in state.inputs) if (Object.prototype.hasOwnProperty.call(state.inputs, k)) {
+    p[k] = state.inputs[k];
+  }
+  p.meter_types = state.meter_types.slice();
+  p.answers = {};
+  for (k in state.answers) if (Object.prototype.hasOwnProperty.call(state.answers, k)) {
+    p.answers[k] = state.answers[k];
+  }
+  return p;
+}
+
+// ---- conditional labels on the input form ----
+function refreshConditionals() {
+  reqLabel('inlet', numVal('inlet'));
+  reqLabel('flow', numVal('flow'));
+}
+function reqLabel(id, val) {
+  var el = $('label-' + id);
+  if (!el) return;
+  if (!val) el.classList.add('usg-req'); else el.classList.remove('usg-req');
+}
+function clampInput(el) {
+  if (el.value === '') return;
+  var v = parseFloat(el.value); if (isNaN(v)) return;
+  var min = el.hasAttribute('min') ? parseFloat(el.getAttribute('min')) : -Infinity;
+  var max = el.hasAttribute('max') ? parseFloat(el.getAttribute('max')) : Infinity;
+  if (v < min) el.value = String(min);
+  if (v > max) el.value = String(max);
+}
+
+// ---- rendering helpers ----
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function alertBox(kind, html) { return '<div class="usg-alert usg-' + kind + '">' + html + '</div>'; }
+
+// ---- Add to Cart ----
+// The site exposes an endpoint that takes matched part[] and qty[] pairs, adds
+// each to the cart, and redirects to the cart page (or to a "contact us" page
+// if a part number is not recognised).
+var CART_ENDPOINT = 'https://hollandsupplycompany.com/api/sizing-tool/add-to-cart';
+
+// The account-pricing note that sits above Add to Cart on the product pages.
+// It shows unconditionally: the tool cannot tell whether this visitor is
+// signed in or already on account pricing, and a note about better prices is
+// harmless to someone who already has them.
+var ACCOUNT_URL = 'https://hollandsupplycompany.com/login';
+function accountNote() {
+  return '<span class="usg-signin">You may qualify for lower pricing by establishing an ' +
+    'account with Holland Supply. <a href="' + ACCOUNT_URL + '">Login in</a> or ' +
+    '<a href="' + ACCOUNT_URL + '">Create an account here</a>.</span>';
+}
+
+function cartUrl(items) {
+  var pairs = [];
+  for (var i = 0; i < items.length; i++) {
+    if (!items[i] || !items[i].part) continue;
+    // Encode the value, then put "/" back: part numbers contain slashes (for
+    // example M.R275.TC.5.D/R.1-1/4.TOP.NA) and the endpoint's documented
+    // example shows them unencoded. A slash is legal in a query string and
+    // decodes the same either way.
+    var part = encodeURIComponent(items[i].part).replace(/%2F/g, '/');
+    var qty = items[i].qty;
+    if (qty === null || qty === undefined || qty === '') qty = 1;
+    pairs.push('part[]=' + part + '&qty[]=' + encodeURIComponent(qty));
+  }
+  return CART_ENDPOINT + '?' + pairs.join('&');
+}
+
+// Everything the cart should receive: one line per part number the run
+// produced, meters first and any Eagle instrument last, which is the order
+// they are rendered in. A meter that quotes rather than numbering
+// contributes no line - there is no SKU to add.
+function cartItems(body) {
+  var items = [];
+  var pns = body.part_numbers || [];
+  for (var i = 0; i < pns.length; i++) items.push({ part: pns[i], qty: 1 });
+  return items;
+}
+
+// ---- Price and lead time ----
+// Looked up from the customer's own browser once the selection has rendered,
+// so a slow or failing lookup never delays the sizing result. Every slot
+// starts hidden and stays hidden if a lookup fails, which is why an outage
+// costs nothing but the price line. Neither figure is written into
+// `lastRun`: prices are session-specific and lead times move, so a saved PDF
+// must not carry either.
+//
+// PRICE - the CMS endpoint, one call per SKU. It must be same-origin and send
+// credentials: without the session cookie it answers with list price rather
+// than this customer's price.
+//     GET /api/chatbot/products?sku=<sku>
+//     { sku, internal_id,
+//       price:      { amount: "1507.54", currency: "USD",
+//                     is_customer_specific: false, price_group: "..." },
+//       list_price: { amount: "1507.54", currency: "USD" } }
+//
+// LEAD TIME - the orchestrator endpoint, one call for the whole selection. It
+// takes 1-8 items; a meter selection is at most four (three meter options
+// plus an Eagle).
+//     POST <LEAD_TIME_ENDPOINT>   { items: [ { partNumber, quantity } ] }
+//     [ { ok, partNumber, quantity, status, leadTime, message,
+//         availableNow, contact: { email, phone } } ]
+//     status: IN_STOCK | AVAILABLE_TO_ORDER | PARTIAL_AVAILABILITY |
+//             CONTACT_US | NOT_FOUND
+//
+// The lead time host is the only cross-origin call this block makes, so it
+// has to be in the site's connect-src. The production host below is covered
+// by the `*.hsc.faxon.tech` entry already in that policy.
+var PRICE_ENDPOINT     = '/api/chatbot/products';
+var LEAD_TIME_ENDPOINT = 'https://orchestrator.hsc.faxon.tech/api/lead-time';
+
+// SKU -> response, or null once a lookup has been tried and produced nothing.
+// A null is not retried: a part the endpoints do not know will not start
+// knowing it while the page is open. Both caches are module-level so they
+// survive the re-render that follows every answer, which is what keeps a
+// re-render from re-firing the whole lookup set.
+var priceCache = {};
+var leadCache = {};
+// A late response must not paint over a newer sizing run.
+var lookupToken = 0;
+
+// Rendered under each part number: the quantity box, then the price and
+// availability placeholders, which are empty and hidden until a lookup fills
+// them in.
+// `line` is the position in the cart list, and it is what the quantity is
+// tracked by - NOT the part number, because two meter options can carry the
+// same SKU and keying on it made the two lines share one quantity.
+function infoSlots(sku, qty, line) {
+  var html = '';
+  if (qty !== false) {
+    var n = (qty === null || qty === undefined || !(Number(qty) > 0)) ? 1 : Math.round(Number(qty));
+    html += '<label class="usg-qty"><span>Quantity</span>' +
+      '<span class="usg-numwrap"><input type="number" inputmode="numeric" min="1" max="999" step="1"' +
+      ' value="' + n + '" data-qty-for="' + line + '"></span></label>';
+  }
+  // Price and availability share one panel, as they do on a product page. The
+  // panel is hidden until one of them has something to say, so a failed
+  // lookup leaves no empty grey box behind.
+  return html +
+    '<div class="usg-pricebox" hidden>' +
+    '<p class="usg-price" data-price-for="' + esc(sku) + '" hidden></p>' +
+    '<div class="usg-avail" data-avail-for="' + esc(sku) + '" data-line="' + line + '" hidden></div>' +
+    '</div>';
+}
+
+// The part/quantity list travels on the Add to Cart paragraph so the lookup
+// can read back exactly what is on screen, with no state to reset when a run
+// finds no meter. Part numbers contain "." "/" "-" but never "~" or "|".
+function itemsAttr(items) {
+  var bits = [];
+  for (var i = 0; i < items.length; i++) {
+    if (items[i] && items[i].part) bits.push(items[i].part + '~' + (items[i].qty || 1));
+  }
+  return bits.join('|');
+}
+function qtyByLine(root) {
+  var els = root.querySelectorAll('[data-qty-for]'), qty = [];
+  for (var i = 0; i < els.length; i++) {
+    var n = parseInt(els[i].value, 10);
+    qty[Number(els[i].getAttribute('data-qty-for'))] = (isFinite(n) && n > 0) ? n : 1;
+  }
+  return qty;
+}
+function itemsFromDom(root) {
+  var el = root.querySelector('.usg-cart[data-items]');
+  if (!el) return [];
+  var live = qtyByLine(root);
+  var pairs = (el.getAttribute('data-items') || '').split('|'), items = [];
+  for (var i = 0; i < pairs.length; i++) {
+    if (!pairs[i]) continue;
+    var bits = pairs[i].split('~');
+    var qty = (live[items.length] !== undefined) ? live[items.length] : (Number(bits[1]) || 1);
+    items.push({ part: bits[0], qty: qty });
+  }
+  return items;
+}
+
+// A lead time is quoted for a quantity, so it is cached against one: change
+// the quantity and the estimate has to be asked for again.
+function leadKey(part, qty) { return part + '|' + qty; }
+
+function onQtyChange(root) {
+  var items = itemsFromDom(root);
+  var wrap = root.querySelector('.usg-cart[data-items]');
+  var btn = wrap ? wrap.querySelector('.usg-btn-cart') : null;
+  if (btn) btn.setAttribute('data-cart', cartUrl(items));
+  paintInfo(root);
+  scheduleLeadTimes(items, root);
+}
+var qtyTimer = null;
+function scheduleLeadTimes(items, root) {
+  if (qtyTimer) window.clearTimeout(qtyTimer);
+  // Typing "12" is two changes; only the second one is worth a request.
+  qtyTimer = window.setTimeout(function () {
+    qtyTimer = null;
+    fetchLeadTimes(items, lookupToken, root);
+  }, 500);
+}
+
+function money(n, currency) {
+  var parts = Number(n).toFixed(2).split('.');
+  var s = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + parts[1];
+  return (!currency || currency === 'USD') ? '$' + s : s + ' ' + currency;
+}
+// Amounts arrive as strings ("1507.54"), so they are parsed rather than used
+// directly.
+function amountOf(slot) {
+  if (!slot) return undefined;
+  var v = (typeof slot === 'object') ? slot.amount : slot;
+  if (v === null || v === undefined || v === '') return undefined;
+  var n = Number(String(v).replace(/[$,\s]/g, ''));
+  return isFinite(n) ? n : undefined;
+}
+function priceOf(rec) {
+  if (!rec) return undefined;
+  var v = amountOf(rec.price);
+  return (v === undefined) ? amountOf(rec.list_price) : v;
+}
+function currencyOf(rec) {
+  if (!rec) return 'USD';
+  return (rec.price && rec.price.currency) ||
+         (rec.list_price && rec.list_price.currency) || 'USD';
+}
+function priceHtml(rec) {
+  var v = priceOf(rec);
+  if (v === undefined) return '';
+  var html = esc(money(v, currencyOf(rec)));
+  if (rec.price && rec.price.is_customer_specific) html += ' <small>your account price</small>';
+  return html;
+}
+
+// Wording for the availability line lives here, and nowhere else.
+var LEAD_LABELS = {
+  IN_STOCK: 'In stock',
+  AVAILABLE_TO_ORDER: 'Available to order',
+  PARTIAL_AVAILABILITY: 'Partly in stock',
+  CONTACT_US: 'Contact us',
+  NOT_FOUND: 'Contact us'
+};
+function availability(rec) {
+  if (!rec) return null;
+  var status = String(rec.status || '');
+  // `message` is the customer-ready sentence; `leadTime` says the same thing
+  // more tersely. Swap the order here to show the terse one instead.
+  var text = rec.message || rec.leadTime || '';
+  // A part number the sizing tool can produce but NetSuite does not carry
+  // comes back NOT_FOUND. Saying nothing would leave the customer to discover
+  // it at the cart, so it points them at a person instead.
+  var toContact = (rec.ok === false || status === 'CONTACT_US' || status === 'NOT_FOUND');
+  if (toContact && !text) {
+    text = 'Contact Holland Supply Company to confirm availability for this part.';
+  }
+  if (!text) return null;
+  var extra = '';
+  if (toContact && rec.contact) {
+    var bits = [];
+    if (rec.contact.phone) {
+      bits.push('<a href="tel:' + esc(String(rec.contact.phone).replace(/[^0-9+]/g, '')) +
+        '">' + esc(rec.contact.phone) + '</a>');
+    }
+    if (rec.contact.email) {
+      bits.push('<a href="mailto:' + esc(rec.contact.email) + '">' + esc(rec.contact.email) + '</a>');
+    }
+    if (bits.length) extra = '<span>' + bits.join(' &middot; ') + '</span>';
+  }
+  return {
+    label: LEAD_LABELS[status] || 'Availability',
+    text: text,
+    stocked: status === 'IN_STOCK',
+    extra: extra
+  };
+}
+
+// Fills the placeholders in place - never rebuilds the results - so it is safe
+// to call from a fetch callback.
+function paintInfo(root) {
+  var i, el, rec;
+  var prices = root.querySelectorAll('[data-price-for]');
+  for (i = 0; i < prices.length; i++) {
+    el = prices[i];
+    var html = priceHtml(priceCache[el.getAttribute('data-price-for')]);
+    el.innerHTML = html;
+    el.hidden = !html;
+  }
+  var live = qtyByLine(root);
+  var avails = root.querySelectorAll('[data-avail-for]');
+  for (i = 0; i < avails.length; i++) {
+    el = avails[i];
+    var sku = el.getAttribute('data-avail-for');
+    var lineQty = live[Number(el.getAttribute('data-line'))];
+    var a = availability(leadCache[leadKey(sku, lineQty === undefined ? 1 : lineQty)]);
+    if (!a) {
+      // Nothing for this quantity yet. Anything already on screen was quoted
+      // for a different one, so dim it until the new estimate lands instead
+      // of clearing it and making the page jump.
+      if (el.innerHTML) {
+        if (el.className.indexOf('is-stale') === -1) el.className += ' is-stale';
+      } else {
+        el.hidden = true;
+      }
+      continue;
+    }
+    el.hidden = false;
+    el.className = 'usg-avail' + (a.stocked ? ' is-stock' : '');
+    el.innerHTML = '<strong>' + esc(a.label) + '</strong><span>' + esc(a.text) + '</span>' + a.extra;
+  }
+  // The panel exists for whichever of the two arrived. Both empty means the
+  // lookup is unavailable, and it stays out of the way entirely.
+  var boxes = root.querySelectorAll('.usg-pricebox');
+  for (i = 0; i < boxes.length; i++) {
+    var pr = boxes[i].querySelector('.usg-price');
+    var av = boxes[i].querySelector('.usg-avail');
+    boxes[i].hidden = !((pr && !pr.hidden) || (av && !av.hidden));
+  }
+
+  // Line-item total beside Add to Cart, shown only when every part on screen
+  // has a price - a partial total would understate the order.
+  var wrap = root.querySelector('.usg-cart[data-items]');
+  var tot = wrap ? wrap.querySelector('.usg-total') : null;
+  if (tot) {
+    var items = itemsFromDom(root), sum = 0, ok = items.length > 0, cur = 'USD';
+    for (i = 0; i < items.length; i++) {
+      rec = priceCache[items[i].part];
+      var v = priceOf(rec);
+      if (v === undefined) { ok = false; break; }
+      cur = currencyOf(rec);
+      sum += v * items[i].qty;
+    }
+    tot.textContent = ok ? 'Total ' + money(sum, cur) : '';
+    tot.hidden = !ok;
+  }
+}
+
+// One price call per SKU and one lead time call for the selection, fired after
+// the result is on screen. Anything already cached paints immediately.
+function loadInfo(root) {
+  if (!window.fetch) return;
+  var items = itemsFromDom(root);
+  if (!items.length) return;
+  var token = ++lookupToken;
+  for (var i = 0; i < items.length; i++) fetchPrice(items[i].part, token, root);
+  fetchLeadTimes(items, token, root);
+  paintInfo(root);
+}
+
+// A failed lookup shows the customer nothing, which is right for them and
+// useless for anyone diagnosing it - so every failure says why in the
+// console. The messages are the only way to tell a blocked request (CSP or
+// CORS) from an endpoint that answered with nothing. Prefix `[USG meter]`.
+function lookupWarn(msg) {
+  if (window.console && window.console.warn) window.console.warn('[USG meter] ' + msg);
+}
+
+function fetchPrice(sku, token, root) {
+  if (sku in priceCache) return;
+  priceCache[sku] = null;
+  window.fetch(PRICE_ENDPOINT + '?sku=' + encodeURIComponent(sku), { credentials: 'include' })
+    .then(function (r) {
+      if (!r.ok) { lookupWarn('price HTTP ' + r.status + ' for ' + sku); return null; }
+      return r.json();
+    })
+    .then(function (data) {
+      priceCache[sku] = data || null;
+      if (data && priceOf(data) === undefined) {
+        lookupWarn('price response carried no amount for ' + sku + ': ' + JSON.stringify(data));
+      }
+      if (token === lookupToken) paintInfo(root);
+    })
+    .catch(function (e) {
+      lookupWarn('price request failed for ' + sku + ' - ' + (e && e.message ? e.message : e));
+    });
+}
+
+function fetchLeadTimes(items, token, root) {
+  var need = [];
+  for (var i = 0; i < items.length && need.length < 8; i++) {
+    var key = leadKey(items[i].part, items[i].qty);
+    if (key in leadCache) continue;
+    leadCache[key] = null;
+    need.push({ partNumber: items[i].part, quantity: items[i].qty });
+  }
+  if (!need.length) return;
+  window.fetch(LEAD_TIME_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items: need })
+  })
+    .then(function (r) {
+      if (!r.ok) { lookupWarn('lead time HTTP ' + r.status + ' from ' + LEAD_TIME_ENDPOINT); return null; }
+      return r.json();
+    })
+    .then(function (data) {
+      absorbLeadTimes(need, data);
+      if (token === lookupToken) paintInfo(root);
+    })
+    .catch(function (e) {
+      // A cross-origin request that is refused arrives here with almost no
+      // detail, by design of the browser. The console entry above it says
+      // whether it was CSP or CORS.
+      lookupWarn('lead time request failed - ' + (e && e.message ? e.message : e) +
+        '. If the console also shows a CSP or CORS error, that is the cause: the ' +
+        'site needs ' + LEAD_TIME_ENDPOINT + ' in connect-src, and the endpoint ' +
+        'has to allow this origin (including the OPTIONS preflight this POST triggers).');
+    });
+}
+
+// The documented response is a bare list, one row per item. This accepts a
+// list wrapped in a single object property too, and matches rows to parts by
+// part number, then case-insensitively, then by position.
+function absorbLeadTimes(need, data) {
+  if (data === null || data === undefined) return;
+  var rows = null;
+  if (Object.prototype.toString.call(data) === '[object Array]') {
+    rows = data;
+  } else if (typeof data === 'object') {
+    var keys = ['items', 'results', 'estimates', 'leadTimes', 'data'];
+    for (var i = 0; i < keys.length; i++) {
+      if (Object.prototype.toString.call(data[keys[i]]) === '[object Array]') { rows = data[keys[i]]; break; }
+    }
+  }
+  if (!rows) {
+    lookupWarn('lead time response was not a list of estimates: ' + JSON.stringify(data).slice(0, 300));
+    return;
+  }
+  for (var k = 0; k < rows.length; k++) {
+    var row = rows[k];
+    if (!row || typeof row !== 'object') continue;
+    var key = row.partNumber || row.part_number || row.sku || row.part;
+    var entry = key ? matchNeed(need, key) : null;
+    if (!entry && !key && need[k]) entry = need[k];   // positional
+    if (!entry) {
+      lookupWarn('lead time row matched no part on screen (' + JSON.stringify(key) + ')');
+      continue;
+    }
+    leadCache[leadKey(entry.partNumber, entry.quantity)] = row;
+    if (!availability(row)) {
+      lookupWarn('lead time row for ' + entry.partNumber + ' had no status or message, so nothing ' +
+        'is shown: ' + JSON.stringify(row).slice(0, 300));
+    }
+  }
+}
+function matchNeed(need, key) {
+  var s = String(key), i;
+  for (i = 0; i < need.length; i++) {
+    if (need[i].partNumber === s) return need[i];
+  }
+  var flat = s.toUpperCase().replace(/\s+/g, '');
+  for (i = 0; i < need.length; i++) {
+    if (need[i].partNumber.toUpperCase().replace(/\s+/g, '') === flat) return need[i];
+  }
+  return null;
+}
+
+var lastRun = null; // stored for the PDF and Excel downloads
+
+// ---- main run handler ----
+// Clicking Run Sizing freezes the numeric inputs into `state` and clears any
+// answers from a previous run: a different pressure or flow can put the job
+// on a different tier, where the old answers may not even be questions.
+function runSizing() {
+  var out = $('output');
+
+  if (!window.USGMeterSizing || typeof window.USGMeterSizing.sizeMeters !== 'function') {
+    out.innerHTML = alertBox('error',
+      'The sizing algorithm could not be loaded. Please refresh the page, and if the problem persists contact Holland Supply Company.');
+    return;
+  }
+
+  state = { inputs: readInputs(), meter_types: [], answers: {} };
+  out.innerHTML = '<div class="usg-spinner"><span class="usg-spin"></span>Sizing meter\u2026</div>';
+
+  // Yield once so the spinner paints before the calculation runs.
+  setTimeout(function () { rerun(); }, 30);
+}
+
+// Every answer change comes back through here. The algorithm is stateless, so
+// this is a full re-run rather than a patch, and the render below is a full
+// replace. Cheap: the whole thing is table lookups and interpolation.
+function rerun() {
+  var out = $('output');
+  var result;
+  try {
+    result = window.USGMeterSizing.sizeMeters(payload());
+  } catch (err) {
+    if (window.console && console.error) console.error('USG meter sizing failed', err);
+    out.innerHTML = alertBox('error', 'Something went wrong while sizing. Please try again.');
+    return;
+  }
+  render(result);
+}
+
+// ---- question widgets ----
+// The algorithm describes each question as { id, label, type, options }. This
+// turns one into a widget, using the control the regulator tool would use for
+// the same shape of answer: a radio group for a short list, a select for a
+// long one, checkboxes for a multi-select.
+function questionHtml(q, current) {
+  var html = '<div class="usg-widget">';
+  var i, opt, checked;
+
+  if (q.type === 'multi_select') {
+    var chosen = current || [];
+    html += '<label class="usg-label">' + esc(q.label) + '</label><div class="usg-check-group">';
+    for (i = 0; i < q.options.length; i++) {
+      opt = q.options[i];
+      checked = indexOf(chosen, opt) !== -1 ? ' checked' : '';
+      html += '<label class="usg-check"><input type="checkbox" data-q="' + esc(q.id) +
+        '" value="' + esc(opt) + '"' + checked + '><span>' + esc(opt) + '</span></label>';
+    }
+    html += '</div>';
+  } else if (q.options.length > 4) {
+    // A six-way ferrule list as radios pushes the part number off the screen,
+    // so anything longer than four options becomes a select - the same
+    // threshold the regulator tool uses for its pipe size list.
+    html += '<label class="usg-label">' + esc(q.label) + '</label>' +
+      '<select data-q="' + esc(q.id) + '">' +
+      '<option value=""' + (current ? '' : ' selected') + '>Select\u2026</option>';
+    for (i = 0; i < q.options.length; i++) {
+      opt = q.options[i];
+      html += '<option value="' + esc(opt) + '"' + (current === opt ? ' selected' : '') +
+        '>' + esc(opt) + '</option>';
+    }
+    html += '</select>';
+  } else {
+    html += '<label class="usg-label">' + esc(q.label) + '</label><div class="usg-radio-group">';
+    for (i = 0; i < q.options.length; i++) {
+      opt = q.options[i];
+      checked = (current === opt) ? ' checked' : '';
+      html += '<label class="usg-radio"><input type="radio" name="usgm-q-' + esc(q.id) +
+        '" data-q="' + esc(q.id) + '" value="' + esc(opt) + '"' + checked + '><span>' +
+        esc(opt) + '</span></label>';
+    }
+    html += '</div>';
+  }
+  return html + '</div>';
+}
+
+function indexOf(arr, v) {
+  for (var i = 0; i < arr.length; i++) if (arr[i] === v) return i;
+  return -1;
+}
+
+// ---- render the result ----
+function render(body) {
+  var out = $('output');
+  var html = '';
+  var i, j;
+  lastRun = null;
+
+  if (!body || body.ok !== true) {
+    var errs = (body && body.errors && body.errors.length)
+      ? body.errors : ["Unexpected result from the sizing algorithm."];
+    for (i = 0; i < errs.length; i++) html += alertBox('error', esc(errs[i]));
+    out.innerHTML = html;
+    return;
+  }
+
+  var warnings = body.warnings || [];
+  for (i = 0; i < warnings.length; i++) html += alertBox('warning', esc(warnings[i]));
+
+  // No meter in any tab has the capacity: there is nothing to ask about.
+  if (!(body.meter_type_question.options || []).length ||
+      (body.stage === 'complete' && !body.selected && !(body.results || []).length)) {
+    html += alertBox('error', '\u274C&nbsp; ' + esc(body.message ||
+      'No meters will work for this application.'));
+    out.innerHTML = html;
+    return;
+  }
+
+  // The meter type question always stays on screen: it is how the customer
+  // switches between the options the job qualifies for, and re-selecting is
+  // the normal way to compare two of them.
+  html += '<h3 class="usg-h3">Meter Type</h3>';
+  html += questionHtml(body.meter_type_question, state.meter_types);
+
+  if (body.stage === 'meter_type') {
+    html += alertBox('info', '\u2139\uFE0F&nbsp; ' + esc(body.message));
+    out.innerHTML = html;
+    wire(out);
+    return;
+  }
+
+  if (body.stage === 'options') {
+    html += alertBox('info', '\u2139\uFE0F&nbsp; ' + esc(body.message));
+  } else if (body.selected) {
+    html += alertBox('success', '\u2705&nbsp; ' + esc(body.message));
+  } else {
+    html += alertBox('error', '\u274C&nbsp; ' + esc(body.message));
+  }
+
+  html += '<h3 class="usg-h3">Meter Selection</h3>';
+
+  // One block per selected type, in the algorithm's order, which is the tier's
+  // order rather than the order the boxes happen to be ticked in.
+  var results = body.results || [];
+  var pns = body.part_numbers || [];
+  var line = 0;
+
+  for (i = 0; i < results.length; i++) {
+    var r = results[i];
+    var cls = 'usg-option' +
+      (r.available === false ? ' is-unavailable' : (r.complete ? ' is-ready' : ''));
+    html += '<div class="' + cls + '">';
+    html += '<h3 class="usg-option-h">' + esc(r.heading) + '</h3>';
+
+    if (r.available === false) {
+      html += alertBox('error', esc(r.message));
+      html += '</div>';
+      continue;
+    }
+
+    // Identity fields only. The answers are shown by the widgets below, so
+    // printing r.fields here would say each one twice.
+    var fields = r.identity_fields || [];
+    for (j = 0; j < fields.length; j++) {
+      html += '<p class="usg-field"><strong>' + esc(fields[j].label) + ':</strong> ' +
+        esc(fields[j].value) + '</p>';
+    }
+
+    // EVERY question for this meter, answered or not, and all of them live.
+    // Rendering only the unanswered ones would strand a customer who picks
+    // the wrong ferrule: the widget would vanish the moment it was answered
+    // and the only way back would be to re-run the whole sizing. The well is
+    // tinted while anything is still outstanding, which is what marks the
+    // selection as unfinished.
+    var qs = r.questions || [];
+    if (qs.length) {
+      var anyPending = false;
+      for (j = 0; j < qs.length; j++) {
+        if (!state.answers[qs[j].id]) { anyPending = true; break; }
+      }
+      html += '<div class="' + (anyPending ? 'usg-pending' : 'usg-answered') + '">';
+      for (j = 0; j < qs.length; j++) {
+        html += questionHtml(qs[j], state.answers[qs[j].id]);
+      }
+      html += '</div>';
+    }
+
+    if (r.part_number) {
+      html += '<p class="usg-field"><strong>Part Number:</strong>' +
+        '<code class="usg-pn">' + esc(r.part_number) + '</code></p>';
+      html += infoSlots(r.part_number, false, line++);
+    } else if (r.quote_note) {
+      // A Sonix IQ or an RMG has no catalogue part number, so the answer is a
+      // sentence rather than a SKU and there is no cart line for it.
+      html += '<p class="usg-field"><strong>Part Number:</strong></p>';
+      html += '<p class="usg-quote">' + esc(r.quote_note) + '</p>';
+    }
+
+    html += '</div>';
+  }
+
+  // The Eagle is its own section below the meter selection, per the sizing
+  // instructions: it is a separate instrument on the quote, not part of any
+  // meter's part number.
+  if (body.eagle) {
+    html += '<hr class="usg-hr">';
+    html += '<h3 class="usg-h3">Eagle Option</h3>';
+    var ef = body.eagle.fields || [];
+    for (j = 0; j < ef.length; j++) {
+      html += '<p class="usg-field"><strong>' + esc(ef[j].label) + ':</strong> ' +
+        esc(ef[j].value) + '</p>';
+    }
+    html += '<p class="usg-field"><strong>Part Number:</strong>' +
+      '<code class="usg-pn">' + esc(body.eagle.part_number) + '</code></p>';
+    html += infoSlots(body.eagle.part_number, false, line++);
+  }
+
+  if (pns.length) {
+    var items = cartItems(body);
+    html += '<p class="usg-cart" data-items="' + esc(itemsAttr(items)) + '">' +
+      '<span class="usg-total" hidden></span>' +
+      accountNote() +
+      '<button type="button" class="usg-btn-cart" data-cart="' +
+      esc(cartUrl(items)) + '">Add to Cart</button></p>';
+  }
+
+  // Downloads are offered once the selection is finished. Offering them
+  // mid-question would produce a PDF with blanks where the part numbers go.
+  if (body.stage === 'complete' && body.selected) {
+    lastRun = {
+      summary: body.summary || [],
+      results: results,
+      eagle: body.eagle || null,
+      pns: pns,
+      msgs: warnings,
+      inputs: state.inputs,
+      meter_types: state.meter_types.slice(),
+      answers: state.answers
+    };
+    html += '<hr class="usg-hr">';
+    html += '<h3 class="usg-h3">Download PDF Summary</h3>';
+    html += '<button type="button" class="usg-btn" id="usgm-pdf-btn">\u2B07\uFE0F&nbsp; Download PDF Summary</button>';
+  }
+
+  // Capacity detail last: reference material rather than something to act on,
+  // the same position the regulator tool gives its sizing adjustments.
+  html += '<hr class="usg-hr">';
+  html += '<h3 class="usg-h3">Sizing Detail</h3>';
+  html += '<table class="usg-table"><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody>';
+  var sm = body.summary || [];
+  for (i = 0; i < sm.length; i++) {
+    html += '<tr><td>' + esc(sm[i].label) + '</td><td>' + esc(sm[i].value) + '</td></tr>';
+  }
+  html += '</tbody></table>';
+
+  if (lastRun) {
+    html += '<hr class="usg-hr">';
+    html += '<h3 class="usg-h3">Download Excel Summary</h3>';
+    html += '<button type="button" class="usg-btn" id="usgm-xlsx-btn">\u2B07\uFE0F&nbsp; Download Excel Summary</button>';
+  }
+
+  out.innerHTML = html;
+  wire(out);
+
+  var pdfBtn = $('pdf-btn');
+  if (pdfBtn) pdfBtn.addEventListener('click', downloadPdf);
+  var xlsxBtn = $('xlsx-btn');
+  if (xlsxBtn) xlsxBtn.addEventListener('click', downloadXlsx);
+  // Add to Cart is a <button> so that the theme styles it, which means the
+  // navigation an <a href> used to do for free is wired up here - the same
+  // arrangement as the 441 configurator, URL carried in data-cart.
+  var cartBtn = out.querySelector('.usg-btn-cart');
+  if (cartBtn) {
+    cartBtn.addEventListener('click', function () {
+      window.location.href = cartBtn.getAttribute('data-cart');
+    });
+  }
+  var qtys = out.querySelectorAll('[data-qty-for]');
+  for (var q = 0; q < qtys.length; q++) {
+    qtys[q].addEventListener('input', function () { onQtyChange(out); });
+  }
+  // Price and lead time come from the customer's browser after the result is
+  // on screen, so the selection never waits on the network.
+  loadInfo(out);
+}
+
+// Every question widget in the output writes its answer into `state` and
+// re-runs. Answers to questions that later disappear are left in place on
+// purpose: tick Live, tick None, then tick Live again and the earlier answers
+// are still there rather than having to be re-entered. The algorithm only
+// reads the ids it currently asks for, so stale entries cannot leak into a
+// part number.
+function wire(out) {
+  var els = out.querySelectorAll('[data-q]');
+  for (var i = 0; i < els.length; i++) {
+    els[i].addEventListener('change', onAnswer);
+  }
+}
+
+function onAnswer(ev) {
+  var el = ev.target;
+  var qid = el.getAttribute('data-q');
+  if (!qid) return;
+
+  if (qid === window.USGMeterSizing.METER_TYPE_QUESTION_ID) {
+    var boxes = $('output').querySelectorAll('[data-q="' + qid + '"]');
+    var chosen = [];
+    for (var i = 0; i < boxes.length; i++) if (boxes[i].checked) chosen.push(boxes[i].value);
+    state.meter_types = chosen;
+  } else {
+    state.answers[qid] = el.value || null;
+  }
+  rerun();
+}
+
+// ---- Excel summary ----
+// One sheet: labels down column A and this run's values in column B, the same
+// shape as the regulator tool's. Meters differ in that a run can produce more
+// than one option, so the rows for the selection repeat per option with the
+// option name in the label - which means the row positions are NOT fixed the
+// way the regulator sheet's are, and two files are not comparable line for
+// line unless both runs chose the same types.
+//
+// Two things are deliberately absent, both matching the PDF: price and lead
+// time (session-specific and changeable, so a saved file must not carry them).
+var XLSX_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+var xlsxLoading = false;
+
+// Loaded on the first click rather than with the page: most visitors never
+// download the spreadsheet, and the library is not small. cdnjs is already in
+// the site's script-src for jsPDF, so no policy change is needed.
+function withXlsx(cb) {
+  if (window.XLSX) { cb(window.XLSX); return; }
+  if (xlsxLoading) return;
+  xlsxLoading = true;
+  var s = document.createElement('script');
+  s.src = XLSX_SRC;
+  s.onload = function () { xlsxLoading = false; cb(window.XLSX || null); };
+  s.onerror = function () { xlsxLoading = false; cb(null); };
+  document.head.appendChild(s);
+}
+
+function summaryRows(run) {
+  var rows = [['Inputs', 1]];
+  var i, j;
+  var sm = run.summary || [];
+  for (i = 0; i < sm.length; i++) rows.push([sm[i].label, sm[i].value]);
+  rows.push(['Meter types selected', (run.meter_types || []).join(', ')]);
+
+  rows.push(['Output', null]);
+  var results = run.results || [];
+  for (i = 0; i < results.length; i++) {
+    var r = results[i];
+    rows.push([r.heading, null]);
+    if (r.available === false) {
+      rows.push(['Result', r.message]);
+      continue;
+    }
+    var fields = r.fields || [];
+    for (j = 0; j < fields.length; j++) rows.push([fields[j].label + ':', fields[j].value]);
+    rows.push(['Part Number:', r.part_number || r.quote_note || null]);
+  }
+
+  if (run.eagle) {
+    rows.push(['Eagle Option', null]);
+    var ef = run.eagle.fields || [];
+    for (j = 0; j < ef.length; j++) rows.push([ef[j].label + ':', ef[j].value]);
+    rows.push(['Part Number:', run.eagle.part_number]);
+  }
+
+  var msgs = run.msgs || [];
+  for (i = 0; i < msgs.length; i++) rows.push(['Warning:', msgs[i]]);
+  return rows;
+}
+
+function downloadXlsx() {
+  if (!lastRun) return;
+  var btn = $('xlsx-btn');
+  var label = btn ? btn.innerHTML : '';
+  if (btn) { btn.disabled = true; btn.innerHTML = 'Preparing\u2026'; }
+  function restore() { if (btn) { btn.disabled = false; btn.innerHTML = label; } }
+
+  withXlsx(function (XLSX) {
+    // If the library cannot be reached the same rows go out as CSV, which
+    // Excel opens. Better than a button that does nothing.
+    if (!XLSX) { downloadCsv(); restore(); return; }
+    try {
+      var ws = XLSX.utils.aoa_to_sheet(summaryRows(lastRun));
+      ws['!cols'] = [{ wch: 30 }, { wch: 42 }];
+      var wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Meter Sizing');
+      XLSX.writeFile(wb, 'meter_sizing_summary.xlsx');
+    } catch (err) {
+      if (window.console && console.error) console.error('USG Excel summary failed', err);
+      downloadCsv();
+    }
+    restore();
+  });
+}
+
+function downloadCsv() {
+  var rows = summaryRows(lastRun), lines = [];
+  for (var r = 0; r < rows.length; r++) {
+    var cells = [];
+    for (var c = 0; c < rows[r].length; c++) {
+      var v = rows[r][c];
+      v = (v === null || v === undefined) ? '' : String(v);
+      if (/[",\r\n]/.test(v)) v = '"' + v.replace(/"/g, '""') + '"';
+      cells.push(v);
+    }
+    lines.push(cells.join(','));
+  }
+  // The BOM is what makes Excel read the inch marks and en dashes correctly.
+  var blob = new Blob(['\uFEFF' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'meter_sizing_summary.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+}
+
+// ---- PDF summary ----
+function downloadPdf() {
+  if (!lastRun) return;
+  try {
+    var JsPDF = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
+    if (!JsPDF) { printFallback(); return; }
+    var ORANGE = [232, 93, 38], DARK = [17, 24, 39], DARK_BLUE = [31, 56, 100], GREY = [107, 114, 128], LINE = [229, 231, 235];
+    var doc = new JsPDF({ unit: 'pt', format: 'letter' });
+    var pageW = doc.internal.pageSize.getWidth();
+    var marginX = 0.7 * 72, y = 0.5 * 72 + 14;
+    var availW = pageW - 2 * marginX;
+
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(20);
+    doc.setTextColor(DARK_BLUE[0], DARK_BLUE[1], DARK_BLUE[2]);
+    doc.text('USG Meter Sizing Tool', marginX, y); y += 16;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(11);
+    doc.setTextColor(DARK[0], DARK[1], DARK[2]);
+    doc.text('Meter Selection Summary', marginX, y); y += 12;
+    doc.setFontSize(7.5); doc.setTextColor(GREY[0], GREY[1], GREY[2]);
+    var now = new Date();
+    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var hh = now.getHours(); var ampm = hh >= 12 ? 'PM' : 'AM'; hh = hh % 12; if (hh === 0) hh = 12;
+    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    doc.text('Generated ' + months[now.getMonth()] + ' ' + pad(now.getDate()) + ', ' + now.getFullYear() + '  ' + pad(hh) + ':' + pad(now.getMinutes()) + ' ' + ampm, marginX, y);
+    y += 14;
+
+    function checkPage(rh) {
+      if (y + rh > doc.internal.pageSize.getHeight() - 0.5 * 72) { doc.addPage(); y = 0.5 * 72 + 6; }
+    }
+    function section(title) {
+      // Generous gap above each heading and a little breathing room below, so
+      // the sections read as separate blocks rather than one continuous table.
+      y += 20;
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5);
+      doc.setTextColor(ORANGE[0], ORANGE[1], ORANGE[2]);
+      // Reserve the heading plus its first row, so a heading never strands at
+      // the bottom of a page with its content overleaf.
+      checkPage(32);
+      doc.text(title, marginX, y);
+      y += 9;
+    }
+    function kvRows(pairs) {
+      doc.setFontSize(8);
+      var labelW = availW * 0.4, valW = availW * 0.6;
+      for (var i = 0; i < pairs.length; i++) {
+        var lLines = doc.splitTextToSize(String(pairs[i].label), labelW - 6);
+        var vLines = doc.splitTextToSize(String(pairs[i].value), valW - 6);
+        var rh = Math.max(lLines.length, vLines.length) * 9.5 + 4.4;
+        checkPage(rh);
+        doc.setFont('helvetica', 'bold'); doc.setTextColor(DARK[0], DARK[1], DARK[2]);
+        doc.text(lLines, marginX, y + 8);
+        doc.setFont('helvetica', 'normal');
+        doc.text(vLines, marginX + labelW, y + 8);
+        y += rh;
+        doc.setDrawColor(LINE[0], LINE[1], LINE[2]); doc.setLineWidth(0.4);
+        doc.line(marginX, y, marginX + availW, y);
+      }
+    }
+    function listRows(items) {
+      doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+      doc.setTextColor(DARK[0], DARK[1], DARK[2]);
+      for (var i = 0; i < items.length; i++) {
+        var lines = doc.splitTextToSize(String(items[i]), availW - 6);
+        var rh = lines.length * 9.5 + 4.4;
+        checkPage(rh);
+        doc.text(lines, marginX, y + 8);
+        y += rh;
+        doc.setDrawColor(LINE[0], LINE[1], LINE[2]); doc.setLineWidth(0.4);
+        doc.line(marginX, y, marginX + availW, y);
+      }
+    }
+    function noneText(t) {
+      doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+      doc.setTextColor(DARK[0], DARK[1], DARK[2]);
+      checkPage(12); doc.text(t, marginX, y + 8); y += 12;
+    }
+
+    section('Inputs');
+    kvRows(lastRun.summary);
+
+    // One section per meter option, so a customer comparing two types reads
+    // them as two quotes rather than one merged list.
+    var results = lastRun.results || [];
+    for (var i = 0; i < results.length; i++) {
+      var r = results[i];
+      section(r.heading);
+      if (r.available === false) { noneText(r.message); continue; }
+      var pairs = (r.fields || []).slice();
+      pairs.push({ label: 'Part Number', value: r.part_number || r.quote_note || 'None' });
+      kvRows(pairs);
+    }
+
+    if (lastRun.eagle) {
+      section('Eagle Option');
+      var epairs = (lastRun.eagle.fields || []).slice();
+      epairs.push({ label: 'Part Number', value: lastRun.eagle.part_number });
+      kvRows(epairs);
+    }
+
+    section('Part Number(s)');
+    if (lastRun.pns.length) listRows(lastRun.pns); else noneText('None');
+
+    section('Warnings');
+    if (lastRun.msgs.length) listRows(lastRun.msgs); else noneText('None');
+
+    doc.save('USG_Meter_Sizing_Tool_Output.pdf');
+  } catch (e) {
+    printFallback();
+  }
+}
+
+function printFallback() {
+  if (!lastRun) return;
+  var w = window.open('', '_blank');
+  if (!w) { window.alert('Could not generate PDF: please allow pop-ups or check that the PDF library can load.'); return; }
+  var h = '<html><head><title>USG Meter Sizing Tool</title><style>body{font-family:Helvetica,Arial,sans-serif;margin:40px;color:#111827}h1{color:#1F3864;font-size:20px;margin:0}h2{color:#e85d26;font-size:12px;margin:26px 0 6px}table{width:100%;border-collapse:collapse;font-size:9px}td{border-bottom:0.5px solid #e5e7eb;padding:3px 0;vertical-align:top}td:first-child{font-weight:bold;width:40%}.gen{color:#6b7280;font-size:8px}</style></head><body>';
+  h += '<h1>USG Meter Sizing Tool</h1><div>Meter Selection Summary</div><div class="gen">Generated ' + new Date().toLocaleString() + '</div>';
+  var kv = function (pairs) { var t = '<table>'; for (var i = 0; i < pairs.length; i++) t += '<tr><td>' + esc(pairs[i].label) + '</td><td>' + esc(pairs[i].value) + '</td></tr>'; return t + '</table>'; };
+  var li = function (items) { var t = '<table>'; for (var i = 0; i < items.length; i++) t += '<tr><td style="font-weight:normal;width:auto">' + esc(items[i]) + '</td></tr>'; return t + '</table>'; };
+  h += '<h2>Inputs</h2>' + kv(lastRun.summary);
+  var results = lastRun.results || [];
+  for (var i = 0; i < results.length; i++) {
+    var r = results[i];
+    h += '<h2>' + esc(r.heading) + '</h2>';
+    if (r.available === false) { h += esc(r.message); continue; }
+    var pairs = (r.fields || []).slice();
+    pairs.push({ label: 'Part Number', value: r.part_number || r.quote_note || 'None' });
+    h += kv(pairs);
+  }
+  if (lastRun.eagle) {
+    var epairs = (lastRun.eagle.fields || []).slice();
+    epairs.push({ label: 'Part Number', value: lastRun.eagle.part_number });
+    h += '<h2>Eagle Option</h2>' + kv(epairs);
+  }
+  h += '<h2>Part Number(s)</h2>' + (lastRun.pns.length ? li(lastRun.pns) : 'None');
+  h += '<h2>Warnings</h2>' + (lastRun.msgs.length ? li(lastRun.msgs) : 'None');
+  h += '</body></html>';
+  w.document.write(h);
+  w.document.close();
+  w.focus();
+  w.print();
+}
+
+// ---- info tooltips (hover on desktop, tap on mobile, keyboard accessible) ----
+var tipBox = document.createElement('div');
+tipBox.className = 'usg-tipbox';
+tipBox.setAttribute('role', 'tooltip');
+$root.appendChild(tipBox);
+var tipPinnedTo = null;
+var tipShownFor = null;
+
+function showTip(icon) {
+  tipBox.textContent = icon.getAttribute('data-tip') || '';
+  tipBox.classList.add('usg-show');
+  tipShownFor = icon;
+  var rootRect = $root.getBoundingClientRect();
+  var iconRect = icon.getBoundingClientRect();
+  var left = iconRect.left - rootRect.left + iconRect.width / 2 - tipBox.offsetWidth / 2;
+  left = Math.max(8, Math.min(left, $root.clientWidth - tipBox.offsetWidth - 8));
+  tipBox.style.left = left + 'px';
+  tipBox.style.top = (iconRect.bottom - rootRect.top + 8) + 'px';
+  icon.classList.add('usg-tip-on');
+}
+function hideTip() {
+  tipBox.classList.remove('usg-show');
+  if (tipShownFor) tipShownFor.classList.remove('usg-tip-on');
+  tipShownFor = null;
+  tipPinnedTo = null;
+}
+
+// ---- wire up events ----
+(function init() {
+  // Only the inputs in the form above the button, not the widgets the output
+  // renders - those are wired by `wire()` as they are created.
+  var inputs = $root.querySelectorAll('#usg-meter-tool > .usg-row input, #usg-meter-tool > .usg-row select');
+  for (var i = 0; i < inputs.length; i++) {
+    inputs[i].addEventListener('change', function () { clampInput(this); refreshConditionals(); });
+    inputs[i].addEventListener('input', function () { refreshConditionals(); });
+  }
+  var helps = $root.querySelectorAll('.usg-help');
+  for (var h = 0; h < helps.length; h++) {
+    (function (icon) {
+      icon.addEventListener('mouseenter', function () { if (!tipPinnedTo) showTip(icon); });
+      icon.addEventListener('mouseleave', function () { if (!tipPinnedTo) hideTip(); });
+      icon.addEventListener('focus', function () { if (!tipPinnedTo) showTip(icon); });
+      icon.addEventListener('blur', function () { if (!tipPinnedTo) hideTip(); });
+      icon.addEventListener('click', function (ev) {
+        ev.preventDefault(); ev.stopPropagation();
+        if (tipPinnedTo === icon) { hideTip(); return; }
+        hideTip(); tipPinnedTo = icon; showTip(icon);
+      });
+      icon.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Spacebar') { ev.preventDefault(); icon.click(); }
+        else if (ev.key === 'Escape') { hideTip(); }
+      });
+    })(helps[h]);
+  }
+  document.addEventListener('click', function () { if (tipPinnedTo) hideTip(); });
+  window.addEventListener('scroll', function () { if (tipShownFor && !tipPinnedTo) hideTip(); }, true);
+  window.addEventListener('resize', function () { hideTip(); });
+  $('run-btn').addEventListener('click', runSizing);
+  refreshConditionals();
+})();
+
+})();
+</script>

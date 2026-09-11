@@ -1,0 +1,7 @@
+# The algorithm itself needs nothing beyond the standard library; everything
+# below is for the HTTP wrapper, the workbook extractor and the tests.
+fastapi>=0.110
+uvicorn[standard]>=0.29
+openpyxl>=3.1
+httpx>=0.27
+pytest>=8.0
