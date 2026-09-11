@@ -1,5 +1,5 @@
 <!-- ============================================================
-     USG Meter Sizing Tool
+     HSC Meter Selection Tool
      Concrete CMS HTML block
 
      This block contains NO sizing logic. The algorithm is maintained in
@@ -28,6 +28,12 @@
      ============================================================ -->
 <!-- Sizing algorithm, generated from the Python source.
 
+     >>> BUMP THE HASH BELOW AFTER EVERY PUSH. <<<
+     Pushing the repository does not change the live page on its own: this URL
+     names a specific commit. Take the new short hash from
+     https://github.com/my-usg/meterselection/commits/main and replace it
+     here, or the site carries on running the rules from 1969146.
+
      PINNED TO A COMMIT ON PURPOSE. A @main URL is cached by jsDelivr for up
      to 12 hours, and its purge endpoint has reported success while the edge
      carried on serving the old file - which cost an afternoon of chasing a
@@ -35,52 +41,56 @@
      immutable, so what you pin is what every visitor gets, immediately and
      forever.
 
-     TO SHIP A CHANGE: push it, copy the new commit's short hash from
-     https://github.com/my-usg/meterselection/commits/main, and replace the
-     hash below. Then reload the page and check
-     window.USGMeterSizing.sizeMeters(...) in the console actually reflects
-     the change before trusting it. -->
+     TO SHIP A CHANGE: push it, replace the hash, then reload the page and
+     check window.USGMeterSizing.sizeMeters(...) in the console actually
+     reflects the change before trusting it.
+
+     The file name and the window global still read "usg". Neither is ever
+     seen by a customer, and holding them steady means this block and the
+     bundle can be deployed in either order - paste the block before pushing
+     and the page still works, just on the previous rules. Everything the
+     customer does see reads HSC. -->
 <script src="https://cdn.jsdelivr.net/gh/my-usg/meterselection@1969146/dist/usg-meter-sizing.js"></script>
 
-<div id="usg-meter-tool">
-  <h1 class="usg-h1">Meter Sizing Tool</h1>
-  <p class="usg-sub">Fill in the inputs above and click <strong>Run Sizing</strong>.</p>
+<div id="hsc-meter-tool">
+  <h1 class="hsc-h1">Meter Selection Tool</h1>
+  <p class="hsc-sub">Fill in the inputs above and click <strong>Run Sizing</strong>.</p>
 
-  <h2 class="usg-h2">&#128203; Inputs</h2>
+  <h2 class="hsc-h2">&#128203; Inputs</h2>
 
-  <p class="usg-group-label"><strong>Pressure &amp; Flow</strong></p>
-  <div class="usg-row usg-cols-4">
-    <div class="usg-widget">
-      <label class="usg-label" id="usgm-label-inlet">Inlet pressure</label>
-      <div class="usg-numwrap">
-        <input type="number" id="usgm-inlet" min="0" max="1440" step="0.1" value="0.0">
+  <p class="hsc-group-label"><strong>Pressure &amp; Flow</strong></p>
+  <div class="hsc-row hsc-cols-4">
+    <div class="hsc-widget">
+      <label class="hsc-label" id="hscm-label-inlet">Inlet pressure</label>
+      <div class="hsc-numwrap">
+        <input type="number" id="hscm-inlet" min="0" max="1440" step="0.1" value="0.0">
       </div>
     </div>
-    <div class="usg-widget">
-      <label class="usg-label">Inlet pressure units</label>
-      <select id="usgm-inlet-units">
+    <div class="hsc-widget">
+      <label class="hsc-label">Inlet pressure units</label>
+      <select id="hscm-inlet-units">
         <option>psi</option><option>in wc</option><option>oz</option><option>bar</option><option>kPa</option>
       </select>
     </div>
-    <div class="usg-widget">
-      <label class="usg-label" id="usgm-label-flow">Flow rate</label>
-      <div class="usg-numwrap">
-        <input type="number" id="usgm-flow" min="0" max="100000000" step="1" value="0">
+    <div class="hsc-widget">
+      <label class="hsc-label" id="hscm-label-flow">Flow rate</label>
+      <div class="hsc-numwrap">
+        <input type="number" id="hscm-flow" min="0" max="100000000" step="1" value="0">
       </div>
     </div>
-    <div class="usg-widget">
-      <label class="usg-label">Flow rate units</label>
-      <select id="usgm-flow-units">
+    <div class="hsc-widget">
+      <label class="hsc-label">Flow rate units</label>
+      <select id="hscm-flow-units">
         <option>CFH</option><option>BTUH</option><option>CMH</option>
       </select>
     </div>
   </div>
 
-  <button type="button" class="usg-btn usg-btn-primary" id="usgm-run-btn">&#9654;&nbsp; Run Sizing</button>
-  <hr class="usg-hr">
+  <button type="button" class="hsc-btn hsc-btn-primary" id="hscm-run-btn">&#9654;&nbsp; Run Sizing</button>
+  <hr class="hsc-hr">
 
-  <div id="usgm-output">
-    <div class="usg-alert usg-info">&#11014;&#65039;&nbsp; Fill in the inputs above and click <strong>Run Sizing</strong>.</div>
+  <div id="hscm-output">
+    <div class="hsc-alert hsc-info">&#11014;&#65039;&nbsp; Fill in the inputs above and click <strong>Run Sizing</strong>.</div>
   </div>
 </div>
 
@@ -91,10 +101,10 @@
    Everything down to the "METER TOOL ADDITIONS" marker is the regulator
    tool's stylesheet with the root selector changed, so the two tools stay
    visually identical. Keep them in step: a change worth making to one is
-   almost always worth making to the other. Element IDs carry a `usgm-`
-   prefix rather than `usg-` so both blocks can sit on one page without
+   almost always worth making to the other. Element IDs carry a `hscm-`
+   prefix rather than `hsc-` so both blocks can sit on one page without
    colliding. */
-#usg-meter-tool {
+#hsc-meter-tool {
   font-family: "Source Sans Pro", "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: rgb(49, 51, 63);
   max-width: 1180px;
@@ -105,32 +115,32 @@
   box-sizing: border-box;
   position: relative;
 }
-#usg-meter-tool *, #usg-meter-tool *::before, #usg-meter-tool *::after { box-sizing: border-box; }
-#usg-meter-tool h1.usg-h1 {
+#hsc-meter-tool *, #hsc-meter-tool *::before, #hsc-meter-tool *::after { box-sizing: border-box; }
+#hsc-meter-tool h1.hsc-h1 {
   font-size: 36px !important; font-weight: 700 !important; color: rgb(49, 51, 63) !important;
   font-family: inherit !important; text-transform: none !important; letter-spacing: normal !important;
   padding: 20px 0 16px !important; margin: 0 !important; line-height: 1.2 !important;
 }
-#usg-meter-tool h2.usg-h2, #usg-meter-tool h3.usg-h3 {
+#hsc-meter-tool h2.hsc-h2, #hsc-meter-tool h3.hsc-h3 {
   font-size: 28px !important; font-weight: 600 !important; color: rgb(49, 51, 63) !important;
   font-family: inherit !important; text-transform: none !important; letter-spacing: normal !important;
   padding: 16px 0 8px !important; margin: 0 !important; line-height: 1.25 !important;
 }
-#usg-meter-tool .usg-sub { font-size: 16px !important; color: rgb(49, 51, 63) !important; margin: 0 0 16px !important; }
-#usg-meter-tool .usg-group-label { font-size: 17px !important; color: rgb(49, 51, 63) !important; margin: 0 0 10px !important; }
-#usg-meter-tool .usg-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
-#usg-meter-tool .usg-cols-4 > .usg-widget { flex: 1 1 0; min-width: 190px; }
-#usg-meter-tool .usg-cols-2 > .usg-col { flex: 1 1 0; min-width: 320px; }
-#usg-meter-tool .usg-top-gap { margin-top: 8px; }
-#usg-meter-tool .usg-widget { margin-bottom: 16px; }
-#usg-meter-tool .usg-halfwidth { max-width: 50%; min-width: 170px; }
-#usg-meter-tool .usg-label {
+#hsc-meter-tool .hsc-sub { font-size: 16px !important; color: rgb(49, 51, 63) !important; margin: 0 0 16px !important; }
+#hsc-meter-tool .hsc-group-label { font-size: 17px !important; color: rgb(49, 51, 63) !important; margin: 0 0 10px !important; }
+#hsc-meter-tool .hsc-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+#hsc-meter-tool .hsc-cols-4 > .hsc-widget { flex: 1 1 0; min-width: 190px; }
+#hsc-meter-tool .hsc-cols-2 > .hsc-col { flex: 1 1 0; min-width: 320px; }
+#hsc-meter-tool .hsc-top-gap { margin-top: 8px; }
+#hsc-meter-tool .hsc-widget { margin-bottom: 16px; }
+#hsc-meter-tool .hsc-halfwidth { max-width: 50%; min-width: 170px; }
+#hsc-meter-tool .hsc-label {
   display: block; font-size: 15px !important; font-weight: 400 !important;
   color: rgb(49, 51, 63) !important; margin: 0 0 6px !important; min-height: 22px;
 }
-#usg-meter-tool .usg-req { color: rgb(255, 43, 43) !important; }
-#usg-meter-tool .usg-req::after { content: " \2757"; }
-#usg-meter-tool .usg-help {
+#hsc-meter-tool .hsc-req { color: rgb(255, 43, 43) !important; }
+#hsc-meter-tool .hsc-req::after { content: " \2757"; }
+#hsc-meter-tool .hsc-help {
   display: inline-flex; align-items: center; justify-content: center;
   width: 17px; height: 17px; border-radius: 50%;
   border: 1px solid rgba(49, 51, 63, 0.45); color: rgba(49, 51, 63, 0.65);
@@ -139,54 +149,54 @@
   cursor: pointer; vertical-align: middle; margin-left: 4px;
   user-select: none; -webkit-tap-highlight-color: transparent;
 }
-#usg-meter-tool .usg-help:hover,
-#usg-meter-tool .usg-help:focus,
-#usg-meter-tool .usg-help.usg-tip-on {
+#hsc-meter-tool .hsc-help:hover,
+#hsc-meter-tool .hsc-help:focus,
+#hsc-meter-tool .hsc-help.hsc-tip-on {
   border-color: rgb(255, 75, 75); color: rgb(255, 75, 75);
   outline: none;
 }
-#usg-meter-tool .usg-tipbox {
+#hsc-meter-tool .hsc-tipbox {
   display: none; position: absolute; z-index: 99999;
   background: rgb(38, 39, 48); color: #fff !important;
   border-radius: 8px; padding: 10px 14px;
   font-size: 14px !important; line-height: 1.5; font-weight: 400;
   max-width: 320px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
 }
-#usg-meter-tool .usg-tipbox.usg-show { display: block; }
-#usg-meter-tool .usg-numwrap { display: flex; align-items: stretch; }
-#usg-meter-tool input[type="number"] {
+#hsc-meter-tool .hsc-tipbox.hsc-show { display: block; }
+#hsc-meter-tool .hsc-numwrap { display: flex; align-items: stretch; }
+#hsc-meter-tool input[type="number"] {
   flex: 1 1 auto; width: 100%; height: 44px;
   background: rgb(240, 242, 246); color: rgb(49, 51, 63);
   border: 1px solid rgb(240, 242, 246); border-radius: 8px;
   padding: 8px 12px; font-size: 16px !important; font-family: inherit;
   min-width: 0; -moz-appearance: textfield; appearance: textfield;
 }
-#usg-meter-tool input[type="number"]::-webkit-outer-spin-button,
-#usg-meter-tool input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-#usg-meter-tool input[type="number"]:focus { outline: none; border-color: rgb(255, 75, 75); }
-#usg-meter-tool select {
+#hsc-meter-tool input[type="number"]::-webkit-outer-spin-button,
+#hsc-meter-tool input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+#hsc-meter-tool input[type="number"]:focus { outline: none; border-color: rgb(255, 75, 75); }
+#hsc-meter-tool select {
   width: 100%; height: 44px; background: rgb(240, 242, 246); color: rgb(49, 51, 63);
   border: 1px solid rgb(240, 242, 246); border-radius: 8px;
   padding: 8px 12px; font-size: 16px !important; font-family: inherit; cursor: pointer;
 }
-#usg-meter-tool select:focus { outline: none; border-color: rgb(255, 75, 75); }
-#usg-meter-tool .usg-radio-group { display: flex; flex-direction: column; gap: 7px; }
-#usg-meter-tool .usg-radio { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 16px !important; color: rgb(49, 51, 63) !important; font-weight: 400 !important; margin: 0 !important; }
-#usg-meter-tool .usg-radio input { accent-color: rgb(255, 75, 75); width: 18px; height: 18px; margin: 0; cursor: pointer; flex: 0 0 auto; }
-#usg-meter-tool .usg-btn {
+#hsc-meter-tool select:focus { outline: none; border-color: rgb(255, 75, 75); }
+#hsc-meter-tool .hsc-radio-group { display: flex; flex-direction: column; gap: 7px; }
+#hsc-meter-tool .hsc-radio { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 16px !important; color: rgb(49, 51, 63) !important; font-weight: 400 !important; margin: 0 !important; }
+#hsc-meter-tool .hsc-radio input { accent-color: rgb(255, 75, 75); width: 18px; height: 18px; margin: 0; cursor: pointer; flex: 0 0 auto; }
+#hsc-meter-tool .hsc-btn {
   font-family: inherit !important; font-size: 16px !important; font-weight: 400 !important;
   padding: 8px 16px !important; border-radius: 8px !important; text-transform: none !important;
   border: 1px solid rgba(49, 51, 63, 0.2); background: #fff; color: rgb(49, 51, 63) !important;
   cursor: pointer; line-height: 1.6 !important; letter-spacing: normal !important;
 }
-#usg-meter-tool .usg-btn:hover { border-color: rgb(255, 75, 75); color: rgb(255, 75, 75) !important; background: #fff; }
-#usg-meter-tool .usg-btn-primary { background: rgb(255, 75, 75) !important; border-color: rgb(255, 75, 75) !important; color: #fff !important; }
-#usg-meter-tool .usg-btn-primary:hover { background: rgb(255, 51, 51) !important; border-color: rgb(255, 51, 51) !important; color: #fff !important; }
+#hsc-meter-tool .hsc-btn:hover { border-color: rgb(255, 75, 75); color: rgb(255, 75, 75) !important; background: #fff; }
+#hsc-meter-tool .hsc-btn-primary { background: rgb(255, 75, 75) !important; border-color: rgb(255, 75, 75) !important; color: #fff !important; }
+#hsc-meter-tool .hsc-btn-primary:hover { background: rgb(255, 51, 51) !important; border-color: rgb(255, 51, 51) !important; color: #fff !important; }
 /* Part numbers read like the product-page title: the site's own blue, the
    body font, and on their own line under the label. The colour is sampled
    from a product page, so it matches by value rather than by inheriting -
    nothing in the theme exposes it as a variable. */
-#usg-meter-tool code.usg-pn {
+#hsc-meter-tool code.hsc-pn {
   display: block; margin-top: 2px;
   font-family: inherit !important;
   font-size: 24px !important; font-weight: 600 !important;
@@ -200,85 +210,92 @@
    control is a plain <button>, so the site theme's own button rules give it
    its colour, border, radius, padding and type case and it matches every
    other button on the site. Do not add any of those here - every rule in this
-   block is #usg-meter-tool-scoped, so it would out-specify the theme. */
-#usg-meter-tool .usg-cart {
+   block is #hsc-meter-tool-scoped, so it would out-specify the theme. */
+#hsc-meter-tool .hsc-cart {
   display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
   margin: 14px 0 0 !important;
   font-family: var(--bs-body-font-family, inherit);
 }
-#usg-meter-tool .usg-btn-cart { cursor: pointer; }
-#usg-meter-tool [hidden] { display: none !important; }
-#usg-meter-tool .usg-pricebox {
+#hsc-meter-tool .hsc-btn-cart { cursor: pointer; }
+#hsc-meter-tool [hidden] { display: none !important; }
+#hsc-meter-tool .hsc-pricebox {
   background: #fafafa; padding: 16px 18px; margin: 0 0 14px;
 }
-#usg-meter-tool .usg-price {
+#hsc-meter-tool .hsc-price {
   font-size: 30px !important; font-weight: 600 !important;
   color: rgb(49, 51, 63) !important; margin: 0 !important;
 }
-#usg-meter-tool .usg-price + .usg-avail { margin-top: 14px; }
-#usg-meter-tool .usg-price[hidden] + .usg-avail { margin-top: 0; }
-#usg-meter-tool .usg-price small {
+/* The unpriced note lives in the price slot but is a sentence, not a figure,
+   so it drops to body size and normal weight. Without this it renders at the
+   30px price size and shouts. */
+#hsc-meter-tool .hsc-price .hsc-noprice {
+  font-size: 17px !important; font-weight: 400 !important;
+  color: rgb(49, 51, 63) !important;
+}
+#hsc-meter-tool .hsc-price + .hsc-avail { margin-top: 14px; }
+#hsc-meter-tool .hsc-price[hidden] + .hsc-avail { margin-top: 0; }
+#hsc-meter-tool .hsc-price small {
   font-size: 15px !important; font-weight: 400;
   color: rgba(49, 51, 63, 0.65) !important; margin-left: 7px;
 }
-#usg-meter-tool .usg-qty { display: block; margin: 10px 0 12px; }
-#usg-meter-tool .usg-qty > span {
+#hsc-meter-tool .hsc-qty { display: block; margin: 10px 0 12px; }
+#hsc-meter-tool .hsc-qty > span {
   display: block; margin-bottom: 5px;
   font-size: 15px !important; color: rgb(49, 51, 63);
 }
-#usg-meter-tool .usg-qty .usg-numwrap { max-width: 120px; }
-#usg-meter-tool .usg-avail {
+#hsc-meter-tool .hsc-qty .hsc-numwrap { max-width: 120px; }
+#hsc-meter-tool .hsc-avail {
   background: #f7f7f7; border-left: 3px solid #b4741d; border-radius: 0 4px 4px 0;
   padding: 9px 15px; margin: 0; font-size: 15px !important; line-height: 1.5;
 }
-#usg-meter-tool .usg-avail strong {
+#hsc-meter-tool .hsc-avail strong {
   display: block; font-size: 13px !important; font-weight: 700 !important;
   text-transform: uppercase; letter-spacing: 0.06em; color: #b4741d !important;
 }
-#usg-meter-tool .usg-avail span { display: block; }
-#usg-meter-tool .usg-avail a { color: inherit !important; }
-#usg-meter-tool .usg-avail.is-stock { border-left-color: #1e7d3a; }
-#usg-meter-tool .usg-avail.is-stock strong { color: #1e7d3a !important; }
-#usg-meter-tool .usg-avail.is-stale { opacity: 0.45; }
-#usg-meter-tool .usg-total {
+#hsc-meter-tool .hsc-avail span { display: block; }
+#hsc-meter-tool .hsc-avail a { color: inherit !important; }
+#hsc-meter-tool .hsc-avail.is-stock { border-left-color: #1e7d3a; }
+#hsc-meter-tool .hsc-avail.is-stock strong { color: #1e7d3a !important; }
+#hsc-meter-tool .hsc-avail.is-stale { opacity: 0.45; }
+#hsc-meter-tool .hsc-total {
   font-size: 30px !important; font-weight: 700; white-space: nowrap;
 }
-#usg-meter-tool .usg-signin {
+#hsc-meter-tool .hsc-signin {
   font-size: 16px !important; line-height: 1.6;
   color: rgb(49, 51, 63); max-width: 620px;
 }
-#usg-meter-tool .usg-hr { border: none; border-top: 1px solid rgba(49, 51, 63, 0.2); margin: 24px 0; }
-#usg-meter-tool .usg-alert { border-radius: 8px; padding: 16px; margin: 8px 0 16px; font-size: 16px !important; line-height: 1.6; }
-#usg-meter-tool .usg-error { background: rgba(255, 43, 43, 0.09); color: rgb(125, 53, 59) !important; }
-#usg-meter-tool .usg-warning { background: rgba(255, 227, 18, 0.1); color: rgb(146, 108, 5) !important; }
-#usg-meter-tool .usg-success { background: rgba(33, 195, 84, 0.1); color: rgb(23, 114, 51) !important; }
-#usg-meter-tool .usg-info { background: rgba(28, 131, 225, 0.1); color: rgb(0, 66, 128) !important; }
-#usg-meter-tool .usg-field { font-size: 16px !important; color: rgb(49, 51, 63) !important; margin: 0 0 12px !important; }
-#usg-meter-tool .usg-field strong { color: rgb(49, 51, 63) !important; font-weight: 600; }
+#hsc-meter-tool .hsc-hr { border: none; border-top: 1px solid rgba(49, 51, 63, 0.2); margin: 24px 0; }
+#hsc-meter-tool .hsc-alert { border-radius: 8px; padding: 16px; margin: 8px 0 16px; font-size: 16px !important; line-height: 1.6; }
+#hsc-meter-tool .hsc-error { background: rgba(255, 43, 43, 0.09); color: rgb(125, 53, 59) !important; }
+#hsc-meter-tool .hsc-warning { background: rgba(255, 227, 18, 0.1); color: rgb(146, 108, 5) !important; }
+#hsc-meter-tool .hsc-success { background: rgba(33, 195, 84, 0.1); color: rgb(23, 114, 51) !important; }
+#hsc-meter-tool .hsc-info { background: rgba(28, 131, 225, 0.1); color: rgb(0, 66, 128) !important; }
+#hsc-meter-tool .hsc-field { font-size: 16px !important; color: rgb(49, 51, 63) !important; margin: 0 0 12px !important; }
+#hsc-meter-tool .hsc-field strong { color: rgb(49, 51, 63) !important; font-weight: 600; }
 /* Nothing in this block renders a table any more - the inputs are no longer
    echoed back under the result. These rules are kept so the stylesheet stays a
    copy of the regulator tool's, which is what makes the two easy to diff. */
-#usg-meter-tool .usg-table { border-collapse: collapse; margin: 8px 0 16px; min-width: 50%; font-size: 15px !important; }
-#usg-meter-tool .usg-table th, #usg-meter-tool .usg-table td {
+#hsc-meter-tool .hsc-table { border-collapse: collapse; margin: 8px 0 16px; min-width: 50%; font-size: 15px !important; }
+#hsc-meter-tool .hsc-table th, #hsc-meter-tool .hsc-table td {
   border: 1px solid rgba(49, 51, 63, 0.1); padding: 8px 16px; text-align: left;
   color: rgb(49, 51, 63) !important; font-size: 15px !important;
 }
-#usg-meter-tool .usg-table th { background: rgb(240, 242, 246); font-weight: 600; }
-#usg-meter-tool .usg-spinner { display: flex; align-items: center; gap: 10px; padding: 16px 0; font-size: 16px; }
-#usg-meter-tool .usg-spin {
+#hsc-meter-tool .hsc-table th { background: rgb(240, 242, 246); font-weight: 600; }
+#hsc-meter-tool .hsc-spinner { display: flex; align-items: center; gap: 10px; padding: 16px 0; font-size: 16px; }
+#hsc-meter-tool .hsc-spin {
   width: 18px; height: 18px; border-radius: 50%;
   border: 2px solid rgba(49, 51, 63, 0.2); border-top-color: rgb(255, 75, 75);
-  animation: usgm-rotate 0.8s linear infinite;
+  animation: hscm-rotate 0.8s linear infinite;
 }
-@keyframes usgm-rotate { to { transform: rotate(360deg); } }
+@keyframes hscm-rotate { to { transform: rotate(360deg); } }
 
 /* A result that no longer matches the boxes above it. Everything is dimmed
    except the warning that says so, which is the one thing that must stay
    readable. The result is left on screen rather than cleared: the customer is
    usually mid-correction, and blanking the page under them loses the answers
    they have already given. */
-#usg-meter-tool #usgm-output.is-stale-result > *:not(#usgm-stale) { opacity: 0.4; }
-#usg-meter-tool #usgm-stale { opacity: 1; }
+#hsc-meter-tool #hscm-output.is-stale-result > *:not(#hscm-stale) { opacity: 0.4; }
+#hsc-meter-tool #hscm-stale { opacity: 1; }
 
 /* ============ METER TOOL ADDITIONS ============
    The regulator tool answers in one shot, so it needs no question widgets in
@@ -298,8 +315,8 @@
    `is-on` is toggled by syncChipStyles(), not by :has() or :checked, because
    the border and background belong to the label and this has to work in
    browsers without :has(). */
-#usg-meter-tool .usg-check-group { display: flex; flex-wrap: wrap; gap: 10px; }
-#usg-meter-tool .usg-check {
+#hsc-meter-tool .hsc-check-group { display: flex; flex-wrap: wrap; gap: 10px; }
+#hsc-meter-tool .hsc-check {
   display: inline-flex; align-items: center; gap: 9px;
   padding: 10px 15px; border: 1px solid #c9d2e2; border-radius: 6px;
   background: #fff; cursor: pointer; user-select: none;
@@ -307,22 +324,22 @@
   font-weight: 400 !important; margin: 0 !important;
   transition: border-color .12s ease, background-color .12s ease;
 }
-#usg-meter-tool .usg-check:hover { border-color: #21417F; }
-#usg-meter-tool .usg-check input {
+#hsc-meter-tool .hsc-check:hover { border-color: #21417F; }
+#hsc-meter-tool .hsc-check input {
   flex: 0 0 auto; width: 16px; height: 16px;
   margin: 0; accent-color: #21417F; cursor: pointer;
 }
-#usg-meter-tool .usg-check.is-on { border-color: #21417F; background: #f5f7fb; }
-#usg-meter-tool .usg-check.is-on span { color: #21417F !important; font-weight: 600; }
+#hsc-meter-tool .hsc-check.is-on { border-color: #21417F; background: #f5f7fb; }
+#hsc-meter-tool .hsc-check.is-on span { color: #21417F !important; font-weight: 600; }
 /* One block per selected meter type. The left rule is what makes several
    options on the page read as separate quotes rather than one long list. */
-#usg-meter-tool .usg-option {
+#hsc-meter-tool .hsc-option {
   border-left: 3px solid rgba(49, 51, 63, 0.15);
   padding: 0 0 4px 18px; margin: 0 0 8px;
 }
-#usg-meter-tool .usg-option.is-ready { border-left-color: rgb(49, 65, 122); }
-#usg-meter-tool .usg-option.is-unavailable { border-left-color: rgba(255, 43, 43, 0.35); }
-#usg-meter-tool h3.usg-option-h {
+#hsc-meter-tool .hsc-option.is-ready { border-left-color: rgb(49, 65, 122); }
+#hsc-meter-tool .hsc-option.is-unavailable { border-left-color: rgba(255, 43, 43, 0.35); }
+#hsc-meter-tool h3.hsc-option-h {
   font-size: 22px !important; font-weight: 600 !important;
   color: rgb(49, 51, 63) !important; font-family: inherit !important;
   text-transform: none !important; letter-spacing: normal !important;
@@ -330,7 +347,7 @@
 }
 /* Outstanding option questions sit in a tinted well so it is obvious the
    selection is not finished and the part number is still to come. */
-#usg-meter-tool .usg-pending {
+#hsc-meter-tool .hsc-pending {
   background: rgb(248, 249, 251); border-radius: 8px;
   padding: 16px 18px 4px; margin: 4px 0 14px;
 }
@@ -338,22 +355,22 @@
    a customer who picked the wrong ferrule changes it here rather than
    re-running the sizing - but the tint comes off, so a finished selection
    reads as finished. */
-#usg-meter-tool .usg-answered { padding: 4px 0 0; margin: 4px 0 8px; }
-#usg-meter-tool .usg-pending .usg-widget:last-child,
-#usg-meter-tool .usg-answered .usg-widget:last-child { margin-bottom: 4px; }
+#hsc-meter-tool .hsc-answered { padding: 4px 0 0; margin: 4px 0 8px; }
+#hsc-meter-tool .hsc-pending .hsc-widget:last-child,
+#hsc-meter-tool .hsc-answered .hsc-widget:last-child { margin-bottom: 4px; }
 /* A meter that quotes rather than carrying a part number. Same weight and
    colour as a part number so it reads as the answer, not a footnote. */
-#usg-meter-tool .usg-quote {
+#hsc-meter-tool .hsc-quote {
   font-size: 20px !important; font-weight: 600 !important;
   color: rgb(49, 65, 122) !important; margin: 2px 0 12px !important;
   overflow-wrap: break-word;
 }
 @media (max-width: 720px) {
-  #usg-meter-tool .usg-cols-4 > .usg-widget { flex-basis: 46%; }
-  #usg-meter-tool .usg-halfwidth { max-width: 100%; }
-  #usg-meter-tool h1.usg-h1 { font-size: 30px !important; }
-  #usg-meter-tool h2.usg-h2, #usg-meter-tool h3.usg-h3 { font-size: 24px !important; }
-  #usg-meter-tool .usg-option { padding-left: 12px; }
+  #hsc-meter-tool .hsc-cols-4 > .hsc-widget { flex-basis: 46%; }
+  #hsc-meter-tool .hsc-halfwidth { max-width: 100%; }
+  #hsc-meter-tool h1.hsc-h1 { font-size: 30px !important; }
+  #hsc-meter-tool h2.hsc-h2, #hsc-meter-tool h3.hsc-h3 { font-size: 24px !important; }
+  #hsc-meter-tool .hsc-option { padding-left: 12px; }
 }
 </style>
 
@@ -381,8 +398,8 @@
    page is always rendering the truth rather than a step counter's idea of it.
    ============================================================== */
 
-var $root = document.getElementById('usg-meter-tool');
-function $(id) { return document.getElementById('usgm-' + id); }
+var $root = document.getElementById('hsc-meter-tool');
+function $(id) { return document.getElementById('hscm-' + id); }
 
 // ---- widget state readers ----
 function numVal(id) {
@@ -448,11 +465,11 @@ function refreshStaleNotice() {
   var out = $('output');
   if (!out) return;
   var stale = inputsChanged();
-  var banner = document.getElementById('usgm-stale');
+  var banner = document.getElementById('hscm-stale');
   if (stale && !banner) {
     banner = document.createElement('div');
-    banner.id = 'usgm-stale';
-    banner.className = 'usg-alert usg-warning';
+    banner.id = 'hscm-stale';
+    banner.className = 'hsc-alert hsc-warning';
     banner.innerHTML = '\u26A0\uFE0F&nbsp; The inputs above have changed. This result was ' +
       'sized for the previous values \u2014 click <strong>Run Sizing</strong> to size ' +
       'for the new ones.';
@@ -469,7 +486,7 @@ function refreshStaleNotice() {
 function reqLabel(id, val) {
   var el = $('label-' + id);
   if (!el) return;
-  if (!val) el.classList.add('usg-req'); else el.classList.remove('usg-req');
+  if (!val) el.classList.add('hsc-req'); else el.classList.remove('hsc-req');
 }
 function clampInput(el) {
   if (el.value === '') return;
@@ -484,7 +501,7 @@ function clampInput(el) {
 function esc(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
-function alertBox(kind, html) { return '<div class="usg-alert usg-' + kind + '">' + html + '</div>'; }
+function alertBox(kind, html) { return '<div class="hsc-alert hsc-' + kind + '">' + html + '</div>'; }
 
 // ---- Add to Cart ----
 // The site exposes an endpoint that takes matched part[] and qty[] pairs, adds
@@ -498,7 +515,7 @@ var CART_ENDPOINT = 'https://hollandsupplycompany.com/api/sizing-tool/add-to-car
 // harmless to someone who already has them.
 var ACCOUNT_URL = 'https://hollandsupplycompany.com/login';
 function accountNote() {
-  return '<span class="usg-signin">You may qualify for lower pricing by establishing an ' +
+  return '<span class="hsc-signin">You may qualify for lower pricing by establishing an ' +
     'account with Holland Supply. <a href="' + ACCOUNT_URL + '">Login in</a> or ' +
     '<a href="' + ACCOUNT_URL + '">Create an account here</a>.</span>';
 }
@@ -582,17 +599,17 @@ function infoSlots(sku, qty, line) {
   var html = '';
   if (qty !== false) {
     var n = (qty === null || qty === undefined || !(Number(qty) > 0)) ? 1 : Math.round(Number(qty));
-    html += '<label class="usg-qty"><span>Quantity</span>' +
-      '<span class="usg-numwrap"><input type="number" inputmode="numeric" min="1" max="999" step="1"' +
+    html += '<label class="hsc-qty"><span>Quantity</span>' +
+      '<span class="hsc-numwrap"><input type="number" inputmode="numeric" min="1" max="999" step="1"' +
       ' value="' + n + '" data-qty-for="' + line + '"></span></label>';
   }
   // Price and availability share one panel, as they do on a product page. The
   // panel is hidden until one of them has something to say, so a failed
   // lookup leaves no empty grey box behind.
   return html +
-    '<div class="usg-pricebox" hidden>' +
-    '<p class="usg-price" data-price-for="' + esc(sku) + '" hidden></p>' +
-    '<div class="usg-avail" data-avail-for="' + esc(sku) + '" data-line="' + line + '" hidden></div>' +
+    '<div class="hsc-pricebox" hidden>' +
+    '<p class="hsc-price" data-price-for="' + esc(sku) + '" hidden></p>' +
+    '<div class="hsc-avail" data-avail-for="' + esc(sku) + '" data-line="' + line + '" hidden></div>' +
     '</div>';
 }
 
@@ -615,7 +632,7 @@ function qtyByLine(root) {
   return qty;
 }
 function itemsFromDom(root) {
-  var el = root.querySelector('.usg-cart[data-items]');
+  var el = root.querySelector('.hsc-cart[data-items]');
   if (!el) return [];
   var live = qtyByLine(root);
   var pairs = (el.getAttribute('data-items') || '').split('|'), items = [];
@@ -634,8 +651,8 @@ function leadKey(part, qty) { return part + '|' + qty; }
 
 function onQtyChange(root) {
   var items = itemsFromDom(root);
-  var wrap = root.querySelector('.usg-cart[data-items]');
-  var btn = wrap ? wrap.querySelector('.usg-btn-cart') : null;
+  var wrap = root.querySelector('.hsc-cart[data-items]');
+  var btn = wrap ? wrap.querySelector('.hsc-btn-cart') : null;
   if (btn) btn.setAttribute('data-cart', cartUrl(items));
   paintInfo(root);
   scheduleLeadTimes(items, root);
@@ -664,13 +681,29 @@ function amountOf(slot) {
   var n = Number(String(v).replace(/[$,\s]/g, ''));
   return isFinite(n) ? n : undefined;
 }
+// Three outcomes for a price lookup, and they must not be conflated:
+//
+//   a record        the part has a price; show it
+//   UNPRICED        the endpoint answered and the part has no usable price -
+//                   either NetSuite does not carry it (404) or it came back
+//                   as 0.00. Show the contact note.
+//   null            we never got an answer - the request was blocked, the
+//                   host was unreachable, or it errored. Show nothing, as
+//                   before: an outage must not tell every customer to ring
+//                   in about parts that are priced perfectly well.
+//
+// The sentinel is compared by identity, so it needs no marker property.
+var UNPRICED = { unpriced: true };
+
+var UNPRICED_NOTE = 'Contact Holland Supply for pricing';
+
 // A part the endpoints answer for with 0.00 is not free - it is unpriced in
 // the catalogue, usually a made-to-order item. Returning undefined for it
-// means everything downstream treats it as missing: no price line, and no
+// means everything downstream treats it as missing: no figure, and no
 // line-item total (the total only shows when every part on screen has a
 // price, so a zero would otherwise understate the order).
 function priceOf(rec) {
-  if (!rec) return undefined;
+  if (!rec || rec === UNPRICED) return undefined;
   var v = amountOf(rec.price);
   if (v === undefined) v = amountOf(rec.list_price);
   return (v === 0) ? undefined : v;
@@ -681,6 +714,12 @@ function currencyOf(rec) {
          (rec.list_price && rec.list_price.currency) || 'USD';
 }
 function priceHtml(rec) {
+  // An unpriced part says so rather than leaving a blank where the figure
+  // goes, which a customer reads as "free" or as a broken page. Styled small,
+  // because it is a sentence and not a price.
+  if (rec === UNPRICED) {
+    return '<span class="hsc-noprice">' + esc(UNPRICED_NOTE) + '</span>';
+  }
   var v = priceOf(rec);
   if (v === undefined) return '';
   var html = esc(money(v, currencyOf(rec)));
@@ -760,22 +799,22 @@ function paintInfo(root) {
       continue;
     }
     el.hidden = false;
-    el.className = 'usg-avail' + (a.stocked ? ' is-stock' : '');
+    el.className = 'hsc-avail' + (a.stocked ? ' is-stock' : '');
     el.innerHTML = '<strong>' + esc(a.label) + '</strong><span>' + esc(a.text) + '</span>' + a.extra;
   }
   // The panel exists for whichever of the two arrived. Both empty means the
   // lookup is unavailable, and it stays out of the way entirely.
-  var boxes = root.querySelectorAll('.usg-pricebox');
+  var boxes = root.querySelectorAll('.hsc-pricebox');
   for (i = 0; i < boxes.length; i++) {
-    var pr = boxes[i].querySelector('.usg-price');
-    var av = boxes[i].querySelector('.usg-avail');
+    var pr = boxes[i].querySelector('.hsc-price');
+    var av = boxes[i].querySelector('.hsc-avail');
     boxes[i].hidden = !((pr && !pr.hidden) || (av && !av.hidden));
   }
 
   // Line-item total beside Add to Cart, shown only when every part on screen
   // has a price - a partial total would understate the order.
-  var wrap = root.querySelector('.usg-cart[data-items]');
-  var tot = wrap ? wrap.querySelector('.usg-total') : null;
+  var wrap = root.querySelector('.hsc-cart[data-items]');
+  var tot = wrap ? wrap.querySelector('.hsc-total') : null;
   if (tot) {
     var items = itemsFromDom(root), sum = 0, ok = items.length > 0, cur = 'USD';
     for (i = 0; i < items.length; i++) {
@@ -805,9 +844,9 @@ function loadInfo(root) {
 // A failed lookup shows the customer nothing, which is right for them and
 // useless for anyone diagnosing it - so every failure says why in the
 // console. The messages are the only way to tell a blocked request (CSP or
-// CORS) from an endpoint that answered with nothing. Prefix `[USG meter]`.
+// CORS) from an endpoint that answered with nothing. Prefix `[HSC meter]`.
 function lookupWarn(msg) {
-  if (window.console && window.console.warn) window.console.warn('[USG meter] ' + msg);
+  if (window.console && window.console.warn) window.console.warn('[HSC meter] ' + msg);
 }
 
 function fetchPrice(sku, token, root) {
@@ -815,20 +854,36 @@ function fetchPrice(sku, token, root) {
   priceCache[sku] = null;
   window.fetch(PRICE_ENDPOINT + '?sku=' + encodeURIComponent(sku), { credentials: 'include' })
     .then(function (r) {
-      if (!r.ok) { lookupWarn('price HTTP ' + r.status + ' for ' + sku); return null; }
+      if (!r.ok) {
+        // A 404 is an answer: NetSuite does not carry this part. Any other
+        // status is the endpoint failing, which is not something to tell the
+        // customer about a part that may well be priced.
+        if (r.status === 404) {
+          priceCache[sku] = UNPRICED;
+          lookupWarn('price 404 for ' + sku + ' - not in NetSuite, showing the ' +
+            'contact note');
+        } else {
+          lookupWarn('price HTTP ' + r.status + ' for ' + sku +
+            ' - treated as a lookup failure, so no price line is shown');
+        }
+        return null;
+      }
       return r.json();
     })
     .then(function (data) {
-      priceCache[sku] = data || null;
-      if (data && priceOf(data) === undefined) {
-        // A 0.00 is deliberately hidden rather than shown as free, so say
-        // which of the two happened - otherwise this reads as a broken
-        // endpoint when it is an unpriced part.
-        var zero = amountOf(data.price) === 0 || amountOf(data.list_price) === 0;
-        lookupWarn('no price shown for ' + sku +
-          (zero ? ' - the endpoint returned 0.00, which is treated as unpriced'
-                : ' - the response carried no amount') +
-          ': ' + JSON.stringify(data));
+      // `null` here means the branch above already decided the outcome; not
+      // overwriting it is what keeps a 404's UNPRICED from being lost.
+      if (data) {
+        if (priceOf(data) === undefined) {
+          priceCache[sku] = UNPRICED;
+          var zero = amountOf(data.price) === 0 || amountOf(data.list_price) === 0;
+          lookupWarn('no price for ' + sku +
+            (zero ? ' - the endpoint returned 0.00'
+                  : ' - the response carried no amount') +
+            ', showing the contact note: ' + JSON.stringify(data));
+        } else {
+          priceCache[sku] = data;
+        }
       }
       if (token === lookupToken) paintInfo(root);
     })
@@ -933,7 +988,7 @@ function runSizing() {
   }
 
   state = { inputs: readInputs(), meter_types: [], answers: {} };
-  out.innerHTML = '<div class="usg-spinner"><span class="usg-spin"></span>Sizing meter\u2026</div>';
+  out.innerHTML = '<div class="hsc-spinner"><span class="hsc-spin"></span>Sizing meter\u2026</div>';
 
   // Yield once so the spinner paints before the calculation runs.
   setTimeout(function () { rerun(); }, 30);
@@ -948,7 +1003,7 @@ function rerun() {
   try {
     result = window.USGMeterSizing.sizeMeters(payload());
   } catch (err) {
-    if (window.console && console.error) console.error('USG meter sizing failed', err);
+    if (window.console && console.error) console.error('HSC meter sizing failed', err);
     out.innerHTML = alertBox('error', 'Something went wrong while sizing. Please try again.');
     return;
   }
@@ -961,12 +1016,12 @@ function rerun() {
 // the same shape of answer: a radio group for a short list, a select for a
 // long one, checkboxes for a multi-select.
 function questionHtml(q, current) {
-  var html = '<div class="usg-widget">';
+  var html = '<div class="hsc-widget">';
   var i, opt, checked;
 
   if (q.type === 'multi_select') {
     var chosen = current || [];
-    html += '<label class="usg-label">' + esc(q.label) + '</label><div class="usg-check-group">';
+    html += '<label class="hsc-label">' + esc(q.label) + '</label><div class="hsc-check-group">';
     for (i = 0; i < q.options.length; i++) {
       opt = q.options[i];
       var on = indexOf(chosen, opt) !== -1;
@@ -974,7 +1029,7 @@ function questionHtml(q, current) {
       // `is-on` is set here as well as by syncChipStyles(), so a chip already
       // chosen paints selected on the first frame rather than flicking on
       // once the script has run.
-      html += '<label class="usg-check' + (on ? ' is-on' : '') +
+      html += '<label class="hsc-check' + (on ? ' is-on' : '') +
         '"><input type="checkbox" data-q="' + esc(q.id) +
         '" value="' + esc(opt) + '"' + checked + '><span>' + esc(opt) + '</span></label>';
     }
@@ -983,7 +1038,7 @@ function questionHtml(q, current) {
     // A six-way ferrule list as radios pushes the part number off the screen,
     // so anything longer than four options becomes a select - the same
     // threshold the regulator tool uses for its pipe size list.
-    html += '<label class="usg-label">' + esc(q.label) + '</label>' +
+    html += '<label class="hsc-label">' + esc(q.label) + '</label>' +
       '<select data-q="' + esc(q.id) + '">' +
       '<option value=""' + (current ? '' : ' selected') + '>Select\u2026</option>';
     for (i = 0; i < q.options.length; i++) {
@@ -993,11 +1048,11 @@ function questionHtml(q, current) {
     }
     html += '</select>';
   } else {
-    html += '<label class="usg-label">' + esc(q.label) + '</label><div class="usg-radio-group">';
+    html += '<label class="hsc-label">' + esc(q.label) + '</label><div class="hsc-radio-group">';
     for (i = 0; i < q.options.length; i++) {
       opt = q.options[i];
       checked = (current === opt) ? ' checked' : '';
-      html += '<label class="usg-radio"><input type="radio" name="usgm-q-' + esc(q.id) +
+      html += '<label class="hsc-radio"><input type="radio" name="hscm-q-' + esc(q.id) +
         '" data-q="' + esc(q.id) + '" value="' + esc(opt) + '"' + checked + '><span>' +
         esc(opt) + '</span></label>';
     }
@@ -1041,7 +1096,7 @@ function render(body) {
   // The meter type question always stays on screen: it is how the customer
   // switches between the options the job qualifies for, and re-selecting is
   // the normal way to compare two of them.
-  html += '<h3 class="usg-h3">Meter Type</h3>';
+  html += '<h3 class="hsc-h3">Meter Type</h3>';
   html += questionHtml(body.meter_type_question, state.meter_types);
 
   if (body.stage === 'meter_type') {
@@ -1059,7 +1114,7 @@ function render(body) {
     html += alertBox('error', '\u274C&nbsp; ' + esc(body.message));
   }
 
-  html += '<h3 class="usg-h3">Meter Selection</h3>';
+  html += '<h3 class="hsc-h3">Meter Selection</h3>';
 
   // One block per selected type, in the algorithm's order, which is the tier's
   // order rather than the order the boxes happen to be ticked in.
@@ -1069,10 +1124,10 @@ function render(body) {
 
   for (i = 0; i < results.length; i++) {
     var r = results[i];
-    var cls = 'usg-option' +
+    var cls = 'hsc-option' +
       (r.available === false ? ' is-unavailable' : (r.complete ? ' is-ready' : ''));
     html += '<div class="' + cls + '">';
-    html += '<h3 class="usg-option-h">' + esc(r.heading) + '</h3>';
+    html += '<h3 class="hsc-option-h">' + esc(r.heading) + '</h3>';
 
     if (r.available === false) {
       html += alertBox('error', esc(r.message));
@@ -1084,7 +1139,7 @@ function render(body) {
     // printing r.fields here would say each one twice.
     var fields = r.identity_fields || [];
     for (j = 0; j < fields.length; j++) {
-      html += '<p class="usg-field"><strong>' + esc(fields[j].label) + ':</strong> ' +
+      html += '<p class="hsc-field"><strong>' + esc(fields[j].label) + ':</strong> ' +
         esc(fields[j].value) + '</p>';
     }
 
@@ -1100,7 +1155,7 @@ function render(body) {
       for (j = 0; j < qs.length; j++) {
         if (!state.answers[qs[j].id]) { anyPending = true; break; }
       }
-      html += '<div class="' + (anyPending ? 'usg-pending' : 'usg-answered') + '">';
+      html += '<div class="' + (anyPending ? 'hsc-pending' : 'hsc-answered') + '">';
       for (j = 0; j < qs.length; j++) {
         html += questionHtml(qs[j], state.answers[qs[j].id]);
       }
@@ -1108,14 +1163,14 @@ function render(body) {
     }
 
     if (r.part_number) {
-      html += '<p class="usg-field"><strong>Part Number:</strong>' +
-        '<code class="usg-pn">' + esc(r.part_number) + '</code></p>';
+      html += '<p class="hsc-field"><strong>Part Number:</strong>' +
+        '<code class="hsc-pn">' + esc(r.part_number) + '</code></p>';
       html += infoSlots(r.part_number, false, line++);
     } else if (r.quote_note) {
       // A Sonix IQ or an RMG has no catalogue part number, so the answer is a
       // sentence rather than a SKU and there is no cart line for it.
-      html += '<p class="usg-field"><strong>Part Number:</strong></p>';
-      html += '<p class="usg-quote">' + esc(r.quote_note) + '</p>';
+      html += '<p class="hsc-field"><strong>Part Number:</strong></p>';
+      html += '<p class="hsc-quote">' + esc(r.quote_note) + '</p>';
     }
 
     html += '</div>';
@@ -1125,24 +1180,24 @@ function render(body) {
   // instructions: it is a separate instrument on the quote, not part of any
   // meter's part number.
   if (body.eagle) {
-    html += '<hr class="usg-hr">';
-    html += '<h3 class="usg-h3">Eagle Corrector</h3>';
+    html += '<hr class="hsc-hr">';
+    html += '<h3 class="hsc-h3">Eagle Corrector</h3>';
     var ef = body.eagle.fields || [];
     for (j = 0; j < ef.length; j++) {
-      html += '<p class="usg-field"><strong>' + esc(ef[j].label) + ':</strong> ' +
+      html += '<p class="hsc-field"><strong>' + esc(ef[j].label) + ':</strong> ' +
         esc(ef[j].value) + '</p>';
     }
-    html += '<p class="usg-field"><strong>Part Number:</strong>' +
-      '<code class="usg-pn">' + esc(body.eagle.part_number) + '</code></p>';
+    html += '<p class="hsc-field"><strong>Part Number:</strong>' +
+      '<code class="hsc-pn">' + esc(body.eagle.part_number) + '</code></p>';
     html += infoSlots(body.eagle.part_number, false, line++);
   }
 
   if (pns.length) {
     var items = cartItems(body);
-    html += '<p class="usg-cart" data-items="' + esc(itemsAttr(items)) + '">' +
-      '<span class="usg-total" hidden></span>' +
+    html += '<p class="hsc-cart" data-items="' + esc(itemsAttr(items)) + '">' +
+      '<span class="hsc-total" hidden></span>' +
       accountNote() +
-      '<button type="button" class="usg-btn-cart" data-cart="' +
+      '<button type="button" class="hsc-btn-cart" data-cart="' +
       esc(cartUrl(items)) + '">Add to Cart</button></p>';
   }
 
@@ -1160,9 +1215,9 @@ function render(body) {
       meter_types: state.meter_types.slice(),
       answers: state.answers
     };
-    html += '<hr class="usg-hr">';
-    html += '<h3 class="usg-h3">Download PDF Summary</h3>';
-    html += '<button type="button" class="usg-btn" id="usgm-pdf-btn">\u2B07\uFE0F&nbsp; Download PDF Summary</button>';
+    html += '<hr class="hsc-hr">';
+    html += '<h3 class="hsc-h3">Download PDF Summary</h3>';
+    html += '<button type="button" class="hsc-btn" id="hscm-pdf-btn">\u2B07\uFE0F&nbsp; Download PDF Summary</button>';
   }
 
   // The inputs are deliberately NOT echoed back on screen: they are still
@@ -1178,7 +1233,7 @@ function render(body) {
   // Add to Cart is a <button> so that the theme styles it, which means the
   // navigation an <a href> used to do for free is wired up here - the same
   // arrangement as the 441 configurator, URL carried in data-cart.
-  var cartBtn = out.querySelector('.usg-btn-cart');
+  var cartBtn = out.querySelector('.hsc-btn-cart');
   if (cartBtn) {
     cartBtn.addEventListener('click', function () {
       window.location.href = cartBtn.getAttribute('data-cart');
@@ -1215,14 +1270,14 @@ function wire(out) {
 // selected state has to be mirrored onto the label. Same approach as the 441
 // configurator, and it avoids depending on :has().
 function syncChipStyles(root) {
-  var chips = root.querySelectorAll('.usg-check');
+  var chips = root.querySelectorAll('.hsc-check');
   for (var i = 0; i < chips.length; i++) {
     var box = chips[i].querySelector('input');
     var on = !!(box && box.checked);
     if (chips[i].classList) {
       chips[i].classList.toggle('is-on', on);
     } else {
-      chips[i].className = 'usg-check' + (on ? ' is-on' : '');
+      chips[i].className = 'hsc-check' + (on ? ' is-on' : '');
     }
   }
 }
@@ -1257,7 +1312,7 @@ function downloadPdf() {
 
     doc.setFont('helvetica', 'bold'); doc.setFontSize(20);
     doc.setTextColor(DARK_BLUE[0], DARK_BLUE[1], DARK_BLUE[2]);
-    doc.text('USG Meter Sizing Tool', marginX, y); y += 16;
+    doc.text('HSC Meter Selection Tool', marginX, y); y += 16;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(11);
     doc.setTextColor(DARK[0], DARK[1], DARK[2]);
     doc.text('Meter Selection Summary', marginX, y); y += 12;
@@ -1334,7 +1389,7 @@ function downloadPdf() {
     // Eagle's inside the Eagle section), so a second flat list of the same
     // numbers only invites reading them out of context.
 
-    doc.save('USG_Meter_Sizing_Tool_Output.pdf');
+    doc.save('HSC_Meter_Selection_Tool_Output.pdf');
   } catch (e) {
     printFallback();
   }
@@ -1344,8 +1399,8 @@ function printFallback() {
   if (!lastRun) return;
   var w = window.open('', '_blank');
   if (!w) { window.alert('Could not generate PDF: please allow pop-ups or check that the PDF library can load.'); return; }
-  var h = '<html><head><title>USG Meter Sizing Tool</title><style>body{font-family:Helvetica,Arial,sans-serif;margin:40px;color:#111827}h1{color:#1F3864;font-size:20px;margin:0}h2{color:#e85d26;font-size:12px;margin:26px 0 6px}table{width:100%;border-collapse:collapse;font-size:9px}td{border-bottom:0.5px solid #e5e7eb;padding:3px 0;vertical-align:top}td:first-child{font-weight:bold;width:40%}.gen{color:#6b7280;font-size:8px}</style></head><body>';
-  h += '<h1>USG Meter Sizing Tool</h1><div>Meter Selection Summary</div><div class="gen">Generated ' + new Date().toLocaleString() + '</div>';
+  var h = '<html><head><title>HSC Meter Selection Tool</title><style>body{font-family:Helvetica,Arial,sans-serif;margin:40px;color:#111827}h1{color:#1F3864;font-size:20px;margin:0}h2{color:#e85d26;font-size:12px;margin:26px 0 6px}table{width:100%;border-collapse:collapse;font-size:9px}td{border-bottom:0.5px solid #e5e7eb;padding:3px 0;vertical-align:top}td:first-child{font-weight:bold;width:40%}.gen{color:#6b7280;font-size:8px}</style></head><body>';
+  h += '<h1>HSC Meter Selection Tool</h1><div>Meter Selection Summary</div><div class="gen">Generated ' + new Date().toLocaleString() + '</div>';
   var kv = function (pairs) { var t = '<table>'; for (var i = 0; i < pairs.length; i++) t += '<tr><td>' + esc(pairs[i].label) + '</td><td>' + esc(pairs[i].value) + '</td></tr>'; return t + '</table>'; };
   h += '<h2>Inputs</h2>' + kv(lastRun.summary);
   var results = lastRun.results || [];
@@ -1371,7 +1426,7 @@ function printFallback() {
 
 // ---- info tooltips (hover on desktop, tap on mobile, keyboard accessible) ----
 var tipBox = document.createElement('div');
-tipBox.className = 'usg-tipbox';
+tipBox.className = 'hsc-tipbox';
 tipBox.setAttribute('role', 'tooltip');
 $root.appendChild(tipBox);
 var tipPinnedTo = null;
@@ -1379,7 +1434,7 @@ var tipShownFor = null;
 
 function showTip(icon) {
   tipBox.textContent = icon.getAttribute('data-tip') || '';
-  tipBox.classList.add('usg-show');
+  tipBox.classList.add('hsc-show');
   tipShownFor = icon;
   var rootRect = $root.getBoundingClientRect();
   var iconRect = icon.getBoundingClientRect();
@@ -1387,11 +1442,11 @@ function showTip(icon) {
   left = Math.max(8, Math.min(left, $root.clientWidth - tipBox.offsetWidth - 8));
   tipBox.style.left = left + 'px';
   tipBox.style.top = (iconRect.bottom - rootRect.top + 8) + 'px';
-  icon.classList.add('usg-tip-on');
+  icon.classList.add('hsc-tip-on');
 }
 function hideTip() {
-  tipBox.classList.remove('usg-show');
-  if (tipShownFor) tipShownFor.classList.remove('usg-tip-on');
+  tipBox.classList.remove('hsc-show');
+  if (tipShownFor) tipShownFor.classList.remove('hsc-tip-on');
   tipShownFor = null;
   tipPinnedTo = null;
 }
@@ -1400,12 +1455,12 @@ function hideTip() {
 (function init() {
   // Only the inputs in the form above the button, not the widgets the output
   // renders - those are wired by `wire()` as they are created.
-  var inputs = $root.querySelectorAll('#usg-meter-tool > .usg-row input, #usg-meter-tool > .usg-row select');
+  var inputs = $root.querySelectorAll('#hsc-meter-tool > .hsc-row input, #hsc-meter-tool > .hsc-row select');
   for (var i = 0; i < inputs.length; i++) {
     inputs[i].addEventListener('change', function () { clampInput(this); refreshConditionals(); });
     inputs[i].addEventListener('input', function () { refreshConditionals(); });
   }
-  var helps = $root.querySelectorAll('.usg-help');
+  var helps = $root.querySelectorAll('.hsc-help');
   for (var h = 0; h < helps.length; h++) {
     (function (icon) {
       icon.addEventListener('mouseenter', function () { if (!tipPinnedTo) showTip(icon); });

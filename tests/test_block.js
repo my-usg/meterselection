@@ -55,16 +55,16 @@ function build() {
 // spinner can paint, so this returns a promise that settles after it.
 function run(dom, inputs) {
   const d = dom.window.document;
-  d.getElementById("usgm-inlet").value = String(inputs.inlet);
-  d.getElementById("usgm-inlet-units").value = inputs.inlet_units || "psi";
-  d.getElementById("usgm-flow").value = String(inputs.flow);
-  d.getElementById("usgm-flow-units").value = inputs.flow_units || "CFH";
-  d.getElementById("usgm-run-btn").click();
+  d.getElementById("hscm-inlet").value = String(inputs.inlet);
+  d.getElementById("hscm-inlet-units").value = inputs.inlet_units || "psi";
+  d.getElementById("hscm-flow").value = String(inputs.flow);
+  d.getElementById("hscm-flow-units").value = inputs.flow_units || "CFH";
+  d.getElementById("hscm-run-btn").click();
   return new Promise((r) => setTimeout(r, 60));
 }
 
 function out(dom) {
-  return dom.window.document.getElementById("usgm-output");
+  return dom.window.document.getElementById("hscm-output");
 }
 function text(dom) {
   return out(dom).textContent.replace(/\s+/g, " ");
@@ -108,7 +108,7 @@ function answer(dom, qid, value) {
 // merely about a widget existing.
 function pendingIds(dom) {
   const ids = new Set();
-  for (const el of out(dom).querySelectorAll(".usg-pending [data-q]")) {
+  for (const el of out(dom).querySelectorAll(".hsc-pending [data-q]")) {
     ids.add(el.getAttribute("data-q"));
   }
   return [...ids];
@@ -117,32 +117,64 @@ function pendingIds(dom) {
 // Every question id on screen, answered or not.
 function questionIds(dom) {
   const ids = new Set();
-  for (const el of out(dom).querySelectorAll(".usg-option [data-q]")) {
+  for (const el of out(dom).querySelectorAll(".hsc-option [data-q]")) {
     ids.add(el.getAttribute("data-q"));
   }
   return [...ids];
 }
 
 function partNumbers(dom) {
-  return [...out(dom).querySelectorAll("code.usg-pn")].map((e) => e.textContent);
+  return [...out(dom).querySelectorAll("code.hsc-pn")].map((e) => e.textContent);
 }
 
 // Answer the price lookup from a fixture rather than the network. The block
 // fires it after the result is on screen, so it has to be in place before the
 // selection is made.
-function stubPrices(dom, bySku) {
+//
+// A fixture value of the string "404" answers with that status (the part is
+// not in NetSuite), "500" with a server error, and "reject" makes the request
+// fail outright the way a blocked or unreachable host does. Anything else is
+// returned as the JSON body. Those four are exactly the outcomes the block
+// has to tell apart.
+function stubPrices(dom, bySku, leadRows) {
   dom.window.fetch = function (url, opts) {
     const s = String(url);
     if (s.indexOf("/api/chatbot/products") === 0 || s.indexOf("products?sku=") !== -1) {
       const sku = decodeURIComponent(s.split("sku=")[1] || "");
       const body = bySku[sku];
-      return Promise.resolve({
-        ok: !!body,
-        json: () => Promise.resolve(body || null),
-      });
+      if (body === "reject") return Promise.reject(new Error("blocked"));
+      if (body === "404") {
+        return Promise.resolve({ ok: false, status: 404, json: () => Promise.resolve(null) });
+      }
+      if (body === "500") {
+        return Promise.resolve({ ok: false, status: 500, json: () => Promise.resolve(null) });
+      }
+      return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(body || null) });
     }
-    // Lead times: answer with an empty list so nothing else renders.
-    return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+    // Lead times: the rows given, or an empty list so nothing else renders.
+    return Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve(leadRows || []),
+    });
+  };
+}
+
+// Size an R275 with the price endpoint stubbed, and report what landed in the
+// price slot.
+const R275 = "M.R275.TC.5.D/R.1-1/4.TOP.NA";
+async function priceSlot(fixture) {
+  const dom = build();
+  stubPrices(dom, { [R275]: fixture });
+  await run(dom, { inlet: 7, inlet_units: "in wc", flow: 250 });
+  tickType(dom, "Diaphragm");
+  answer(dom, "diaphragm.ferrule", "1-1/4");
+  await new Promise((r) => setTimeout(r, 60));
+  const el = out(dom).querySelector(".hsc-price");
+  return {
+    text: el && !el.hidden ? el.textContent.trim() : null,
+    boxShown: !!(out(dom).querySelector(".hsc-pricebox") &&
+                 !out(dom).querySelector(".hsc-pricebox").hidden),
+    all: text(dom),
   };
 }
 
@@ -172,7 +204,7 @@ async function main() {
   check(
     "the ticked meter type is marked selected",
     (function () {
-      for (const l of out(dom).querySelectorAll(".usg-check")) {
+      for (const l of out(dom).querySelectorAll(".hsc-check")) {
         const box = l.querySelector("input");
         if (box.value === "Diaphragm") {
           return box.checked && l.className.indexOf("is-on") !== -1;
@@ -184,7 +216,7 @@ async function main() {
   check(
     "an unticked meter type is not marked selected",
     (function () {
-      for (const l of out(dom).querySelectorAll(".usg-check")) {
+      for (const l of out(dom).querySelectorAll(".hsc-check")) {
         const box = l.querySelector("input");
         if (box.value === "Sonix IQ") {
           return !box.checked && l.className.indexOf("is-on") === -1;
@@ -208,14 +240,14 @@ async function main() {
     "got: " + JSON.stringify(partNumbers(dom))
   );
   check("no questions left outstanding", pendingIds(dom).length === 0);
-  check("Add to Cart appears", !!out(dom).querySelector(".usg-btn-cart"));
-  check("PDF download appears", !!dom.window.document.getElementById("usgm-pdf-btn"));
+  check("Add to Cart appears", !!out(dom).querySelector(".hsc-btn-cart"));
+  check("PDF download appears", !!dom.window.document.getElementById("hscm-pdf-btn"));
   check(
     "there is no Excel download",
-    dom.window.document.getElementById("usgm-xlsx-btn") === null
+    dom.window.document.getElementById("hscm-xlsx-btn") === null
   );
 
-  const cart = out(dom).querySelector(".usg-btn-cart").getAttribute("data-cart");
+  const cart = out(dom).querySelector(".hsc-btn-cart").getAttribute("data-cart");
   check(
     "the inputs are not echoed back under the result",
     out(dom).querySelectorAll("table").length === 0 &&
@@ -224,7 +256,7 @@ async function main() {
   check(
     "but they are still held for the PDF",
     dom.window.eval(
-      "(function(){var r=document.getElementById('usgm-pdf-btn');return !!r;})()"
+      "(function(){var r=document.getElementById('hscm-pdf-btn');return !!r;})()"
     )
   );
   check(
@@ -241,8 +273,8 @@ async function main() {
   tickType(dom, "Rotary (meter bar)");
   check(
     "two option blocks on screen",
-    out(dom).querySelectorAll(".usg-option").length === 2,
-    "found " + out(dom).querySelectorAll(".usg-option").length
+    out(dom).querySelectorAll(".hsc-option").length === 2,
+    "found " + out(dom).querySelectorAll(".hsc-option").length
   );
   answer(dom, "ultrasonic.ferrule", "30LT");
   answer(dom, "rotary_meter_bar.ferrule", "45LT");
@@ -255,7 +287,7 @@ async function main() {
   );
   check(
     "both go in the cart",
-    (out(dom).querySelector(".usg-cart").getAttribute("data-items").match(/\|/g) || []).length === 1
+    (out(dom).querySelector(".hsc-cart").getAttribute("data-items").match(/\|/g) || []).length === 1
   );
   check(
     "both report their standard pulse output",
@@ -349,7 +381,7 @@ async function main() {
   );
   check(
     "and offers no Add to Cart, since there is no SKU",
-    !out(dom).querySelector(".usg-btn-cart")
+    !out(dom).querySelector(".hsc-btn-cart")
   );
 
   // ---- inputs that cannot be sized ---------------------------------
@@ -358,7 +390,7 @@ async function main() {
   await run(dom, { inlet: 0, flow: 0 });
   check(
     "a zero inlet and flow report input errors",
-    out(dom).querySelectorAll(".usg-error").length > 0 &&
+    out(dom).querySelectorAll(".hsc-error").length > 0 &&
       /greater than zero/.test(text(dom))
   );
 
@@ -376,12 +408,12 @@ async function main() {
   dom = build();
   check(
     "there is no MAOP field",
-    dom.window.document.getElementById("usgm-maop") === null
+    dom.window.document.getElementById("hscm-maop") === null
   );
   check(
     "the form has exactly the four inputs the algorithm takes",
     dom.window.document.querySelectorAll(
-      "#usg-meter-tool > .usg-row input, #usg-meter-tool > .usg-row select"
+      "#hsc-meter-tool > .hsc-row input, #hsc-meter-tool > .hsc-row select"
     ).length === 4
   );
 
@@ -427,13 +459,13 @@ async function main() {
     text(dom).slice(0, 400)
   );
 
-  const inletBox = dom.window.document.getElementById("usgm-inlet");
+  const inletBox = dom.window.document.getElementById("hscm-inlet");
   inletBox.value = "40";
   inletBox.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
   inletBox.dispatchEvent(new dom.window.Event("change", { bubbles: true }));
   check(
     "correcting the pressure warns that the result is out of date",
-    !!dom.window.document.getElementById("usgm-stale") &&
+    !!dom.window.document.getElementById("hscm-stale") &&
       /inputs above have changed/.test(text(dom))
   );
   check(
@@ -445,7 +477,7 @@ async function main() {
   answer(dom, "rotary_roots.eagle_type", "Rotary Corrector");
   check(
     "the warning survives a re-render",
-    !!dom.window.document.getElementById("usgm-stale")
+    !!dom.window.document.getElementById("hscm-stale")
   );
 
   await run(dom, { inlet: 40, flow: 25000 });
@@ -455,52 +487,80 @@ async function main() {
   answer(dom, "rotary_roots.eagle_type", "Volume Corrector");
   check(
     "re-running clears the warning and gives 40 psi its 0-51 transducer",
-    dom.window.document.getElementById("usgm-stale") === null &&
+    dom.window.document.getElementById("hscm-stale") === null &&
       /Pressure Transducer: 0-51 psi/.test(text(dom)),
     text(dom).slice(0, 400)
   );
 
-  // ---- a zero price is not a price --------------------------------
-  console.log("\nprice of 0.00");
-  dom = build();
-  stubPrices(dom, {
-    "M.R275.TC.5.D/R.1-1/4.TOP.NA": {
-      sku: "M.R275.TC.5.D/R.1-1/4.TOP.NA",
-      price: { amount: "0.00", currency: "USD" },
-      list_price: { amount: "0.00", currency: "USD" },
-    },
+  // ---- the four price-lookup outcomes -----------------------------
+  console.log("\nprice lookup outcomes");
+
+  let slot = await priceSlot({
+    sku: R275,
+    price: { amount: "1507.54", currency: "USD" },
+    list_price: { amount: "1507.54", currency: "USD" },
   });
-  await run(dom, { inlet: 7, inlet_units: "in wc", flow: 250 });
-  tickType(dom, "Diaphragm");
-  answer(dom, "diaphragm.ferrule", "1-1/4");
-  await new Promise((r) => setTimeout(r, 60));
+  check("a real price is shown as a figure", slot.text === "$1,507.54", slot.text);
+
+  slot = await priceSlot({
+    sku: R275,
+    price: { amount: "0.00", currency: "USD" },
+    list_price: { amount: "0.00", currency: "USD" },
+  });
   check(
-    "a 0.00 price is not shown",
-    !/\$0\.00/.test(text(dom)),
-    text(dom).slice(0, 400)
+    "a 0.00 price shows the contact note instead",
+    slot.text === "Contact Holland Supply for pricing",
+    slot.text
   );
+  check("and never renders as $0.00", !/\$0\.00/.test(slot.all));
+  check("and contributes no line total", !/Total \$/.test(slot.all));
+
+  slot = await priceSlot("404");
   check(
-    "and no line total is shown for it either",
-    !/Total \$0/.test(text(dom))
+    "a part NetSuite does not carry shows the contact note",
+    slot.text === "Contact Holland Supply for pricing",
+    slot.text
   );
 
-  console.log("\na real price");
-  dom = build();
-  stubPrices(dom, {
-    "M.R275.TC.5.D/R.1-1/4.TOP.NA": {
-      sku: "M.R275.TC.5.D/R.1-1/4.TOP.NA",
-      price: { amount: "1507.54", currency: "USD" },
-      list_price: { amount: "1507.54", currency: "USD" },
-    },
-  });
-  await run(dom, { inlet: 7, inlet_units: "in wc", flow: 250 });
-  tickType(dom, "Diaphragm");
-  answer(dom, "diaphragm.ferrule", "1-1/4");
-  await new Promise((r) => setTimeout(r, 60));
+  slot = await priceSlot({ sku: R275 });
   check(
-    "a non-zero price still shows",
-    /\$1,507\.54/.test(text(dom)),
-    text(dom).slice(0, 400)
+    "a response with no amount at all shows the contact note",
+    slot.text === "Contact Holland Supply for pricing",
+    slot.text
+  );
+
+  // The outage cases must stay silent: telling every customer to ring in
+  // because the endpoint is down would be worse than showing nothing.
+  slot = await priceSlot("500");
+  check("an endpoint error shows nothing", slot.text === null, slot.text);
+
+  slot = await priceSlot("reject");
+  check("a blocked request shows nothing", slot.text === null, slot.text);
+
+  // Price and availability are separate lookups, and the brief was to leave
+  // the lead time alone for an unpriced part. So an unpriced part must still
+  // show its estimate, in the same panel, unchanged.
+  const dom4 = build();
+  stubPrices(dom4, { [R275]: "404" }, [{
+    ok: true, partNumber: R275, quantity: 1,
+    status: "AVAILABLE_TO_ORDER", leadTime: "3-4 weeks",
+    message: "Ships in 3-4 weeks from the factory.",
+  }]);
+  await run(dom4, { inlet: 7, inlet_units: "in wc", flow: 250 });
+  tickType(dom4, "Diaphragm");
+  answer(dom4, "diaphragm.ferrule", "1-1/4");
+  await new Promise((r) => setTimeout(r, 80));
+  check(
+    "an unpriced part still shows its lead time",
+    /Available to order/.test(text(dom4)) &&
+      /Ships in 3-4 weeks/.test(text(dom4)),
+    text(dom4).slice(0, 600)
+  );
+  check(
+    "and shows the contact note beside it, in the one panel",
+    /Contact Holland Supply for pricing/.test(text(dom4)) &&
+      out(dom4).querySelectorAll(".hsc-pricebox").length === 1,
+    text(dom4).slice(0, 600)
   );
 
   // ---- the 23M asks nothing ---------------------------------------

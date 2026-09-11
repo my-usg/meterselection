@@ -18,6 +18,10 @@
  * Exposes:
  *   window.USGMeterSizing.sizeMeters(input) -> result object
  *   window.USGMeterSizing.PRESSURE_UNITS / FLOW_UNITS / VERSION
+ *
+ * The global keeps its original name on purpose: nothing a customer sees
+ * carries it, and holding it steady means the CMS block and the bundle can be
+ * deployed in either order.
  */
 (function (root) {
   "use strict";

@@ -247,9 +247,24 @@ meters it is standard. The Sonix IQ pair is not in that list: theirs is an
 option, so it stays a yes/no question. `PULSE_OUTPUT_INCLUDED` in both
 implementations.
 
-**A price of 0.00 is treated as unpriced, not free.** It is hidden, and the
-line-item total stays hidden too rather than understating the order. The
-console says which of the two happened. `priceOf` in the block.
+**An unpriced part says "Contact Holland Supply for pricing"** rather than
+leaving the price slot blank, which reads as free or as a broken page. Three
+outcomes are kept apart, in `fetchPrice`:
+
+| Lookup result | Shown |
+| --- | --- |
+| a price | the figure |
+| HTTP 404, or 0.00, or a response with no amount | the contact note |
+| any other status, or the request failing | nothing |
+
+The last row is the important one: a price endpoint that is down or blocked
+must not tell every customer to ring in about parts that are priced perfectly
+well. The console line says which case it was.
+
+An unpriced part still contributes no line-item total (the total only shows
+when every part on screen has a price, so a zero or a gap would understate the
+order), and its **lead time is unaffected** — price and availability are
+separate lookups sharing one panel.
 
 **Capacities print to the whole CFH.** Interpolation lands on fractions and a
 fraction of a cubic foot per hour is noise. `_fmt_cfh` / `fmtCfh`, which use
@@ -301,6 +316,7 @@ tests/cases.json              611 cases: every tier, family and answer branch
 tests/test_parity.py          Python vs JS, plus fixed expected outputs
 tests/test_block.js           drives block.html in jsdom
 tests/test_pdf.js             renders the PDF and reads the text back
+tests/test_no_usg.js          sweeps every customer-visible surface for "USG"
 ```
 
 ## Deploying the block
@@ -314,8 +330,24 @@ Security Policy must allow:
 - `connect-src https://orchestrator.hsc.faxon.tech` — lead times, already
   allowed
 
-Element IDs carry a `usgm-` prefix rather than `usg-`, and the CSS is scoped to
-`#usg-meter-tool`, so this block and the regulator block can sit on one page
-without colliding. The stylesheet down to the `METER TOOL ADDITIONS` marker is
-the regulator tool's, unchanged apart from the root selector — worth keeping in
-step.
+Every class and element ID in this block is prefixed `hsc-` / `hscm-`, against
+the regulator tool's `usg-`, so the two blocks can sit on one page without
+colliding. The stylesheet down to the `METER TOOL ADDITIONS` marker is still
+the regulator tool's rules with the prefix and root selector swapped — worth
+keeping in step when either changes.
+
+## Naming
+
+Customer-facing text, the CSS prefix, the browser global and the bundle
+filename all read HSC. Three things deliberately still say USG, because they
+are real names rather than branding:
+
+- the GitHub organisation, `my-usg`
+- `https://github.com/my-usg/sizingtool`, the regulator tool's repository
+- a comment referring to `usg-441-configurator.html`, the file the chip
+  styling was copied from
+
+The bundle also exposes `window.USGMeterSizing` as an alias of
+`window.USGMeterSizing`, so a CMS block on the old name keeps working against
+a new bundle. Once the block is live, the alias at the foot of
+`src/js/meter_sizing.js` can be deleted.

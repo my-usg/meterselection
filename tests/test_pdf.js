@@ -65,7 +65,7 @@ function el(dom, id) {
   return dom.window.document.getElementById(id);
 }
 function out(dom) {
-  return el(dom, "usgm-output");
+  return el(dom, "hscm-output");
 }
 function fire(dom, node) {
   node.dispatchEvent(new dom.window.Event("change", { bubbles: true }));
@@ -103,7 +103,7 @@ function renderPdf(dom) {
   const alerted = [];
   dom.window.alert = function (m) { alerted.push(m); };
   try {
-    el(dom, "usgm-pdf-btn").click();
+    el(dom, "hscm-pdf-btn").click();
   } finally {
     dom.window.jspdf.jsPDF = Orig;
   }
@@ -131,9 +131,9 @@ async function main() {
 
   // A roots meter with a live Eagle: two part numbers, in two sections.
   const dom = build();
-  el(dom, "usgm-inlet").value = "60";
-  el(dom, "usgm-flow").value = "9000";
-  el(dom, "usgm-run-btn").click();
+  el(dom, "hscm-inlet").value = "60";
+  el(dom, "hscm-flow").value = "9000";
+  el(dom, "hscm-run-btn").click();
   await new Promise((r) => setTimeout(r, 80));
 
   tickType(dom, "Rotary (roots)");
@@ -141,7 +141,7 @@ async function main() {
   answer(dom, "rotary_roots.live", "Eagle MPplusII Instrument");
   answer(dom, "rotary_roots.eagle_type", "Rotary Corrector");
 
-  check("the PDF button is present", !!el(dom, "usgm-pdf-btn"));
+  check("the PDF button is present", !!el(dom, "hscm-pdf-btn"));
   const doc = renderPdf(dom);
   check("a PDF is produced", !!doc);
   if (!doc) { process.exit(1); }
@@ -174,9 +174,9 @@ async function main() {
   // A Sonix 600 in the PDF, to confirm the standard pulse output reaches the
   // saved document and not just the screen.
   const dom3 = build();
-  el(dom3, "usgm-inlet").value = "10";
-  el(dom3, "usgm-flow").value = "1800";
-  el(dom3, "usgm-run-btn").click();
+  el(dom3, "hscm-inlet").value = "10";
+  el(dom3, "hscm-flow").value = "1800";
+  el(dom3, "hscm-run-btn").click();
   await new Promise((r) => setTimeout(r, 80));
   tickType(dom3, "Ultrasonic");
   answer(dom3, "ultrasonic.ferrule", "30LT");
@@ -207,9 +207,9 @@ async function main() {
   // A quote-only meter has no SKU; the section must still say so rather than
   // leaving the customer with a blank where a part number belongs.
   const dom2 = build();
-  el(dom2, "usgm-inlet").value = "2";
-  el(dom2, "usgm-flow").value = "380";
-  el(dom2, "usgm-run-btn").click();
+  el(dom2, "hscm-inlet").value = "2";
+  el(dom2, "hscm-flow").value = "380";
+  el(dom2, "hscm-run-btn").click();
   await new Promise((r) => setTimeout(r, 80));
   tickType(dom2, "Sonix IQ");
   answer(dom2, "sonix_iq.ferrule", "20LT");

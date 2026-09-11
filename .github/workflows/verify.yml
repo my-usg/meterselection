@@ -55,6 +55,12 @@ jobs:
       - name: The PDF carries the part numbers
         run: node tests/test_pdf.js
 
+      # Branding is easy to reintroduce by accident in a new message or
+      # heading, so every customer-visible surface is swept rather than
+      # eyeballed.
+      - name: Nothing a customer sees says USG
+        run: node tests/test_no_usg.js
+
       - name: API smoke test
         run: |
           python -c "

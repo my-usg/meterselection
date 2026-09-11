@@ -1,12 +1,12 @@
 {
-  "name": "usg-meter-sizing",
+  "name": "hsc-meter-sizing",
   "version": "1.0.0",
   "private": true,
   "description": "Holland Supply meter sizing algorithm. The browser bundle in dist/ is generated; see README.md.",
   "main": "dist/usg-meter-sizing.js",
   "scripts": {
     "build": "python3 tools/build.py",
-    "test": "python3 tests/test_parity.py && node tests/test_block.js && node tests/test_pdf.js"
+    "test": "python3 tests/test_parity.py && node tests/test_block.js && node tests/test_pdf.js && node tests/test_no_usg.js"
   },
   "devDependencies": {
     "jsdom": "^24.0.0",
