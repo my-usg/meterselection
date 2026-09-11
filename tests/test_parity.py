@@ -23,7 +23,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
-from algorithm.meter_sizing import size_meters  # noqa: E402
+from algorithm.meter_sizing import eagle_p1, size_meters  # noqa: E402
 
 CASES = REPO / "tests" / "cases.json"
 BUNDLE = REPO / "dist" / "usg-meter-sizing.js"
@@ -156,7 +156,7 @@ EXPECTED = [
          "part_number": "M.RT3M-175.FLG.ETC.CIR.175.VDN.NA.LITH.NA"},
     ),
     (
-        "a fix-factored Eagle instrument puts CD in the roots part number",
+        "an Eagle volume corrector puts CD in the roots part number",
         {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "Fix-Factored",
                      "rotary_roots.index": "Eagle MPplusII Instrument",
@@ -164,20 +164,59 @@ EXPECTED = [
         {"part_number": "M.RT3M-175.FLG.CD.NA.175.VDN.NA.NA.NA"},
     ),
     (
-        "a live Eagle instrument puts CD in the roots part number too",
+        "an Eagle rotary corrector puts CTR there instead",
+        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+         "answers": {"rotary_roots.compensation": "Fix-Factored",
+                     "rotary_roots.index": "Eagle MPplusII Instrument",
+                     "rotary_roots.eagle_type": "Rotary Corrector"}},
+        {"part_number": "M.RT3M-175.FLG.CTR.NA.175.VDN.NA.NA.NA"},
+    ),
+    (
+        "the live path resolves the drive the same way - volume",
+        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+         "answers": {"rotary_roots.compensation": "Live",
+                     "rotary_roots.live": "Eagle MPplusII Instrument",
+                     "rotary_roots.eagle_type": "Volume Corrector"}},
+        {"part_number": "M.RT3M-175.FLG.CD.NA.175.VDN.NA.NA.NA"},
+    ),
+    (
+        "the live path resolves the drive the same way - rotary",
         {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Rotary Corrector"}},
-        {"part_number": "M.RT3M-175.FLG.CD.NA.175.VDN.NA.NA.NA"},
+        {"part_number": "M.RT3M-175.FLG.CTR.NA.175.VDN.NA.NA.NA"},
     ),
     (
-        "the 232 psi roots meter takes its rating from the model",
+        "CTR takes the same NA / NA segments as CD",
+        {"inlet": 200, "flow": 250000, "meter_types": ["Rotary (roots)"],
+         "answers": {"rotary_roots.compensation": "Live",
+                     "rotary_roots.live": "Eagle MPplusII Instrument",
+                     "rotary_roots.eagle_type": "Rotary Corrector"}},
+        {"part_number": "M.RT23M-232.FLG.CTR.NA.VDN.NA.NA.NA"},
+    ),
+    (
+        "the 232 psi roots meter drops the rating segment entirely",
         {"inlet": 200, "flow": 250000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "None",
                      "rotary_roots.radio": "No"}},
         {"model": "23M232",
-         "part_number": "M.RT23M-232.FLG.TC.NA.232.VDN.NA.NA.NA"},
+         "part_number": "M.RT23M-232.FLG.TC.NA.VDN.NA.NA.NA"},
+    ),
+    (
+        "and drops it on an index that fills the CIR / LITH fields too",
+        {"inlet": 200, "flow": 250000, "meter_types": ["Rotary (roots)"],
+         "answers": {"rotary_roots.compensation": "Fix-Factored",
+                     "rotary_roots.index": "ETC"}},
+        {"part_number": "M.RT23M-232.FLG.ETC.CIR.VDN.NA.LITH.NA"},
+    ),
+    (
+        "a 175-rated roots meter still carries its rating segment",
+        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+         "answers": {"rotary_roots.compensation": "None",
+                     "rotary_roots.radio": "No"}},
+        {"model": "3M175",
+         "part_number": "M.RT3M-175.FLG.TC.NA.175.VDN.NA.NA.NA"},
     ),
     (
         "roots IMC index -> CIR / ALK",
@@ -233,12 +272,59 @@ EXPECTED_TOP = [
         lambda r: r["eagle"]["part_number"] == "I.MPP-MRC.102.N.N.N.TC.INTEG.CCW.N.ALK.8X6",
     ),
     (
+        "a CTR drive is paired with the rotary corrector instrument",
+        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+         "answers": {"rotary_roots.compensation": "Live",
+                     "rotary_roots.live": "Eagle MPplusII Instrument",
+                     "rotary_roots.eagle_type": "Rotary Corrector"}},
+        lambda r: r["part_numbers"] == [
+            "M.RT3M-175.FLG.CTR.NA.175.VDN.NA.NA.NA",
+            "I.MPP-MRC.102.N.N.N.TC.INTEG.CCW.N.ALK.8X6",
+        ],
+    ),
+    (
+        "a CD drive is paired with the volume corrector instrument",
+        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+         "answers": {"rotary_roots.compensation": "Live",
+                     "rotary_roots.live": "Eagle MPplusII Instrument",
+                     "rotary_roots.eagle_type": "Volume Corrector"}},
+        lambda r: r["part_numbers"] == [
+            "M.RT3M-175.FLG.CD.NA.175.VDN.NA.NA.NA",
+            "I.MPP-MVC.102.N.N.N.TC.CVI.CCW.N.ALK.8X6",
+        ],
+    ),
+    (
         "the confirmed Eagle index raises no warning",
         {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Rotary Corrector"}},
         lambda r: not any("index token" in w for w in r["warnings"]),
+    ),
+    (
+        "every Eagle transducer band, through a real sizing run",
+        {"inlet": 1, "flow": 100000},   # payload unused; see the predicate
+        lambda r: all(
+            size_meters({
+                "inlet": psi, "flow": 100000, "meter_types": ["Turbine"],
+                "answers": {"turbine.compensation": "Live"},
+            })["eagle"]["p1"] == want
+            for psi, want in [
+                (0.5, "10"), (9.99, "10"),
+                (10, "51"), (40, "51"), (49.99, "51"),
+                (50, "102"), (99.99, "102"),
+                (100, "290"), (289.99, "290"),
+                (290, "508"), (499.99, "508"),
+                (500, "1050"), (1049.99, "1050"),
+                (1050, "1450"), (1440, "1450"),
+            ]
+        ),
+    ),
+    (
+        "1440 psi is accepted and 1441 is not",
+        {"inlet": 1440, "flow": 100000},
+        lambda r: r["ok"] is True
+        and size_meters({"inlet": 1441, "flow": 100000})["ok"] is False,
     ),
     (
         "no Eagle when a turbo has no compensation",

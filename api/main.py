@@ -47,6 +47,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from algorithm.meter_sizing import (  # noqa: E402
     FLOW_UNITS,
+    MAX_FLOW,
+    MAX_INLET,
     PRESSURE_UNITS,
     TIERS,
     size_meters,
@@ -71,7 +73,7 @@ app.add_middleware(
 
 class SizingRequest(BaseModel):
     inlet: Optional[float] = Field(
-        None, description="Inlet pressure, 0-1000, in `inlet_units`."
+        None, description="Inlet pressure, 0-1440, in `inlet_units`."
     )
     inlet_units: str = Field("psi", description="psi, in wc, oz, bar or kPa.")
     flow: Optional[float] = Field(
@@ -135,8 +137,8 @@ def schema() -> Dict[str, Any]:
     return {
         "pressure_units": PRESSURE_UNITS,
         "flow_units": FLOW_UNITS,
-        "inlet_range": [0, 1000],
-        "flow_range": [0, 100000000],
+        "inlet_range": [0, MAX_INLET],
+        "flow_range": [0, MAX_FLOW],
         "stages": ["error", "meter_type", "options", "complete"],
         "meter_types_by_tier": {t["id"]: list(t["types"]) for t in TIERS},
     }

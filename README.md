@@ -33,7 +33,7 @@ cannot drift apart unnoticed.
 1. Edit `algorithm/meter_sizing.py` **and** `src/js/meter_sizing.js`. They are
    the same rules written twice; changing one alone will fail CI.
 2. `python tools/build.py` to regenerate `dist/usg-meter-sizing.js`.
-3. `python tests/test_parity.py` and `node tests/test_block.js`.
+3. `python tests/test_parity.py`, then `npm test` for the two browser tests.
 4. Commit and push. The website picks it up automatically; jsDelivr caches a
    branch URL for up to 12 hours.
 
@@ -58,6 +58,7 @@ npm install
 python tools/build.py
 python tests/test_parity.py
 node tests/test_block.js
+node tests/test_pdf.js
 uvicorn api.main:app --reload      # chatbot endpoint on :8000
 ```
 
@@ -117,7 +118,7 @@ window.USGMeterSizing.sizeMeters({
 
 | Field | Notes |
 | --- | --- |
-| `inlet` | 0–1000, in `inlet_units` |
+| `inlet` | 0–1440, in `inlet_units` |
 | `inlet_units` | `psi`, `in wc`, `oz`, `bar`, `kPa` |
 | `flow` | 0–100,000,000, in `flow_units` |
 | `flow_units` | `CFH`, `BTUH`, `CMH` |
@@ -136,7 +137,7 @@ window.USGMeterSizing.sizeMeters({
 | `part_numbers` | every part number the run produced, meters then Eagle |
 | `eagle` | the Eagle instrument, or `null`. A separate line item, never part of a meter's part number |
 | `selected` | true when at least one type reached a finished selection |
-| `summary` | the inputs as label/value pairs, for the PDF and spreadsheet |
+| `summary` | the inputs as label/value pairs, for the PDF |
 | `warnings` | anything the customer should read, including assumptions |
 | `evaluations` | every meter in the tables with its capacity and, if it failed, why |
 
@@ -207,13 +208,27 @@ run through a gap.
 Confirmed with Holland Supply, and each one line to change if that ever moves:
 
 **A roots meter with an Eagle corrector** carries a drive rather than an index,
-and the part number takes `CD` — on both the fix-factored and the live path.
-`ROOTS_EAGLE_INDEX` in both implementations.
+and which drive depends on the corrector — `CD` for a volume corrector, `CTR`
+for a rotary one. The same either way on the fix-factored and the live path,
+and both take the `NA` / `NA` surrounding segments. `ROOTS_EAGLE_INDEX` in both
+implementations.
 
-**The rating field in the roots part number** comes from the model rather than
-the literal `175` in the template, so the 232 psi `DR23M232` numbers as
-`M.RT23M-232.FLG.TC.NA.232.VDN.NA.NA.NA` and every other roots meter keeps
-`175`. `roots_model_parts` in both implementations.
+```
+Volume Corrector   M.RT3M-175.FLG.CD.NA.175.VDN.NA.NA.NA  + I.MPP-MVC…
+Rotary Corrector   M.RT3M-175.FLG.CTR.NA.175.VDN.NA.NA.NA + I.MPP-MRC…
+```
+
+**The rating field in the roots part number** is present only on the 175-rated
+models. The 232 psi `DR23M232` omits the segment altogether — the model token
+already says 232 — so that meter is one field shorter than the template:
+
+```
+3M-175   M.RT3M-175.FLG.TC.NA.175.VDN.NA.NA.NA
+23M-232  M.RT23M-232.FLG.TC.NA.VDN.NA.NA.NA
+```
+
+The field is absent, not blank. `build_part_number`'s roots branch in both
+implementations.
 
 **Fix-factored roots with an Eagle** also asks the corrector-type question that
 the live path asks, since the Eagle part number cannot be built without it.
@@ -228,6 +243,17 @@ unchanged rather than extrapolated down. Every such run carries a warning.
 **Turbo ANSI class and Eagle transducer range** are taken from the inlet
 pressure, as written — `ansi_class` and `eagle_p1`.
 
+**The inlet range is 0–1440**, the top row of the turbo capacity table and so
+the highest pressure any meter in the tables is rated for. `MAX_INLET` in both
+implementations, and `max` on the input in the block.
+
+**A result is sized for the inputs as they were when Run Sizing was clicked**,
+not as they are now. Editing a pressure or flow afterwards does not re-size
+anything until it is clicked again — re-running on every keystroke would size
+against half-typed numbers. The block dims the result and says so whenever the
+form has drifted from the run it is showing, which is the only thing that makes
+the frozen snapshot safe.
+
 ## Layout
 
 ```
@@ -241,9 +267,10 @@ block/block.html              the Concrete CMS block
 tools/extract_capacities.py   workbook -> JSON
 tools/build.py                template + JSON -> dist bundle
 tools/gen_cases.py            regenerate the test case set
-tests/cases.json              540 cases: every tier, family and answer branch
+tests/cases.json              601 cases: every tier, family and answer branch
 tests/test_parity.py          Python vs JS, plus fixed expected outputs
 tests/test_block.js           drives block.html in jsdom
+tests/test_pdf.js             renders the PDF and reads the text back
 ```
 
 ## Deploying the block
@@ -252,8 +279,8 @@ Paste `block/block.html` into a Concrete CMS HTML block. The site's Content
 Security Policy must allow:
 
 - `script-src https://cdn.jsdelivr.net` — the algorithm bundle
-- `script-src https://cdnjs.cloudflare.com` — jsPDF and SheetJS, already
-  allowed for the regulator tool
+- `script-src https://cdnjs.cloudflare.com` — jsPDF, already allowed for the
+  regulator tool
 - `connect-src https://orchestrator.hsc.faxon.tech` — lead times, already
   allowed
 

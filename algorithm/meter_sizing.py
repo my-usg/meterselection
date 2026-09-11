@@ -83,6 +83,12 @@ FLOW_TO_CFH = {
 }
 
 PRESSURE_UNITS = ["psi", "in wc", "oz", "bar", "kPa"]
+
+# The accepted range for the entered figure, in whatever units it is entered
+# in. 1440 is the highest pressure the capacity tables cover (the top row of
+# the turbo tab); above it nothing is rated, so there is nothing to size.
+MAX_INLET = 1440
+MAX_FLOW = 100000000
 FLOW_UNITS = ["CFH", "BTUH", "CMH"]
 
 
@@ -477,11 +483,23 @@ def eagle_p1(psi):
     return "1450"
 
 
-# A roots meter driving an external Eagle corrector carries a drive rather than
-# an index. Confirmed with Holland Supply: whenever an Eagle instrument is
-# used, the roots part number carries CD. This applies to both the
-# fix-factored and the live path.
-ROOTS_EAGLE_INDEX = "CD"
+# A roots meter driving an external Eagle corrector carries a drive rather
+# than an index, and which drive depends on the corrector. Confirmed with
+# Holland Supply. Both take the same surrounding segments as any non-ETC/ES3/
+# IMC index, so A and B stay NA.
+ROOTS_EAGLE_INDEX = {
+    "Volume Corrector": "CD",
+    "Rotary Corrector": "CTR",
+}
+# Used only if the corrector type is somehow missing: the part number is not
+# built until every question is answered, so this should be unreachable.
+ROOTS_EAGLE_INDEX_DEFAULT = "CD"
+
+
+def roots_eagle_index(slug, answers):
+    return ROOTS_EAGLE_INDEX.get(
+        answers.get(f"{slug}.eagle_type"), ROOTS_EAGLE_INDEX_DEFAULT
+    )
 
 
 def build_part_number(model, slug, answers, inlet_psi):
@@ -514,9 +532,6 @@ def build_part_number(model, slug, answers, inlet_psi):
         return None, QUOTE_NOTE, warnings
 
     if fam == "roots":
-        # The rating comes from the model rather than the literal 175 in the
-        # template: confirmed with Holland Supply, so the 232 psi DR23M232
-        # numbers as ...232.VDN... and every other roots meter as ...175...
         token, rating = roots_model_parts(model)
         index = roots_index(slug, answers)
         if index in ("ETC", "ES3"):
@@ -525,7 +540,17 @@ def build_part_number(model, slug, answers, inlet_psi):
             a, b = "CIR", "ALK"
         else:
             a, b = "NA", "NA"
-        return f"M.RT{token}.FLG.{index}.{a}.{rating}.VDN.NA.{b}.NA", None, warnings
+        # The 232-rated 23M-232 does not carry a rating segment at all: the
+        # model token already says 232, so the field is simply absent from that
+        # meter's part number rather than blank. Every 175-rated model keeps
+        # it. Confirmed with Holland Supply.
+        #   23M-232 -> M.RT23M-232.FLG.TC.NA.VDN.NA.NA.NA
+        #   3M-175  -> M.RT3M-175.FLG.TC.NA.175.VDN.NA.NA.NA
+        segments = ["M.RT" + token, "FLG", index, a]
+        if rating != "232":
+            segments.append(rating)
+        segments += ["VDN", "NA", b, "NA"]
+        return ".".join(segments), None, warnings
 
     if fam == "turbo":
         comp = get("compensation")
@@ -561,11 +586,11 @@ def roots_index(slug, answers):
     if comp == "Fix-Factored":
         chosen = answers.get(f"{slug}.index")
         if chosen == EAGLE_INSTRUMENT:
-            return ROOTS_EAGLE_INDEX
+            return roots_eagle_index(slug, answers)
         return chosen or "ETC"
     if comp == "Live":
         if answers.get(f"{slug}.live") == EAGLE_INSTRUMENT:
-            return ROOTS_EAGLE_INDEX
+            return roots_eagle_index(slug, answers)
         return IMC
     return "TC"
 
@@ -650,10 +675,13 @@ def size_meters(payload):
         errors.append("Enter an inlet pressure greater than zero.")
     if flow is None or flow <= 0:
         errors.append("Enter a flow rate greater than zero.")
-    if inlet is not None and not (0 <= inlet <= 1000):
-        errors.append("Inlet pressure must be between 0 and 1000.")
-    if flow is not None and not (0 <= flow <= 100000000):
-        errors.append("Flow rate must be between 0 and 100,000,000.")
+    # 1440 psi is the top of the turbo capacity table, so it is the highest
+    # pressure any meter in the tables is rated for. It is also what makes the
+    # Eagle's 0-1450 transducer band reachable.
+    if inlet is not None and not (0 <= inlet <= MAX_INLET):
+        errors.append(f"Inlet pressure must be between 0 and {MAX_INLET:,.0f}.")
+    if flow is not None and not (0 <= flow <= MAX_FLOW):
+        errors.append(f"Flow rate must be between 0 and {MAX_FLOW:,}.")
 
     try:
         inlet_psi = to_psi(inlet or 0, inlet_units)
@@ -764,7 +792,7 @@ def size_meters(payload):
                 {
                     "type": mtype,
                     "slug": slug,
-                    "heading": f"{mtype} Option",
+                    "heading": f"{mtype} Meter",
                     "available": False,
                     "message": _unavailable_message(mtype, tier, evals),
                     "identity_fields": [],
@@ -786,7 +814,7 @@ def size_meters(payload):
         entry = {
             "type": mtype,
             "slug": slug,
-            "heading": f"{mtype} Option",
+            "heading": f"{mtype} Meter",
             "available": True,
             "meter": model,
             "manufacturer": display_manufacturer(model),
@@ -809,7 +837,7 @@ def size_meters(payload):
         # (the web block does) shows the identity fields only, so an answer is
         # not printed once as a field and again as a ticked radio; a caller
         # that just wants the finished selection as text (the chatbot, the
-        # PDF, the spreadsheet) reads `fields`.
+        # PDF, the PDF) reads `fields`.
         entry["identity_fields"] = _identity_fields(entry)
         entry["answer_fields"] = _answer_fields(questions, answers)
         entry["fields"] = entry["identity_fields"] + entry["answer_fields"]

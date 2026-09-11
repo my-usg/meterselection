@@ -151,6 +151,30 @@ async function main() {
 
   tickType(dom, "Diaphragm");
   check(
+    "the ticked meter type is marked selected",
+    (function () {
+      for (const l of out(dom).querySelectorAll(".usg-check")) {
+        const box = l.querySelector("input");
+        if (box.value === "Diaphragm") {
+          return box.checked && l.className.indexOf("is-on") !== -1;
+        }
+      }
+      return false;
+    })()
+  );
+  check(
+    "an unticked meter type is not marked selected",
+    (function () {
+      for (const l of out(dom).querySelectorAll(".usg-check")) {
+        const box = l.querySelector("input");
+        if (box.value === "Sonix IQ") {
+          return !box.checked && l.className.indexOf("is-on") === -1;
+        }
+      }
+      return false;
+    })()
+  );
+  check(
     "ticking Diaphragm asks for a ferrule",
     pendingIds(dom).indexOf("diaphragm.ferrule") !== -1,
     "pending: " + JSON.stringify(pendingIds(dom))
@@ -167,9 +191,23 @@ async function main() {
   check("no questions left outstanding", pendingIds(dom).length === 0);
   check("Add to Cart appears", !!out(dom).querySelector(".usg-btn-cart"));
   check("PDF download appears", !!dom.window.document.getElementById("usgm-pdf-btn"));
-  check("Excel download appears", !!dom.window.document.getElementById("usgm-xlsx-btn"));
+  check(
+    "there is no Excel download",
+    dom.window.document.getElementById("usgm-xlsx-btn") === null
+  );
 
   const cart = out(dom).querySelector(".usg-btn-cart").getAttribute("data-cart");
+  check(
+    "the inputs are not echoed back under the result",
+    out(dom).querySelectorAll("table").length === 0 &&
+      !/Sizing Detail/.test(text(dom))
+  );
+  check(
+    "but they are still held for the PDF",
+    dom.window.eval(
+      "(function(){var r=document.getElementById('usgm-pdf-btn');return !!r;})()"
+    )
+  );
   check(
     "cart URL keeps the slashes in the part number unencoded",
     cart.indexOf("M.R275.TC.5.D/R.1-1/4.TOP.NA") !== -1,
@@ -243,12 +281,12 @@ async function main() {
   const roots = partNumbers(dom);
   check(
     "roots part number renders",
-    roots.indexOf("M.RT3M-175.FLG.CD.NA.175.VDN.NA.NA.NA") !== -1,
+    roots.indexOf("M.RT3M-175.FLG.CTR.NA.175.VDN.NA.NA.NA") !== -1,
     JSON.stringify(roots)
   );
   check(
     "the Eagle gets its own section below the meter",
-    /Eagle Option/.test(text(dom)) &&
+    /Eagle Corrector/.test(text(dom)) &&
       roots.indexOf("I.MPP-MRC.102.N.N.N.TC.INTEG.CCW.N.ALK.8X6") !== -1,
     JSON.stringify(roots)
   );
@@ -271,7 +309,7 @@ async function main() {
     partNumbers(dom).indexOf("M.RT3M-175.FLG.TC.NA.175.VDN.NA.NA.NA") !== -1,
     JSON.stringify(partNumbers(dom))
   );
-  check("the Eagle section is gone", !/Eagle Option/.test(text(dom)));
+  check("the Eagle section is gone", !/Eagle Corrector/.test(text(dom)));
 
   // ---- a meter that quotes instead of numbering ---------------------
   console.log("\nquote-only meter: 2 psi, 380 CFH");
@@ -345,6 +383,57 @@ async function main() {
     partNumbers(dom).length === 0 &&
       out(dom).querySelectorAll('[data-q="meter_type"]:checked').length === 0,
     text(dom).slice(0, 200)
+  );
+
+  // ---- a result that no longer matches the form ---------------------
+  // The inputs are frozen at Run Sizing, so a pressure corrected afterwards
+  // leaves a result on screen that was sized for the old value. That is how a
+  // 40 psi job got quoted a 0-10 transducer, and this is the guard against it
+  // happening silently again.
+  console.log("\nediting an input without re-running");
+  dom = build();
+  await run(dom, { inlet: 4, flow: 25000 });
+  tickType(dom, "Rotary (roots)");
+  answer(dom, "rotary_roots.compensation", "Live");
+  answer(dom, "rotary_roots.live", "Eagle MPplusII Instrument");
+  answer(dom, "rotary_roots.eagle_type", "Volume Corrector");
+  check(
+    "4 psi gives a 0-10 transducer",
+    /Pressure transducer: 0-10/.test(text(dom)),
+    text(dom).slice(0, 400)
+  );
+
+  const inletBox = dom.window.document.getElementById("usgm-inlet");
+  inletBox.value = "40";
+  inletBox.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+  inletBox.dispatchEvent(new dom.window.Event("change", { bubbles: true }));
+  check(
+    "correcting the pressure warns that the result is out of date",
+    !!dom.window.document.getElementById("usgm-stale") &&
+      /inputs above have changed/.test(text(dom))
+  );
+  check(
+    "and the out-of-date result is dimmed",
+    out(dom).className.indexOf("is-stale-result") !== -1
+  );
+
+  // Answering another question must not clear the warning.
+  answer(dom, "rotary_roots.eagle_type", "Rotary Corrector");
+  check(
+    "the warning survives a re-render",
+    !!dom.window.document.getElementById("usgm-stale")
+  );
+
+  await run(dom, { inlet: 40, flow: 25000 });
+  tickType(dom, "Rotary (roots)");
+  answer(dom, "rotary_roots.compensation", "Live");
+  answer(dom, "rotary_roots.live", "Eagle MPplusII Instrument");
+  answer(dom, "rotary_roots.eagle_type", "Volume Corrector");
+  check(
+    "re-running clears the warning and gives 40 psi its 0-51 transducer",
+    dom.window.document.getElementById("usgm-stale") === null &&
+      /Pressure transducer: 0-51/.test(text(dom)),
+    text(dom).slice(0, 400)
   );
 
   console.log(

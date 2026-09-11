@@ -63,6 +63,13 @@
     "btuh": 1.0 / 1000.0   // 1000 BTUH = 1 CFH
   };
   var PRESSURE_UNITS = ["psi", "in wc", "oz", "bar", "kPa"];
+
+  // The accepted range for the entered figure, in whatever units it is
+  // entered in. 1440 is the highest pressure the capacity tables cover (the
+  // top row of the turbo tab); above it nothing is rated, so there is nothing
+  // to size. It is also what makes the Eagle's 0-1450 band reachable.
+  var MAX_INLET = 1440;
+  var MAX_FLOW = 100000000;
   var FLOW_UNITS = ["CFH", "BTUH", "CMH"];
 
   function toPsi(value, units) {
@@ -395,10 +402,22 @@
   }
 
   // A roots meter driving an external Eagle corrector carries a drive rather
-  // than an index. Confirmed with Holland Supply: whenever an Eagle
-  // instrument is used, the roots part number carries CD. This applies to
-  // both the fix-factored and the live path.
-  var ROOTS_EAGLE_INDEX = "CD";
+  // than an index, and which drive depends on the corrector. Confirmed with
+  // Holland Supply. Both take the same surrounding segments as any
+  // non-ETC/ES3/IMC index, so A and B stay NA.
+  var ROOTS_EAGLE_INDEX = {
+    "Volume Corrector": "CD",
+    "Rotary Corrector": "CTR"
+  };
+  // Used only if the corrector type is somehow missing: the part number is
+  // not built until every question is answered, so this should be
+  // unreachable.
+  var ROOTS_EAGLE_INDEX_DEFAULT = "CD";
+
+  function rootsEagleIndex(slug, answers) {
+    return ROOTS_EAGLE_INDEX[answers[slug + ".eagle_type"]] ||
+           ROOTS_EAGLE_INDEX_DEFAULT;
+  }
 
   function rootsIndex(slug, answers) {
     var comp = answers[slug + ".compensation"];
@@ -412,11 +431,13 @@
     }
     if (comp === "Fix-Factored") {
       var picked = answers[slug + ".index"];
-      if (picked === EAGLE_INSTRUMENT) return ROOTS_EAGLE_INDEX;
+      if (picked === EAGLE_INSTRUMENT) return rootsEagleIndex(slug, answers);
       return picked || "ETC";
     }
     if (comp === "Live") {
-      if (answers[slug + ".live"] === EAGLE_INSTRUMENT) return ROOTS_EAGLE_INDEX;
+      if (answers[slug + ".live"] === EAGLE_INSTRUMENT) {
+        return rootsEagleIndex(slug, answers);
+      }
       return IMC;
     }
     return "TC";
@@ -454,18 +475,23 @@
       return { part_number: null, quote_note: QUOTE_NOTE, warnings: warnings };
     }
     if (fam === "roots") {
-      // The rating comes from the model rather than the literal 175 in the
-      // template: confirmed with Holland Supply, so the 232 psi DR23M232
-      // numbers as ...232.VDN... and every other roots meter as ...175...
       token = rootsModelParts(model)[0];
       rating = rootsModelParts(model)[1];
       index = rootsIndex(slug, answers);
       if (index === "ETC" || index === "ES3") { a = "CIR"; b = "LITH"; }
       else if (index === IMC) { a = "CIR"; b = "ALK"; }
       else { a = "NA"; b = "NA"; }
+      // The 232-rated 23M-232 does not carry a rating segment at all: the
+      // model token already says 232, so the field is simply absent from that
+      // meter's part number rather than blank. Every 175-rated model keeps
+      // it. Confirmed with Holland Supply.
+      //   23M-232 -> M.RT23M-232.FLG.TC.NA.VDN.NA.NA.NA
+      //   3M-175  -> M.RT3M-175.FLG.TC.NA.175.VDN.NA.NA.NA
+      var segments = ["M.RT" + token, "FLG", index, a];
+      if (rating !== "232") segments.push(rating);
+      segments = segments.concat(["VDN", "NA", b, "NA"]);
       return {
-        part_number: "M.RT" + token + ".FLG." + index + "." + a + "." + rating +
-                     ".VDN.NA." + b + ".NA",
+        part_number: segments.join("."),
         quote_note: null, warnings: warnings
       };
     }
@@ -638,10 +664,10 @@
 
     if (inlet === null || inlet <= 0) errors.push("Enter an inlet pressure greater than zero.");
     if (flow === null || flow <= 0) errors.push("Enter a flow rate greater than zero.");
-    if (inlet !== null && !(inlet >= 0 && inlet <= 1000)) {
-      errors.push("Inlet pressure must be between 0 and 1000.");
+    if (inlet !== null && !(inlet >= 0 && inlet <= MAX_INLET)) {
+      errors.push("Inlet pressure must be between 0 and 1,440.");
     }
-    if (flow !== null && !(flow >= 0 && flow <= 100000000)) {
+    if (flow !== null && !(flow >= 0 && flow <= MAX_FLOW)) {
       errors.push("Flow rate must be between 0 and 100,000,000.");
     }
 
@@ -761,7 +787,7 @@
 
       if (model === null) {
         results.push({
-          type: mtype, slug: slug, heading: mtype + " Option",
+          type: mtype, slug: slug, heading: mtype + " Meter",
           available: false,
           message: unavailableMessage(mtype, tier, evals),
           identity_fields: [], answer_fields: [], fields: [], lines: [],
@@ -780,7 +806,7 @@
 
       var ev = evals[model];
       var entry = {
-        type: mtype, slug: slug, heading: mtype + " Option",
+        type: mtype, slug: slug, heading: mtype + " Meter",
         available: true,
         meter: model,
         manufacturer: displayManufacturer(model),
@@ -803,7 +829,7 @@
       // (the web block does) shows the identity fields only, so an answer is
       // not printed once as a field and again as a ticked radio; a caller
       // that just wants the finished selection as text (the chatbot, the PDF,
-      // the spreadsheet) reads `fields`.
+      // the PDF) reads `fields`.
       entry.identity_fields = identityFields(entry);
       entry.answer_fields = answerFields(questions, answers);
       entry.fields = entry.identity_fields.concat(entry.answer_fields);

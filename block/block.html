@@ -42,7 +42,7 @@
     <div class="usg-widget">
       <label class="usg-label" id="usgm-label-inlet">Inlet pressure</label>
       <div class="usg-numwrap">
-        <input type="number" id="usgm-inlet" min="0" max="1000" step="0.1" value="0.0">
+        <input type="number" id="usgm-inlet" min="0" max="1440" step="0.1" value="0.0">
       </div>
     </div>
     <div class="usg-widget">
@@ -244,6 +244,9 @@
 #usg-meter-tool .usg-info { background: rgba(28, 131, 225, 0.1); color: rgb(0, 66, 128) !important; }
 #usg-meter-tool .usg-field { font-size: 16px !important; color: rgb(49, 51, 63) !important; margin: 0 0 12px !important; }
 #usg-meter-tool .usg-field strong { color: rgb(49, 51, 63) !important; font-weight: 600; }
+/* Nothing in this block renders a table any more - the inputs are no longer
+   echoed back under the result. These rules are kept so the stylesheet stays a
+   copy of the regulator tool's, which is what makes the two easy to diff. */
 #usg-meter-tool .usg-table { border-collapse: collapse; margin: 8px 0 16px; min-width: 50%; font-size: 15px !important; }
 #usg-meter-tool .usg-table th, #usg-meter-tool .usg-table td {
   border: 1px solid rgba(49, 51, 63, 0.1); padding: 8px 16px; text-align: left;
@@ -258,24 +261,48 @@
 }
 @keyframes usgm-rotate { to { transform: rotate(360deg); } }
 
+/* A result that no longer matches the boxes above it. Everything is dimmed
+   except the warning that says so, which is the one thing that must stay
+   readable. The result is left on screen rather than cleared: the customer is
+   usually mid-correction, and blanking the page under them loses the answers
+   they have already given. */
+#usg-meter-tool #usgm-output.is-stale-result > *:not(#usgm-stale) { opacity: 0.4; }
+#usg-meter-tool #usgm-stale { opacity: 1; }
+
 /* ============ METER TOOL ADDITIONS ============
    The regulator tool answers in one shot, so it needs no question widgets in
    its output. These are the only rules that exist here and not there. */
 
 /* The meter-type question. Checkboxes rather than radios: the customer can
    price more than one type side by side, which is what the sample outputs
-   show ("Diaphragm Option", "Sonix IQ Option" and so on, one after another).
-   Styled to match .usg-radio exactly so the form reads as one form. */
-#usg-meter-tool .usg-check-group { display: flex; flex-direction: column; gap: 7px; }
+   show ("Diaphragm Meter", "Sonix IQ Meter" and so on, one after another).
+
+   Presented as selectable chips, copied from "Which parts do you need?" in
+   the 441 configurator so the two tools read as one family. The colours are
+   that configurator's, not this block's: #21417F for the selected state
+   rather than the red accent the form inputs above use. That is deliberate -
+   the chip row is a product choice, and it should look like the one on the
+   441 page.
+
+   `is-on` is toggled by syncChipStyles(), not by :has() or :checked, because
+   the border and background belong to the label and this has to work in
+   browsers without :has(). */
+#usg-meter-tool .usg-check-group { display: flex; flex-wrap: wrap; gap: 10px; }
 #usg-meter-tool .usg-check {
-  display: flex; align-items: center; gap: 8px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 10px 15px; border: 1px solid #c9d2e2; border-radius: 6px;
+  background: #fff; cursor: pointer; user-select: none;
   font-size: 16px !important; color: rgb(49, 51, 63) !important;
   font-weight: 400 !important; margin: 0 !important;
+  transition: border-color .12s ease, background-color .12s ease;
 }
+#usg-meter-tool .usg-check:hover { border-color: #21417F; }
 #usg-meter-tool .usg-check input {
-  accent-color: rgb(255, 75, 75); width: 18px; height: 18px;
-  margin: 0; cursor: pointer; flex: 0 0 auto;
+  flex: 0 0 auto; width: 16px; height: 16px;
+  margin: 0; accent-color: #21417F; cursor: pointer;
 }
+#usg-meter-tool .usg-check.is-on { border-color: #21417F; background: #f5f7fb; }
+#usg-meter-tool .usg-check.is-on span { color: #21417F !important; font-weight: 600; }
 /* One block per selected meter type. The left rule is what makes several
    options on the page read as separate quotes rather than one long list. */
 #usg-meter-tool .usg-option {
@@ -385,6 +412,48 @@ function payload() {
 function refreshConditionals() {
   reqLabel('inlet', numVal('inlet'));
   reqLabel('flow', numVal('flow'));
+  refreshStaleNotice();
+}
+
+// `state.inputs` is frozen when Run Sizing is clicked, so a pressure or flow
+// edited afterwards does NOT affect the result on screen until it is clicked
+// again. That is deliberate - re-running on every keystroke would size against
+// half-typed numbers - but silently showing a result built from different
+// figures than the ones in the boxes is how a customer ends up quoting, say, a
+// 0-10 transducer for a 40 psi job. So the moment the form drifts from the
+// snapshot, the result is dimmed and says so.
+function inputsChanged() {
+  if (!state) return false;
+  var now = readInputs();
+  for (var k in now) {
+    if (Object.prototype.hasOwnProperty.call(now, k) && now[k] !== state.inputs[k]) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function refreshStaleNotice() {
+  var out = $('output');
+  if (!out) return;
+  var stale = inputsChanged();
+  var banner = document.getElementById('usgm-stale');
+  if (stale && !banner) {
+    banner = document.createElement('div');
+    banner.id = 'usgm-stale';
+    banner.className = 'usg-alert usg-warning';
+    banner.innerHTML = '\u26A0\uFE0F&nbsp; The inputs above have changed. This result was ' +
+      'sized for the previous values \u2014 click <strong>Run Sizing</strong> to size ' +
+      'for the new ones.';
+    out.insertBefore(banner, out.firstChild);
+  } else if (!stale && banner && banner.parentNode) {
+    banner.parentNode.removeChild(banner);
+  }
+  if (out.classList) {
+    out.classList.toggle('is-stale-result', stale);
+  } else {
+    out.className = stale ? 'is-stale-result' : '';
+  }
 }
 function reqLabel(id, val) {
   var el = $('label-' + id);
@@ -824,7 +893,7 @@ function matchNeed(need, key) {
   return null;
 }
 
-var lastRun = null; // stored for the PDF and Excel downloads
+var lastRun = null; // stored for the PDF download
 
 // ---- main run handler ----
 // Clicking Run Sizing freezes the numeric inputs into `state` and clears any
@@ -876,8 +945,13 @@ function questionHtml(q, current) {
     html += '<label class="usg-label">' + esc(q.label) + '</label><div class="usg-check-group">';
     for (i = 0; i < q.options.length; i++) {
       opt = q.options[i];
-      checked = indexOf(chosen, opt) !== -1 ? ' checked' : '';
-      html += '<label class="usg-check"><input type="checkbox" data-q="' + esc(q.id) +
+      var on = indexOf(chosen, opt) !== -1;
+      checked = on ? ' checked' : '';
+      // `is-on` is set here as well as by syncChipStyles(), so a chip already
+      // chosen paints selected on the first frame rather than flicking on
+      // once the script has run.
+      html += '<label class="usg-check' + (on ? ' is-on' : '') +
+        '"><input type="checkbox" data-q="' + esc(q.id) +
         '" value="' + esc(opt) + '"' + checked + '><span>' + esc(opt) + '</span></label>';
     }
     html += '</div>';
@@ -1028,7 +1102,7 @@ function render(body) {
   // meter's part number.
   if (body.eagle) {
     html += '<hr class="usg-hr">';
-    html += '<h3 class="usg-h3">Eagle Option</h3>';
+    html += '<h3 class="usg-h3">Eagle Corrector</h3>';
     var ef = body.eagle.fields || [];
     for (j = 0; j < ef.length; j++) {
       html += '<p class="usg-field"><strong>' + esc(ef[j].label) + ':</strong> ' +
@@ -1055,8 +1129,9 @@ function render(body) {
       summary: body.summary || [],
       results: results,
       eagle: body.eagle || null,
-      pns: pns,
-      msgs: warnings,
+      // No `pns` and no `msgs`: the PDF prints neither a consolidated part
+      // number list nor a warnings section, and every part number reaches it
+      // inside its own meter section. Warnings stay on screen only.
       inputs: state.inputs,
       meter_types: state.meter_types.slice(),
       answers: state.answers
@@ -1066,30 +1141,16 @@ function render(body) {
     html += '<button type="button" class="usg-btn" id="usgm-pdf-btn">\u2B07\uFE0F&nbsp; Download PDF Summary</button>';
   }
 
-  // Capacity detail last: reference material rather than something to act on,
-  // the same position the regulator tool gives its sizing adjustments.
-  html += '<hr class="usg-hr">';
-  html += '<h3 class="usg-h3">Sizing Detail</h3>';
-  html += '<table class="usg-table"><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody>';
-  var sm = body.summary || [];
-  for (i = 0; i < sm.length; i++) {
-    html += '<tr><td>' + esc(sm[i].label) + '</td><td>' + esc(sm[i].value) + '</td></tr>';
-  }
-  html += '</tbody></table>';
-
-  if (lastRun) {
-    html += '<hr class="usg-hr">';
-    html += '<h3 class="usg-h3">Download Excel Summary</h3>';
-    html += '<button type="button" class="usg-btn" id="usgm-xlsx-btn">\u2B07\uFE0F&nbsp; Download Excel Summary</button>';
-  }
+  // The inputs are deliberately NOT echoed back on screen: they are still
+  // filled in above, so a table repeating them adds a scroll and no
+  // information. They do go into the PDF, where the form is not there to
+  // read - see `summary` on `lastRun`.
 
   out.innerHTML = html;
   wire(out);
 
   var pdfBtn = $('pdf-btn');
   if (pdfBtn) pdfBtn.addEventListener('click', downloadPdf);
-  var xlsxBtn = $('xlsx-btn');
-  if (xlsxBtn) xlsxBtn.addEventListener('click', downloadXlsx);
   // Add to Cart is a <button> so that the theme styles it, which means the
   // navigation an <a href> used to do for free is wired up here - the same
   // arrangement as the 441 configurator, URL carried in data-cart.
@@ -1106,6 +1167,10 @@ function render(body) {
   // Price and lead time come from the customer's browser after the result is
   // on screen, so the selection never waits on the network.
   loadInfo(out);
+  // render() replaces the output wholesale, which takes the notice with it, so
+  // it is put back here: answering an option question while the form is stale
+  // must not quietly clear the warning.
+  refreshStaleNotice();
 }
 
 // Every question widget in the output writes its answer into `state` and
@@ -1118,6 +1183,23 @@ function wire(out) {
   var els = out.querySelectorAll('[data-q]');
   for (var i = 0; i < els.length; i++) {
     els[i].addEventListener('change', onAnswer);
+  }
+  syncChipStyles(out);
+}
+
+// The chip's border and background live on the label, not the input, so the
+// selected state has to be mirrored onto the label. Same approach as the 441
+// configurator, and it avoids depending on :has().
+function syncChipStyles(root) {
+  var chips = root.querySelectorAll('.usg-check');
+  for (var i = 0; i < chips.length; i++) {
+    var box = chips[i].querySelector('input');
+    var on = !!(box && box.checked);
+    if (chips[i].classList) {
+      chips[i].classList.toggle('is-on', on);
+    } else {
+      chips[i].className = 'usg-check' + (on ? ' is-on' : '');
+    }
   }
 }
 
@@ -1135,115 +1217,6 @@ function onAnswer(ev) {
     state.answers[qid] = el.value || null;
   }
   rerun();
-}
-
-// ---- Excel summary ----
-// One sheet: labels down column A and this run's values in column B, the same
-// shape as the regulator tool's. Meters differ in that a run can produce more
-// than one option, so the rows for the selection repeat per option with the
-// option name in the label - which means the row positions are NOT fixed the
-// way the regulator sheet's are, and two files are not comparable line for
-// line unless both runs chose the same types.
-//
-// Two things are deliberately absent, both matching the PDF: price and lead
-// time (session-specific and changeable, so a saved file must not carry them).
-var XLSX_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-var xlsxLoading = false;
-
-// Loaded on the first click rather than with the page: most visitors never
-// download the spreadsheet, and the library is not small. cdnjs is already in
-// the site's script-src for jsPDF, so no policy change is needed.
-function withXlsx(cb) {
-  if (window.XLSX) { cb(window.XLSX); return; }
-  if (xlsxLoading) return;
-  xlsxLoading = true;
-  var s = document.createElement('script');
-  s.src = XLSX_SRC;
-  s.onload = function () { xlsxLoading = false; cb(window.XLSX || null); };
-  s.onerror = function () { xlsxLoading = false; cb(null); };
-  document.head.appendChild(s);
-}
-
-function summaryRows(run) {
-  var rows = [['Inputs', 1]];
-  var i, j;
-  var sm = run.summary || [];
-  for (i = 0; i < sm.length; i++) rows.push([sm[i].label, sm[i].value]);
-  rows.push(['Meter types selected', (run.meter_types || []).join(', ')]);
-
-  rows.push(['Output', null]);
-  var results = run.results || [];
-  for (i = 0; i < results.length; i++) {
-    var r = results[i];
-    rows.push([r.heading, null]);
-    if (r.available === false) {
-      rows.push(['Result', r.message]);
-      continue;
-    }
-    var fields = r.fields || [];
-    for (j = 0; j < fields.length; j++) rows.push([fields[j].label + ':', fields[j].value]);
-    rows.push(['Part Number:', r.part_number || r.quote_note || null]);
-  }
-
-  if (run.eagle) {
-    rows.push(['Eagle Option', null]);
-    var ef = run.eagle.fields || [];
-    for (j = 0; j < ef.length; j++) rows.push([ef[j].label + ':', ef[j].value]);
-    rows.push(['Part Number:', run.eagle.part_number]);
-  }
-
-  var msgs = run.msgs || [];
-  for (i = 0; i < msgs.length; i++) rows.push(['Warning:', msgs[i]]);
-  return rows;
-}
-
-function downloadXlsx() {
-  if (!lastRun) return;
-  var btn = $('xlsx-btn');
-  var label = btn ? btn.innerHTML : '';
-  if (btn) { btn.disabled = true; btn.innerHTML = 'Preparing\u2026'; }
-  function restore() { if (btn) { btn.disabled = false; btn.innerHTML = label; } }
-
-  withXlsx(function (XLSX) {
-    // If the library cannot be reached the same rows go out as CSV, which
-    // Excel opens. Better than a button that does nothing.
-    if (!XLSX) { downloadCsv(); restore(); return; }
-    try {
-      var ws = XLSX.utils.aoa_to_sheet(summaryRows(lastRun));
-      ws['!cols'] = [{ wch: 30 }, { wch: 42 }];
-      var wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Meter Sizing');
-      XLSX.writeFile(wb, 'meter_sizing_summary.xlsx');
-    } catch (err) {
-      if (window.console && console.error) console.error('USG Excel summary failed', err);
-      downloadCsv();
-    }
-    restore();
-  });
-}
-
-function downloadCsv() {
-  var rows = summaryRows(lastRun), lines = [];
-  for (var r = 0; r < rows.length; r++) {
-    var cells = [];
-    for (var c = 0; c < rows[r].length; c++) {
-      var v = rows[r][c];
-      v = (v === null || v === undefined) ? '' : String(v);
-      if (/[",\r\n]/.test(v)) v = '"' + v.replace(/"/g, '""') + '"';
-      cells.push(v);
-    }
-    lines.push(cells.join(','));
-  }
-  // The BOM is what makes Excel read the inch marks and en dashes correctly.
-  var blob = new Blob(['\uFEFF' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
-  a.href = url;
-  a.download = 'meter_sizing_summary.csv';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
 }
 
 // ---- PDF summary ----
@@ -1304,19 +1277,6 @@ function downloadPdf() {
         doc.line(marginX, y, marginX + availW, y);
       }
     }
-    function listRows(items) {
-      doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-      doc.setTextColor(DARK[0], DARK[1], DARK[2]);
-      for (var i = 0; i < items.length; i++) {
-        var lines = doc.splitTextToSize(String(items[i]), availW - 6);
-        var rh = lines.length * 9.5 + 4.4;
-        checkPage(rh);
-        doc.text(lines, marginX, y + 8);
-        y += rh;
-        doc.setDrawColor(LINE[0], LINE[1], LINE[2]); doc.setLineWidth(0.4);
-        doc.line(marginX, y, marginX + availW, y);
-      }
-    }
     function noneText(t) {
       doc.setFontSize(8); doc.setFont('helvetica', 'normal');
       doc.setTextColor(DARK[0], DARK[1], DARK[2]);
@@ -1339,17 +1299,16 @@ function downloadPdf() {
     }
 
     if (lastRun.eagle) {
-      section('Eagle Option');
+      section('Eagle Corrector');
       var epairs = (lastRun.eagle.fields || []).slice();
       epairs.push({ label: 'Part Number', value: lastRun.eagle.part_number });
       kvRows(epairs);
     }
 
-    section('Part Number(s)');
-    if (lastRun.pns.length) listRows(lastRun.pns); else noneText('None');
-
-    section('Warnings');
-    if (lastRun.msgs.length) listRows(lastRun.msgs); else noneText('None');
+    // No consolidated part number list and no warnings section: each part
+    // number is already printed inside its own meter option above (and the
+    // Eagle's inside the Eagle section), so a second flat list of the same
+    // numbers only invites reading them out of context.
 
     doc.save('USG_Meter_Sizing_Tool_Output.pdf');
   } catch (e) {
@@ -1364,7 +1323,6 @@ function printFallback() {
   var h = '<html><head><title>USG Meter Sizing Tool</title><style>body{font-family:Helvetica,Arial,sans-serif;margin:40px;color:#111827}h1{color:#1F3864;font-size:20px;margin:0}h2{color:#e85d26;font-size:12px;margin:26px 0 6px}table{width:100%;border-collapse:collapse;font-size:9px}td{border-bottom:0.5px solid #e5e7eb;padding:3px 0;vertical-align:top}td:first-child{font-weight:bold;width:40%}.gen{color:#6b7280;font-size:8px}</style></head><body>';
   h += '<h1>USG Meter Sizing Tool</h1><div>Meter Selection Summary</div><div class="gen">Generated ' + new Date().toLocaleString() + '</div>';
   var kv = function (pairs) { var t = '<table>'; for (var i = 0; i < pairs.length; i++) t += '<tr><td>' + esc(pairs[i].label) + '</td><td>' + esc(pairs[i].value) + '</td></tr>'; return t + '</table>'; };
-  var li = function (items) { var t = '<table>'; for (var i = 0; i < items.length; i++) t += '<tr><td style="font-weight:normal;width:auto">' + esc(items[i]) + '</td></tr>'; return t + '</table>'; };
   h += '<h2>Inputs</h2>' + kv(lastRun.summary);
   var results = lastRun.results || [];
   for (var i = 0; i < results.length; i++) {
@@ -1378,10 +1336,8 @@ function printFallback() {
   if (lastRun.eagle) {
     var epairs = (lastRun.eagle.fields || []).slice();
     epairs.push({ label: 'Part Number', value: lastRun.eagle.part_number });
-    h += '<h2>Eagle Option</h2>' + kv(epairs);
+    h += '<h2>Eagle Corrector</h2>' + kv(epairs);
   }
-  h += '<h2>Part Number(s)</h2>' + (lastRun.pns.length ? li(lastRun.pns) : 'None');
-  h += '<h2>Warnings</h2>' + (lastRun.msgs.length ? li(lastRun.msgs) : 'None');
   h += '</body></html>';
   w.document.write(h);
   w.document.close();

@@ -50,6 +50,11 @@ jobs:
       - name: The page reaches an answer
         run: node tests/test_block.js
 
+      # The PDF is assembled section by section and is the one output a
+      # customer keeps, so it is rendered and read back rather than eyeballed.
+      - name: The PDF carries the part numbers
+        run: node tests/test_pdf.js
+
       - name: API smoke test
         run: |
           python -c "

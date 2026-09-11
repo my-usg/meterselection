@@ -6,9 +6,10 @@
   "main": "dist/usg-meter-sizing.js",
   "scripts": {
     "build": "python3 tools/build.py",
-    "test": "python3 tests/test_parity.py && node tests/test_block.js"
+    "test": "python3 tests/test_parity.py && node tests/test_block.js && node tests/test_pdf.js"
   },
   "devDependencies": {
-    "jsdom": "^24.0.0"
+    "jsdom": "^24.0.0",
+    "jspdf": "^2.5.1"
   }
 }
