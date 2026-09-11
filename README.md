@@ -172,7 +172,7 @@ reason out loud rather than handle a status code.
 
 **Does a meter work.** Its capacity at the inlet pressure, linearly
 interpolated from the table, must cover the flow plus the family's oversize
-allowance — 0% for the small meters and RMG, 20% for roots and turbo. It must
+allowance — 0% for the small meters and RMG, 10% for roots and turbo. It must
 be rated for the inlet pressure. If it has a minimum capacity, that minimum
 must be at or below the flow.
 

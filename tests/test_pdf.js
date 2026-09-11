@@ -132,7 +132,7 @@ async function main() {
   // A roots meter with a live Eagle: two part numbers, in two sections.
   const dom = build();
   el(dom, "hscm-inlet").value = "60";
-  el(dom, "hscm-flow").value = "9000";
+  el(dom, "hscm-flow").value = "12000";
   el(dom, "hscm-run-btn").click();
   await new Promise((r) => setTimeout(r, 80));
 

@@ -32,7 +32,7 @@
      Pushing the repository does not change the live page on its own: this URL
      names a specific commit. Take the new short hash from
      https://github.com/my-usg/meterselection/commits/main and replace it
-     here, or the site carries on running the rules from 1969146.
+     here, or the site carries on running the rules from the pinned commit.
 
      PINNED TO A COMMIT ON PURPOSE. A @main URL is cached by jsDelivr for up
      to 12 hours, and its purge endpoint has reported success while the edge
@@ -50,7 +50,7 @@
      bundle can be deployed in either order - paste the block before pushing
      and the page still works, just on the previous rules. Everything the
      customer does see reads HSC. -->
-<script src="https://cdn.jsdelivr.net/gh/my-usg/meterselection@1969146/dist/usg-meter-sizing.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/my-usg/meterselection@0f97e1e0d3f8d09f05a12a5c9d979629d4413805/dist/usg-meter-sizing.js"></script>
 
 <div id="hsc-meter-tool">
   <h1 class="hsc-h1">Meter Selection Tool</h1>

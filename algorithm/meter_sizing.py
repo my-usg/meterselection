@@ -148,7 +148,7 @@ def evaluate(model, inlet_psi, flow_cfh):
     A meter works when
       * it is rated for the inlet pressure,
       * its interpolated capacity covers the flow plus the family's oversize
-        allowance (0 for small meters and RMG, 20% for roots and turbo), and
+        allowance (0 for small meters and RMG, 10% for roots and turbo), and
       * its minimum capacity, if it has one, is at or below the flow.
     """
     spec = BY_MODEL[model]

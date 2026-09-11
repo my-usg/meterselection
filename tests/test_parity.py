@@ -153,7 +153,7 @@ EXPECTED = [
     ),
     (
         "roots 3M175 sample output, ETC index -> CIR / LITH",
-        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "Fix-Factored",
                      "rotary_roots.index": "ETC"}},
         {"manufacturer": "Dresser", "model": "3M175", "size": '2"',
@@ -161,7 +161,7 @@ EXPECTED = [
     ),
     (
         "an Eagle volume corrector puts CD in the roots part number",
-        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "Fix-Factored",
                      "rotary_roots.index": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Volume Corrector"}},
@@ -169,7 +169,7 @@ EXPECTED = [
     ),
     (
         "an Eagle rotary corrector puts CTR there instead",
-        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "Fix-Factored",
                      "rotary_roots.index": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Rotary Corrector"}},
@@ -177,7 +177,7 @@ EXPECTED = [
     ),
     (
         "the live path resolves the drive the same way - volume",
-        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Volume Corrector"}},
@@ -185,7 +185,7 @@ EXPECTED = [
     ),
     (
         "the live path resolves the drive the same way - rotary",
-        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Rotary Corrector"}},
@@ -195,7 +195,7 @@ EXPECTED = [
         # A 23M or larger cannot reach CTR - it is forced to a volume
         # corrector - so this is checked on a meter that still asks.
         "CTR takes the same NA / NA segments as CD",
-        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Rotary Corrector"}},
@@ -211,7 +211,7 @@ EXPECTED = [
     ),
     (
         "a 175-rated meter on the same CD index keeps its rating segment",
-        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Volume Corrector"}},
@@ -220,7 +220,7 @@ EXPECTED = [
     ),
     (
         "a 175-rated roots meter still carries its rating segment",
-        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "None",
                      "rotary_roots.radio": "No"}},
         {"model": "3M175",
@@ -228,14 +228,14 @@ EXPECTED = [
     ),
     (
         "roots IMC index -> CIR / ALK",
-        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "IMC-W2-PTZ index"}},
         {"part_number": "M.RT3M-175.FLG.IMC-W2-PTZ.CIR.175.VDN.NA.ALK.NA"},
     ),
     (
         "roots with no compensation and no radio -> TC, NA / NA",
-        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "None",
                      "rotary_roots.radio": "No"}},
         {"part_number": "M.RT3M-175.FLG.TC.NA.175.VDN.NA.NA.NA"},
@@ -273,7 +273,7 @@ EXPECTED_TOP = [
     ),
     (
         "Eagle rotary corrector on live roots, 60 psi -> P1 102 and INTEG",
-        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Rotary Corrector"}},
@@ -281,7 +281,7 @@ EXPECTED_TOP = [
     ),
     (
         "a CTR drive is paired with the rotary corrector instrument",
-        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Rotary Corrector"}},
@@ -292,7 +292,7 @@ EXPECTED_TOP = [
     ),
     (
         "a CD drive is paired with the volume corrector instrument",
-        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Volume Corrector"}},
@@ -303,7 +303,7 @@ EXPECTED_TOP = [
     ),
     (
         "the confirmed Eagle index raises no warning",
-        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Rotary Corrector"}},
@@ -411,7 +411,7 @@ EXPECTED_TOP = [
     ),
     (
         "rotation reads as a direction alone, for both correctors",
-        {"inlet": 60, "flow": 9000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Rotary Corrector"}},
@@ -489,10 +489,17 @@ EXPECTED_TOP = [
         lambda r: "Diaphragm" not in r["meter_type_question"]["options"],
     ),
     (
-        "20% oversize applies to turbo: 100,000 CFH needs 120,000 of capacity",
+        "10% oversize applies to turbo: 100,000 CFH needs 110,000 of capacity",
         {"inlet": 300, "flow": 100000, "meter_types": ["Turbine"],
          "answers": {"turbine.compensation": "Live"}},
-        lambda r: abs(r["results"][0]["required_cfh"] - 120000) < 1e-6,
+        lambda r: abs(r["results"][0]["required_cfh"] - 110000) < 1e-6,
+    ),
+    (
+        "and to roots, and to nothing else",
+        {"inlet": 60, "flow": 12000},
+        lambda r: {
+            e["family"]: round(e["oversize"], 6) for e in r["evaluations"]
+        } == {"small": 0.0, "roots": 0.1, "turbo": 0.1, "rmg": 0.0},
     ),
     (
         "no oversize on small meters: an SR275 covers exactly its capacity",

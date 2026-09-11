@@ -34,8 +34,8 @@ OUT = REPO / "data" / "capacities.json"
 FAMILIES = [
     # key,     sheet name,       has_min, oversize
     ("small", "small meters", False, 0.0),
-    ("roots", "roots", False, 0.2),
-    ("turbo", "turbo", True, 0.2),
+    ("roots", "roots", False, 0.1),
+    ("turbo", "turbo", True, 0.1),
     ("rmg", "rmg", True, 0.0),
 ]
 

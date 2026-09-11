@@ -273,7 +273,7 @@
     },
     "roots": {
       "sheet": "roots",
-      "oversize": 0.2,
+      "oversize": 0.1,
       "meters": [
         {
           "model": "DR8C175",
@@ -899,7 +899,7 @@
     },
     "turbo": {
       "sheet": "turbo",
-      "oversize": 0.2,
+      "oversize": 0.1,
       "meters": [
         {
           "model": "T18",

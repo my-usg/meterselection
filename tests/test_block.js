@@ -303,9 +303,9 @@ async function main() {
   );
 
   // ---- the roots conditional tree, one answer at a time -------------
-  console.log("\nroots with a live Eagle: 60 psi, 9000 CFH");
+  console.log("\nroots with a live Eagle: 60 psi, 12000 CFH");
   dom = build();
-  await run(dom, { inlet: 60, flow: 9000 });
+  await run(dom, { inlet: 60, flow: 12000 });
   check(
     "top tier offers roots, ultrasonic and turbine",
     /Rotary \(roots\)/.test(text(dom)) && /Turbine/.test(text(dom))
@@ -433,7 +433,7 @@ async function main() {
   tickType(dom, "Diaphragm");
   answer(dom, "diaphragm.ferrule", "1-1/4");
   check("first run reaches a part number", partNumbers(dom).length === 1);
-  await run(dom, { inlet: 60, flow: 9000 });
+  await run(dom, { inlet: 60, flow: 12000 });
   check(
     "a second run clears the old selection rather than carrying it over",
     partNumbers(dom).length === 0 &&
