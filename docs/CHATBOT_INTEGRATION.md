@@ -36,7 +36,7 @@ meter.
         (SOURCE OF TRUTH)            |  tools/build.py
           /            \              v
    api/main.py    (chatbot)    dist/usg-meter-sizing.js
-        |                             |  jsDelivr, pinned to a commit
+        |                             |  jsDelivr @main, published by CI
         v                             v
      chatbot                    block/block.html   (Concrete CMS)
 ```
@@ -540,7 +540,7 @@ Both run the same rules, but by different routes:
 
 | | Rules from | Updated by |
 | --- | --- | --- |
-| Website block | `dist/usg-meter-sizing.js` via jsDelivr, pinned to a commit | bumping the pinned hash in the CMS block |
+| Website block | `dist/usg-meter-sizing.js` via jsDelivr at `@main` | pushing to `main` — CI tests, publishes and verifies it automatically |
 | Chatbot | `algorithm/meter_sizing.py` | redeploying the API service |
 
 **They can drift if only one is updated.** After a rules change, do both.
@@ -551,9 +551,10 @@ To change a rule:
    the same rules written twice; changing one alone fails CI.
 2. `python tools/build.py`
 3. `python tests/test_parity.py` and `npm test`
-4. Commit and push. CI re-runs everything.
-5. Update the pinned commit hash in the CMS block.
-6. Redeploy the API service.
+4. Commit and push. CI re-runs everything and, if it passes, publishes the
+   bundle to the website and confirms it is live. Nothing to edit in the CMS.
+5. Redeploy the API service. **This is the step that is still manual**, and
+   the one that lets the chatbot and the website drift apart if skipped.
 
 To change a capacity table: edit `data/capacities.xlsx`, run
 `python tools/extract_capacities.py data/capacities.xlsx`, then from step 2.

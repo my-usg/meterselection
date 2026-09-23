@@ -28,29 +28,31 @@
      ============================================================ -->
 <!-- Sizing algorithm, generated from the Python source.
 
-     >>> BUMP THE HASH BELOW AFTER EVERY PUSH. <<<
-     Pushing the repository does not change the live page on its own: this URL
-     names a specific commit. Take the new short hash from
-     https://github.com/my-usg/meterselection/commits/main and replace it
-     here, or the site carries on running the rules from the pinned commit.
+     THIS LINE NEVER NEEDS EDITING. Push to GitHub and the website updates
+     itself.
 
-     PINNED TO A COMMIT ON PURPOSE. A @main URL is cached by jsDelivr for up
-     to 12 hours, and its purge endpoint has reported success while the edge
-     carried on serving the old file - which cost an afternoon of chasing a
-     part number that had already been fixed in the repo. A commit URL is
-     immutable, so what you pin is what every visitor gets, immediately and
-     forever.
+     It loads from @main, and the `publish` job in
+     .github/workflows/verify.yml puts each change live: once every test has
+     passed on a push to main, it purges jsDelivr's cache of this file and then
+     fetches it back, checking it is serving the exact build the tests just
+     passed. It retries until it is, for up to about 15 minutes.
 
-     TO SHIP A CHANGE: push it, replace the hash, then reload the page and
-     check window.USGMeterSizing.sizeMeters(...) in the console actually
-     reflects the change before trusting it.
+     That verification is the point. A @main URL is cached by jsDelivr for up
+     to 12 hours, and its purge has been seen to report success while the edge
+     kept serving the old file. So the purge is never trusted on its own word:
+     the job is only green once the live file is confirmed.
+
+     IF THE SITE LOOKS OUT OF DATE, look at the latest run on the repo's
+     Actions page. A red `publish` job means jsDelivr would not update; re-run
+     it. A red `verify` job means the tests failed and nothing was published,
+     which is deliberate - a broken change never reaches customers this way.
+
+     Every green push goes live. If you ever want to hold a change back, pin
+     this URL to a commit instead (replace @main with @<short-hash>).
 
      The file name and the window global still read "usg". Neither is ever
-     seen by a customer, and holding them steady means this block and the
-     bundle can be deployed in either order - paste the block before pushing
-     and the page still works, just on the previous rules. Everything the
-     customer does see reads HSC. -->
-<script src="https://cdn.jsdelivr.net/gh/my-usg/meterselection@a14be6e/dist/usg-meter-sizing.js"></script>
+     seen by a customer. Everything the customer does see reads HSC. -->
+<script src="https://cdn.jsdelivr.net/gh/my-usg/meterselection@main/dist/usg-meter-sizing.js"></script>
 
 <div id="hsc-meter-tool">
   <h1 class="hsc-h1">Meter Selection Tool</h1>

@@ -45,6 +45,19 @@ the build must be reproducible or CI's staleness check could never pass.
 
 ## Publishing a change
 
+Push to `main`. That is the whole process.
+
+CI runs every test, and if they all pass the `publish` job purges jsDelivr and
+then fetches the live bundle back, confirming it is the build the tests just
+passed. It retries for about 15 minutes and goes red if the CDN never catches
+up. The CMS block loads `@main`, so it never needs editing.
+
+If the site looks out of date, check the latest run on the Actions page:
+a red `publish` means jsDelivr would not update (re-run it); a red `verify`
+means tests failed and nothing was published, on purpose.
+
+### The manual steps behind that
+
 1. Edit `algorithm/meter_sizing.py` **and** `src/js/meter_sizing.js`. They are
    the same rules written twice; changing one alone will fail CI.
 2. `python tools/build.py` to regenerate `dist/usg-meter-sizing.js`.

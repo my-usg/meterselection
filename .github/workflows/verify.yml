@@ -91,3 +91,66 @@ jobs:
       - name: Report bundle size
         run: |
           echo "dist/usg-meter-sizing.js: $(wc -c < dist/usg-meter-sizing.js) bytes" >> "$GITHUB_STEP_SUMMARY"
+
+  # Puts the tested bundle live on the website, with no hash to copy.
+  #
+  # The CMS block loads the bundle from jsDelivr at @main. jsDelivr caches a
+  # branch URL for up to 12 hours, and its purge endpoint has been seen to
+  # report success while the edge carried on serving the old file. So a purge
+  # alone is not trusted: after purging, this fetches the live URL and checks
+  # it is serving the build that `verify` just tested, retrying until it is.
+  # If it never converges the job goes red, so a stale site is never silent.
+  #
+  # Runs only on a push to main, and only after every test has passed, so a
+  # broken change can never reach customers through this route.
+  publish:
+    needs: verify
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Purge jsDelivr and confirm the new bundle is live
+        env:
+          REPO: ${{ github.repository }}
+        run: |
+          FILE="dist/usg-meter-sizing.js"
+          LIVE="https://cdn.jsdelivr.net/gh/${REPO}@main/${FILE}"
+          PURGE="https://purge.jsdelivr.net/gh/${REPO}@main/${FILE}"
+
+          # The stamp is a hash of the sources, written into the bundle by
+          # tools/build.py, so the committed file says which build it is.
+          STAMP=$(grep -o 'var VERSION = "[0-9a-f]*"' "$FILE" | grep -o '"[0-9a-f]*"' | tr -d '"')
+          if [ -z "$STAMP" ]; then
+            echo "::error::Could not read the version stamp from $FILE."
+            exit 1
+          fi
+          echo "Expecting build $STAMP at $LIVE"
+
+          # Up to ~15 minutes. Re-purge every fourth attempt: a purge is
+          # cheap, and repeating it is what clears an edge the first one
+          # missed. jsDelivr rate-limits purges, which is why it is not every
+          # attempt.
+          for attempt in $(seq 1 30); do
+            if [ $(( (attempt - 1) % 4 )) -eq 0 ]; then
+              echo "--- purge ($attempt) ---"
+              curl -fsS "$PURGE" || echo "(purge request failed; will retry)"
+              echo
+            fi
+            # Exactly the URL the CMS block loads - no cache-busting query and
+            # no no-cache header. Either could make this request bypass the
+            # edge cache and pass while customers are still served the stale
+            # copy, which would make the whole check meaningless.
+            BODY=$(curl -fsS "$LIVE" || true)
+            if printf '%s' "$BODY" | grep -q "var VERSION = \"${STAMP}\""; then
+              echo "Live: build $STAMP is being served (attempt $attempt)."
+              echo "Live on the website: build \`$STAMP\`" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            SEEN=$(printf '%s' "$BODY" | grep -o 'var VERSION = "[0-9a-f]*"' | head -1)
+            echo "Attempt $attempt: not live yet (serving: ${SEEN:-nothing readable})."
+            sleep 30
+          done
+
+          echo "::error::jsDelivr is still not serving build $STAMP after ~15 minutes. The site is running an older bundle. Re-run this job, or purge by hand: $PURGE"
+          exit 1
