@@ -819,7 +819,7 @@ def size_meters(payload):
         "meter_type_question": {
             "id": METER_TYPE_QUESTION_ID,
             "label": "Meter type",
-            "type": "multi_select",
+            "type": "single_select",
             "options": list(tier["types"]),
         },
         "evaluations": [evals[m] for m in BY_MODEL],
@@ -845,9 +845,20 @@ def size_meters(payload):
 
     # Ordered by the tier rather than by the caller, so the same selection
     # always renders and reads back in the same order whether it arrived from
-    # a set of checkboxes or a chatbot reply.
+    # a radio group or a chatbot reply.
+    #
+    # Exactly one type is sized. The question is a single choice, so a caller
+    # sending several is either stale or confused; the first in tier order is
+    # taken and the rest are called out rather than silently dropped.
     requested = _as_list(payload.get("meter_types"))
-    chosen_types = [t for t in tier["types"] if t in requested]
+    valid = [t for t in tier["types"] if t in requested]
+    chosen_types = valid[:1]
+    if len(valid) > 1:
+        warnings.append(
+            "Only one meter type can be selected. "
+            f"{chosen_types[0]} was sized; {', '.join(valid[1:])} "
+            + ("was" if len(valid) == 2 else "were") + " ignored."
+        )
     dropped = [t for t in requested if t not in tier["types"]]
     if dropped:
         warnings.append(
@@ -970,17 +981,11 @@ def size_meters(payload):
             )
 
     # The Eagle is a separate line item under the meter selection, not part of
-    # any meter's own part number. Two chosen types asking for the same Eagle
-    # produce one.
+    # any meter's own part number. Only one meter type is sized, so there is at
+    # most one.
     eagle = None
     if eagle_requests:
-        etype = eagle_requests[0]
-        if len(set(eagle_requests)) > 1:
-            warnings.append(
-                "More than one Eagle corrector type was selected; the "
-                f"{etype} is shown."
-            )
-        eagle = eagle_selection(etype, inlet_psi)
+        eagle = eagle_selection(eagle_requests[0], inlet_psi)
         part_numbers.append(eagle["part_number"])
 
     stage = "options" if pending else "complete"
@@ -989,10 +994,7 @@ def size_meters(payload):
     if stage == "options":
         message = "Answer the remaining options to build the part number."
     elif ready:
-        message = (
-            "Meter selected!" if len(ready) == 1
-            else f"{len(ready)} meter options selected!"
-        )
+        message = "Meter selected!"
     else:
         message = "No meter is available for the selected type."
 

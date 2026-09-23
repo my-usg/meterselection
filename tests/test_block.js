@@ -266,34 +266,67 @@ async function main() {
   );
 
   // ---- two types side by side --------------------------------------
-  console.log("\ntwo options at once: 10 psi, 2000 CFH");
+  // ---- one type at a time ------------------------------------------
+  console.log("\nswitching meter type: 10 psi, 2000 CFH");
   dom = build();
   await run(dom, { inlet: 10, flow: 2000 });
+  check(
+    "the meter type chips are radios, not checkboxes",
+    [...out(dom).querySelectorAll('[data-q="meter_type"]')].every(
+      (b) => b.type === "radio"
+    ) && out(dom).querySelectorAll('[data-q="meter_type"]').length === 3
+  );
+  check(
+    "they share a name, so the browser enforces one choice",
+    new Set(
+      [...out(dom).querySelectorAll('[data-q="meter_type"]')].map((b) => b.name)
+    ).size === 1
+  );
+
   tickType(dom, "Ultrasonic");
+  answer(dom, "ultrasonic.ferrule", "30LT");
+  check(
+    "one option block, with its part number",
+    out(dom).querySelectorAll(".hsc-option").length === 1 &&
+      partNumbers(dom).join() === "M.SON-880.30LT.FIX.20.PO",
+    JSON.stringify(partNumbers(dom))
+  );
+  check("one cart line", 
+    (out(dom).querySelector(".hsc-cart").getAttribute("data-items").match(/\|/g) || []).length === 0
+  );
+  check(
+    "it reports its standard pulse output once",
+    (text(dom).match(/Pulse Output: Included/g) || []).length === 1
+  );
+
+  // Switching replaces the selection rather than adding to it.
   tickType(dom, "Rotary (meter bar)");
   check(
-    "two option blocks on screen",
-    out(dom).querySelectorAll(".hsc-option").length === 2,
-    "found " + out(dom).querySelectorAll(".hsc-option").length
+    "choosing another type replaces the first",
+    out(dom).querySelectorAll(".hsc-option").length === 1 &&
+      /Rotary \(meter bar\) Meter/.test(text(dom)) &&
+      !/Ultrasonic Meter/.test(text(dom)),
+    text(dom).slice(0, 300)
   );
-  answer(dom, "ultrasonic.ferrule", "30LT");
+  check(
+    "only the new chip is marked selected",
+    [...out(dom).querySelectorAll(".hsc-check")].filter(
+      (l) => l.className.indexOf("is-on") !== -1
+    ).length === 1
+  );
+
+  // Switching back must not make the customer re-answer what they already
+  // told us: answers are namespaced per type and are kept.
   answer(dom, "rotary_meter_bar.ferrule", "45LT");
-  const two = partNumbers(dom);
+  tickType(dom, "Ultrasonic");
   check(
-    "both part numbers render",
-    two.indexOf("M.SON-880.30LT.FIX.20.PO") !== -1 &&
-      two.indexOf("M.D800.45LT.CBG.25.NA.LIT.NA") !== -1,
-    JSON.stringify(two)
+    "switching back restores the earlier answer rather than re-asking",
+    pendingIds(dom).length === 0 &&
+      partNumbers(dom).join() === "M.SON-880.30LT.FIX.20.PO",
+    JSON.stringify(partNumbers(dom)) + " pending " + JSON.stringify(pendingIds(dom))
   );
-  check(
-    "both go in the cart",
-    (out(dom).querySelector(".hsc-cart").getAttribute("data-items").match(/\|/g) || []).length === 1
-  );
-  check(
-    "both report their standard pulse output",
-    (text(dom).match(/Pulse Output: Included/g) || []).length === 2,
-    text(dom).slice(0, 600)
-  );
+
+  tickType(dom, "Rotary (meter bar)");
   check(
     "straight pipe is offered but reports why it will not work",
     (function () {

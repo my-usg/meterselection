@@ -32,8 +32,6 @@ def answer_question(question, auto):
     verbatim, since the algorithm matches on the exact strings.
     """
     options = question["options"]
-    if question["type"] == "multi_select":
-        return [options[0]]
     if auto:
         return options[0]
     print(f"\n{question['label']}")
@@ -87,7 +85,9 @@ def converse(inlet, inlet_units, flow, flow_units, auto=True):
         print(f"  Q: {q['label']}?  A: {reply}")
 
         if q["id"] == "meter_type":
-            payload["meter_types"] = reply
+            # One type per sizing. The field stays a list because that is what
+            # the algorithm takes, but it never holds more than one.
+            payload["meter_types"] = [reply]
         else:
             payload["answers"][q["id"]] = reply
 

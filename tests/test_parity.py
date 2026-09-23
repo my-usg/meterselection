@@ -555,11 +555,26 @@ EXPECTED_TOP = [
         lambda r: abs(r["converted"]["flow_cfh"] - 35.3147) < 1e-9,
     ),
     (
-        "the meter type question comes first and asks for a multi-select",
+        "the meter type question comes first and asks for a single choice",
         {"inlet": 5, "flow": 300},
         lambda r: r["stage"] == "meter_type"
         and r["questions"][0]["id"] == "meter_type"
-        and r["questions"][0]["type"] == "multi_select",
+        and r["questions"][0]["type"] == "single_select",
+    ),
+    (
+        "only one meter type is ever sized, whatever the caller sends",
+        {"inlet": 10, "flow": 2000,
+         "meter_types": ["Rotary (meter bar)", "Ultrasonic"]},
+        lambda r: len(r["results"]) == 1,
+    ),
+    (
+        "the extra type is taken in tier order and the rest called out",
+        {"inlet": 10, "flow": 2000,
+         "meter_types": ["Rotary (meter bar)", "Ultrasonic"]},
+        # Ultrasonic comes first in this tier, so it wins regardless of the
+        # order the caller listed them in.
+        lambda r: r["results"][0]["type"] == "Ultrasonic"
+        and any("Only one meter type" in w for w in r["warnings"]),
     ),
     (
         "options stage asks the ferrule and holds back the part number",

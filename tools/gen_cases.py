@@ -175,8 +175,9 @@ def answer_cases():
                 cases.append(dict(base, inlet_units="psi", flow_units="CFH",
                                   meter_types=[mtype], answers=answers))
 
-        # All offered types at once: exercises multi-select, ordering, and the
-        # single-Eagle rule when two types both want one.
+        # Every offered type at once. The question is a single choice, so
+        # this exercises the "caller sent too many" path: the first in tier
+        # order is sized and the rest are called out.
         merged = {}
         for mtype in offered:
             sets = ANSWER_SETS.get(mtype, [{}])

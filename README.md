@@ -28,6 +28,13 @@ HTTP, so the bot and the page cannot give different answers.
 `tests/cases.json` and fails if they disagree, so the two copies of the rules
 cannot drift apart unnoticed.
 
+## Integrating a chatbot
+
+`docs/CHATBOT_INTEGRATION.md` is the full contract: the conversation loop,
+every input and output field, every question id with its branches, the five
+terminal states a bot has to handle, and a worked transcript. Read it before
+wiring anything up.
+
 ## Checking what is live
 
 `window.USGMeterSizing.VERSION` in the browser console returns a short hash of
@@ -87,7 +94,7 @@ POST /api/meter-sizing
 { "inlet": 60, "inlet_units": "psi", "flow": 9000, "flow_units": "CFH" }
 
   -> "stage": "meter_type"
-     "questions": [ { "id": "meter_type", "type": "multi_select",
+     "questions": [ { "id": "meter_type", "type": "single_select",
                       "options": ["Rotary (roots)", "Ultrasonic", "Turbine"] } ]
 
 POST { ...same..., "meter_types": ["Rotary (roots)"] }
@@ -130,7 +137,7 @@ window.USGMeterSizing.sizeMeters({
 | `inlet_units` | `psi`, `in wc`, `oz`, `bar`, `kPa` |
 | `flow` | 0–100,000,000, in `flow_units` |
 | `flow_units` | `CFH`, `BTUH`, `CMH` |
-| `meter_types` | the answer to the `meter_type` question; more than one is allowed |
+| `meter_types` | the answer to the `meter_type` question; a list holding exactly one |
 | `answers` | option answers keyed by question `id` |
 
 ### Output
@@ -325,6 +332,7 @@ tests/test_parity.py          Python vs JS, plus fixed expected outputs
 tests/test_block.js           drives block.html in jsdom
 tests/test_pdf.js             renders the PDF and reads the text back
 tests/test_no_usg.js          sweeps every customer-visible surface for "USG"
+docs/CHATBOT_INTEGRATION.md   the chatbot contract and continuity guide
 ```
 
 ## Deploying the block

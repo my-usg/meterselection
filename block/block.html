@@ -50,7 +50,7 @@
      bundle can be deployed in either order - paste the block before pushing
      and the page still works, just on the previous rules. Everything the
      customer does see reads HSC. -->
-<script src="https://cdn.jsdelivr.net/gh/my-usg/meterselection@0f97e1e0d3f8d09f05a12a5c9d979629d4413805/dist/usg-meter-sizing.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/my-usg/meterselection@a14be6e/dist/usg-meter-sizing.js"></script>
 
 <div id="hsc-meter-tool">
   <h1 class="hsc-h1">Meter Selection Tool</h1>
@@ -301,9 +301,7 @@
    The regulator tool answers in one shot, so it needs no question widgets in
    its output. These are the only rules that exist here and not there. */
 
-/* The meter-type question. Checkboxes rather than radios: the customer can
-   price more than one type side by side, which is what the sample outputs
-   show ("Diaphragm Meter", "Sonix IQ Meter" and so on, one after another).
+/* The meter-type question: one type at a time, as radios sharing a name.
 
    Presented as selectable chips, copied from "Which parts do you need?" in
    the 441 configurator so the two tools read as one family. The colours are
@@ -1019,7 +1017,14 @@ function questionHtml(q, current) {
   var html = '<div class="hsc-widget">';
   var i, opt, checked;
 
-  if (q.type === 'multi_select') {
+  if (q.id === window.USGMeterSizing.METER_TYPE_QUESTION_ID) {
+    // Radios, not checkboxes: one meter type at a time. They keep the chip
+    // styling rather than dropping to the plain radio rows the option
+    // questions use, because this is the choice the whole result hangs off
+    // and it should read as the prominent control on the page.
+    //
+    // `current` is still an array - the payload field is `meter_types` and
+    // stays a list - so membership is what decides the checked chip.
     var chosen = current || [];
     html += '<label class="hsc-label">' + esc(q.label) + '</label><div class="hsc-check-group">';
     for (i = 0; i < q.options.length; i++) {
@@ -1028,9 +1033,10 @@ function questionHtml(q, current) {
       checked = on ? ' checked' : '';
       // `is-on` is set here as well as by syncChipStyles(), so a chip already
       // chosen paints selected on the first frame rather than flicking on
-      // once the script has run.
+      // once the script has run. The shared `name` is what makes the browser
+      // deselect the previous chip.
       html += '<label class="hsc-check' + (on ? ' is-on' : '') +
-        '"><input type="checkbox" data-q="' + esc(q.id) +
+        '"><input type="radio" name="hscm-q-' + esc(q.id) + '" data-q="' + esc(q.id) +
         '" value="' + esc(opt) + '"' + checked + '><span>' + esc(opt) + '</span></label>';
     }
     html += '</div>';
@@ -1288,10 +1294,13 @@ function onAnswer(ev) {
   if (!qid) return;
 
   if (qid === window.USGMeterSizing.METER_TYPE_QUESTION_ID) {
-    var boxes = $('output').querySelectorAll('[data-q="' + qid + '"]');
-    var chosen = [];
-    for (var i = 0; i < boxes.length; i++) if (boxes[i].checked) chosen.push(boxes[i].value);
-    state.meter_types = chosen;
+    // One radio, one type. The payload field stays a list because that is
+    // what the algorithm takes, but it never holds more than one now.
+    state.meter_types = el.value ? [el.value] : [];
+    // Answers given for the type being left behind are kept, not cleared: a
+    // customer who switches to compare and switches back does not re-enter
+    // them. The algorithm only reads the ids it currently asks for, so a
+    // stale answer cannot reach a part number.
   } else {
     state.answers[qid] = el.value || null;
   }
