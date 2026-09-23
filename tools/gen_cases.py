@@ -105,7 +105,7 @@ ANSWER_SETS = {
         {"rotary_straight_pipe.connection": "45LT"},
         {"rotary_straight_pipe.connection": "1-1/2"},
     ],
-    "Rotary (roots)": [
+    "Rotary (Roots)": [
         {},
         # None -> no radio -> index fixed at TC
         {"rotary_roots.compensation": "None", "rotary_roots.radio": "No"},
@@ -198,7 +198,7 @@ def answer_cases():
     # Two Eagle types requested at once, from the tier that can do it.
     cases.append({
         "inlet": 60, "inlet_units": "psi", "flow": 9000, "flow_units": "CFH",
-        "meter_types": ["Rotary (roots)", "Turbine"],
+        "meter_types": ["Rotary (Roots)", "Turbine"],
         "answers": {
             "rotary_roots.compensation": "Live",
             "rotary_roots.live": "Eagle MPplusII Instrument",
@@ -227,7 +227,7 @@ def answer_cases():
     for p in [175, 200, 232]:
         cases.append({
             "inlet": p, "inlet_units": "psi", "flow": 250000, "flow_units": "CFH",
-            "meter_types": ["Rotary (roots)"],
+            "meter_types": ["Rotary (Roots)"],
             "answers": {"rotary_roots.compensation": "None", "rotary_roots.radio": "No"},
         })
 
@@ -237,14 +237,24 @@ def answer_cases():
     for flow in [250000, 400000, 700000]:
         cases.append({
             "inlet": 100, "inlet_units": "psi", "flow": flow, "flow_units": "CFH",
-            "meter_types": ["Rotary (roots)"], "answers": {},
+            "meter_types": ["Rotary (Roots)"], "answers": {},
         })
         cases.append({
             "inlet": 100, "inlet_units": "psi", "flow": flow, "flow_units": "CFH",
-            "meter_types": ["Rotary (roots)"],
+            "meter_types": ["Rotary (Roots)"],
             "answers": {"rotary_roots.compensation": "None",
                         "rotary_roots.radio": "No",
                         "rotary_roots.eagle_type": "Rotary Corrector"},
+        })
+
+    # The old lower-case spelling, and case variants, as a stale chatbot might
+    # send them. Both builds have to match the type the same way.
+    for spelling in ["Rotary (roots)", "rotary (roots)", "ROTARY (ROOTS)"]:
+        cases.append({
+            "inlet": 60, "inlet_units": "psi", "flow": 12000, "flow_units": "CFH",
+            "meter_types": [spelling],
+            "answers": {"rotary_roots.compensation": "None",
+                        "rotary_roots.radio": "No"},
         })
 
     # Pressures that interpolate onto an exact half, where the two builds'

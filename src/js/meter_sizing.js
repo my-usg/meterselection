@@ -235,7 +235,7 @@
   var ULTRASONIC = "Ultrasonic";
   var ROTARY_BAR = "Rotary (meter bar)";
   var ROTARY_PIPE = "Rotary (straight pipe)";
-  var ROTARY_ROOTS = "Rotary (roots)";
+  var ROTARY_ROOTS = "Rotary (Roots)";
   var TURBINE = "Turbine";
 
   var SLUG = {};
@@ -408,7 +408,8 @@
       out.push(q(slug + ".compensation", "Pressure compensation", COMPENSATION));
       var comp = get("compensation");
       if (comp === "None") {
-        out.push(q(slug + ".radio", "AMI/AMR radio", ["Yes", "No"], "yes_no"));
+        out.push(q(slug + ".radio", "Pulse Output or AMR adapter required",
+          ["Yes", "No"], "yes_no"));
         if (get("radio") === "Yes") {
           out.push(q(slug + ".index", "Index", ["TC/AMR", "ETC", "ES3"]));
         }
@@ -437,7 +438,7 @@
   }
 
   // ---- part numbers --------------------------------------------------
-  var QUOTE_NOTE = "contact Holland Supply for a quote";
+  var QUOTE_NOTE = "Contact Holland Supply for a quote";
   var ROOTS_MODEL_RE = /^DR(\d+[CM])(\d+)$/;
 
   // DR15C175 -> ["15C-175", "175"]: the part-number token and the rating.
@@ -714,7 +715,7 @@
       for (i = 0; i < meters.length; i++) models.push(meters[i].model);
     }
     var best = models[models.length - 1];
-    return "No " + mtype.toLowerCase() + " meter will work for this application (" +
+    return "No " + mtype + " meter will work for this application (" +
       displayModel(best) + ": " + evals[best].reason + ").";
   }
 
@@ -844,10 +845,19 @@
     // Exactly one type is sized. The question is a single choice, so a caller
     // sending several is either stale or confused; the first in tier order is
     // taken and the rest are called out rather than silently dropped.
+    //
+    // Matched without regard to case. "Rotary (roots)" was once spelt with a
+    // lower-case r, and a chatbot built against that spelling must not have
+    // its customer's choice dropped as "does not apply" over a capital letter.
     var requested = asList(payload.meter_types);
     var valid = [], chosenTypes = [], dropped = [];
+    var reqKeys = [], tierKeys = [];
+    for (i = 0; i < requested.length; i++) {
+      reqKeys.push(String(requested[i]).trim().toLowerCase());
+    }
     for (i = 0; i < tier.types.length; i++) {
-      if (contains(requested, tier.types[i])) valid.push(tier.types[i]);
+      tierKeys.push(tier.types[i].toLowerCase());
+      if (contains(reqKeys, tier.types[i].toLowerCase())) valid.push(tier.types[i]);
     }
     if (valid.length) chosenTypes = [valid[0]];
     if (valid.length > 1) {
@@ -856,7 +866,7 @@
         (valid.length === 2 ? " was" : " were") + " ignored.");
     }
     for (i = 0; i < requested.length; i++) {
-      if (!contains(tier.types, requested[i])) dropped.push(requested[i]);
+      if (!contains(tierKeys, reqKeys[i])) dropped.push(requested[i]);
     }
     if (dropped.length) {
       warnings.push("These meter types do not apply at this pressure and flow " +

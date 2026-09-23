@@ -298,7 +298,7 @@ SONIX_IQ = "Sonix IQ"
 ULTRASONIC = "Ultrasonic"
 ROTARY_BAR = "Rotary (meter bar)"
 ROTARY_PIPE = "Rotary (straight pipe)"
-ROTARY_ROOTS = "Rotary (roots)"
+ROTARY_ROOTS = "Rotary (Roots)"
 TURBINE = "Turbine"
 
 SLUG = {
@@ -480,7 +480,8 @@ def option_questions(slug, model, answers):
         out.append(_q(f"{slug}.compensation", "Pressure compensation", COMPENSATION))
         comp = get("compensation")
         if comp == "None":
-            out.append(_q(f"{slug}.radio", "AMI/AMR radio", ["Yes", "No"], "yes_no"))
+            out.append(_q(f"{slug}.radio", "Pulse Output or AMR adapter required",
+                           ["Yes", "No"], "yes_no"))
             if get("radio") == "Yes":
                 out.append(_q(f"{slug}.index", "Index", ["TC/AMR", "ETC", "ES3"]))
             # A "No" needs no index question: the rules fix it at TC.
@@ -518,7 +519,7 @@ def option_questions(slug, model, answers):
 # Part numbers
 # --------------------------------------------------------------------------
 
-QUOTE_NOTE = "contact Holland Supply for a quote"
+QUOTE_NOTE = "Contact Holland Supply for a quote"
 
 _ROOTS_MODEL_RE = re.compile(r"^DR(\d+[CM])(\d+)$")
 
@@ -850,8 +851,13 @@ def size_meters(payload):
     # Exactly one type is sized. The question is a single choice, so a caller
     # sending several is either stale or confused; the first in tier order is
     # taken and the rest are called out rather than silently dropped.
+    #
+    # Matched without regard to case. "Rotary (roots)" was once spelt with a
+    # lower-case r, and a chatbot built against that spelling must not have
+    # its customer's choice dropped as "does not apply" over a capital letter.
     requested = _as_list(payload.get("meter_types"))
-    valid = [t for t in tier["types"] if t in requested]
+    req_keys = {str(t).strip().lower() for t in requested}
+    valid = [t for t in tier["types"] if t.lower() in req_keys]
     chosen_types = valid[:1]
     if len(valid) > 1:
         warnings.append(
@@ -859,7 +865,8 @@ def size_meters(payload):
             f"{chosen_types[0]} was sized; {', '.join(valid[1:])} "
             + ("was" if len(valid) == 2 else "were") + " ignored."
         )
-    dropped = [t for t in requested if t not in tier["types"]]
+    tier_keys = {t.lower() for t in tier["types"]}
+    dropped = [t for t in requested if str(t).strip().lower() not in tier_keys]
     if dropped:
         warnings.append(
             "These meter types do not apply at this pressure and flow and were "
@@ -1027,7 +1034,7 @@ def _unavailable_message(mtype, tier, evals):
     models = arg if kind == "pick" else [m["model"] for m in FAMILIES[arg]["meters"]]
     best = models[-1]
     return (
-        f"No {mtype.lower()} meter will work for this application "
+        f"No {mtype} meter will work for this application "
         f"({display_model(best)}: {evals[best]['reason']})."
     )
 

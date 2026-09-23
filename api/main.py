@@ -104,7 +104,7 @@ class SizingRequest(BaseModel):
                 "inlet_units": "psi",
                 "flow": 9000,
                 "flow_units": "CFH",
-                "meter_types": ["Rotary (roots)"],
+                "meter_types": ["Rotary (Roots)"],
                 "answers": {
                     "rotary_roots.compensation": "Fix-Factored",
                     "rotary_roots.index": "ETC",

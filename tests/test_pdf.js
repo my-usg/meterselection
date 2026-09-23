@@ -136,7 +136,7 @@ async function main() {
   el(dom, "hscm-run-btn").click();
   await new Promise((r) => setTimeout(r, 80));
 
-  tickType(dom, "Rotary (roots)");
+  tickType(dom, "Rotary (Roots)");
   answer(dom, "rotary_roots.compensation", "Live");
   answer(dom, "rotary_roots.live", "Eagle MPplusII Instrument");
   answer(dom, "rotary_roots.eagle_type", "Rotary Corrector");
@@ -155,7 +155,7 @@ async function main() {
   );
   check(
     "the meter option section is headed by its type",
-    /Rotary \(roots\) Meter/.test(text),
+    /Rotary \(Roots\) Meter/.test(text),
     text.slice(0, 400)
   );
   check(
@@ -218,7 +218,7 @@ async function main() {
   check(
     "a quote-only meter prints the quote note in place of a part number",
     /Sonix IQ Meter/.test(text2) &&
-      /contact Holland Supply for a quote/.test(text2),
+      /Contact Holland Supply for a quote/.test(text2),
     text2
   );
 

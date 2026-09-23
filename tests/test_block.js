@@ -331,7 +331,7 @@ async function main() {
     "straight pipe is offered but reports why it will not work",
     (function () {
       tickType(dom, "Rotary (straight pipe)");
-      return /No rotary \(straight pipe\) meter will work/.test(text(dom));
+      return /No Rotary \(straight pipe\) meter will work/.test(text(dom));
     })()
   );
 
@@ -341,9 +341,9 @@ async function main() {
   await run(dom, { inlet: 60, flow: 12000 });
   check(
     "top tier offers roots, ultrasonic and turbine",
-    /Rotary \(roots\)/.test(text(dom)) && /Turbine/.test(text(dom))
+    /Rotary \(Roots\)/.test(text(dom)) && /Turbine/.test(text(dom))
   );
-  tickType(dom, "Rotary (roots)");
+  tickType(dom, "Rotary (Roots)");
   check(
     "asks for pressure compensation first",
     pendingIds(dom).indexOf("rotary_roots.compensation") !== -1
@@ -409,7 +409,7 @@ async function main() {
   answer(dom, "sonix_iq.pulse", "Yes");
   check(
     "shows the quote note rather than a part number",
-    /contact Holland Supply for a quote/.test(text(dom)) && partNumbers(dom).length === 0,
+    /Contact Holland Supply for a quote/.test(text(dom)) && partNumbers(dom).length === 0,
     text(dom).slice(0, 300)
   );
   check(
@@ -455,7 +455,7 @@ async function main() {
   await run(dom, { inlet: 26, flow: 2000 });
   check(
     "26 psi rules the small meters out entirely",
-    !/Diaphragm/.test(text(dom)) && /Rotary \(roots\)/.test(text(dom)),
+    !/Diaphragm/.test(text(dom)) && /Rotary \(Roots\)/.test(text(dom)),
     text(dom).slice(0, 240)
   );
 
@@ -482,7 +482,7 @@ async function main() {
   console.log("\nediting an input without re-running");
   dom = build();
   await run(dom, { inlet: 4, flow: 25000 });
-  tickType(dom, "Rotary (roots)");
+  tickType(dom, "Rotary (Roots)");
   answer(dom, "rotary_roots.compensation", "Live");
   answer(dom, "rotary_roots.live", "Eagle MPplusII Instrument");
   answer(dom, "rotary_roots.eagle_type", "Volume Corrector");
@@ -514,7 +514,7 @@ async function main() {
   );
 
   await run(dom, { inlet: 40, flow: 25000 });
-  tickType(dom, "Rotary (roots)");
+  tickType(dom, "Rotary (Roots)");
   answer(dom, "rotary_roots.compensation", "Live");
   answer(dom, "rotary_roots.live", "Eagle MPplusII Instrument");
   answer(dom, "rotary_roots.eagle_type", "Volume Corrector");
@@ -600,7 +600,7 @@ async function main() {
   console.log("\n23M roots meter: no questions");
   dom = build();
   await run(dom, { inlet: 200, flow: 250000 });
-  tickType(dom, "Rotary (roots)");
+  tickType(dom, "Rotary (Roots)");
   check(
     "ticking it produces a part number with no questions in between",
     pendingIds(dom).length === 0 &&

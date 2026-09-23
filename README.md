@@ -95,9 +95,9 @@ POST /api/meter-sizing
 
   -> "stage": "meter_type"
      "questions": [ { "id": "meter_type", "type": "single_select",
-                      "options": ["Rotary (roots)", "Ultrasonic", "Turbine"] } ]
+                      "options": ["Rotary (Roots)", "Ultrasonic", "Turbine"] } ]
 
-POST { ...same..., "meter_types": ["Rotary (roots)"] }
+POST { ...same..., "meter_types": ["Rotary (Roots)"] }
 
   -> "stage": "options"
      "questions": [ { "id": "rotary_roots.compensation",
@@ -123,7 +123,7 @@ The same call in the browser:
 window.USGMeterSizing.sizeMeters({
   inlet: 60, inlet_units: "psi",
   flow: 9000, flow_units: "CFH",
-  meter_types: ["Rotary (roots)"],
+  meter_types: ["Rotary (Roots)"],
   answers: { "rotary_roots.compensation": "Fix-Factored",
              "rotary_roots.index": "ETC" }
 });
@@ -202,8 +202,8 @@ is ignored rather than sized against.
 | SR275 | Diaphragm, Sonix IQ |
 | SIQ250 / SIQ425 | Sonix IQ, Ultrasonic |
 | Sonix600 / Sonix880 | Ultrasonic, Rotary (meter bar), Rotary (straight pipe) |
-| DD800 / DD1000 | Rotary (meter bar), Rotary (straight pipe), Rotary (roots) |
-| nothing above | Rotary (roots), Ultrasonic, Turbine |
+| DD800 / DD1000 | Rotary (meter bar), Rotary (straight pipe), Rotary (Roots) |
+| nothing above | Rotary (Roots), Ultrasonic, Turbine |
 
 "Ultrasonic" means Sonix 600/880 in the middle tiers and RMG in the top tier,
 which is why the type-to-meter mapping is held per tier rather than globally.

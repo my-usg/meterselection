@@ -153,7 +153,7 @@ async function main() {
   await new Promise((r) => setTimeout(r, 80));
   report("the meter type question", visibleText(dom));
 
-  tickType(dom, "Rotary (roots)");
+  tickType(dom, "Rotary (Roots)");
   answer(dom, "rotary_roots.compensation", "Live");
   answer(dom, "rotary_roots.live", "Eagle MPplusII Instrument");
   answer(dom, "rotary_roots.eagle_type", "Volume Corrector");
@@ -175,7 +175,7 @@ async function main() {
   el(dom2, "hscm-flow").value = "9000";
   el(dom2, "hscm-run-btn").click();
   await new Promise((r) => setTimeout(r, 80));
-  tickType(dom2, "Rotary (roots)");
+  tickType(dom2, "Rotary (Roots)");
   answer(dom2, "rotary_roots.compensation", "None");
   answer(dom2, "rotary_roots.radio", "No");
   let printed = "";

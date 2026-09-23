@@ -122,7 +122,7 @@ EXPECTED = [
         {"inlet": 2, "flow": 380, "meter_types": ["Sonix IQ"],
          "answers": {"sonix_iq.ferrule": "20LT", "sonix_iq.pulse": "Yes"}},
         {"manufacturer": "Sensus", "model": "Sonix IQ 250", "part_number": None,
-         "quote_note": "contact Holland Supply for a quote"},
+         "quote_note": "Contact Holland Supply for a quote"},
     ),
     (
         "Sonix 600 sample output",
@@ -153,7 +153,7 @@ EXPECTED = [
     ),
     (
         "roots 3M175 sample output, ETC index -> CIR / LITH",
-        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (Roots)"],
          "answers": {"rotary_roots.compensation": "Fix-Factored",
                      "rotary_roots.index": "ETC"}},
         {"manufacturer": "Dresser", "model": "3M175", "size": '2"',
@@ -161,7 +161,7 @@ EXPECTED = [
     ),
     (
         "an Eagle volume corrector puts CD in the roots part number",
-        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (Roots)"],
          "answers": {"rotary_roots.compensation": "Fix-Factored",
                      "rotary_roots.index": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Volume Corrector"}},
@@ -169,7 +169,7 @@ EXPECTED = [
     ),
     (
         "an Eagle rotary corrector puts CTR there instead",
-        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (Roots)"],
          "answers": {"rotary_roots.compensation": "Fix-Factored",
                      "rotary_roots.index": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Rotary Corrector"}},
@@ -177,7 +177,7 @@ EXPECTED = [
     ),
     (
         "the live path resolves the drive the same way - volume",
-        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (Roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Volume Corrector"}},
@@ -185,7 +185,7 @@ EXPECTED = [
     ),
     (
         "the live path resolves the drive the same way - rotary",
-        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (Roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Rotary Corrector"}},
@@ -195,7 +195,7 @@ EXPECTED = [
         # A 23M or larger cannot reach CTR - it is forced to a volume
         # corrector - so this is checked on a meter that still asks.
         "CTR takes the same NA / NA segments as CD",
-        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (Roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Rotary Corrector"}},
@@ -205,13 +205,13 @@ EXPECTED = [
         # The 23M is a forced-Eagle meter, so CD is the only index it can
         # carry; the rule being checked here is the missing rating segment.
         "the 232 psi roots meter drops the rating segment entirely",
-        {"inlet": 200, "flow": 250000, "meter_types": ["Rotary (roots)"]},
+        {"inlet": 200, "flow": 250000, "meter_types": ["Rotary (Roots)"]},
         {"model": "23M232",
          "part_number": "M.RT23M-232.FLG.CD.NA.VDN.NA.NA.NA"},
     ),
     (
         "a 175-rated meter on the same CD index keeps its rating segment",
-        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (Roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Volume Corrector"}},
@@ -220,7 +220,7 @@ EXPECTED = [
     ),
     (
         "a 175-rated roots meter still carries its rating segment",
-        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (Roots)"],
          "answers": {"rotary_roots.compensation": "None",
                      "rotary_roots.radio": "No"}},
         {"model": "3M175",
@@ -228,14 +228,14 @@ EXPECTED = [
     ),
     (
         "roots IMC index -> CIR / ALK",
-        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (Roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "IMC-W2-PTZ index"}},
         {"part_number": "M.RT3M-175.FLG.IMC-W2-PTZ.CIR.175.VDN.NA.ALK.NA"},
     ),
     (
         "roots with no compensation and no radio -> TC, NA / NA",
-        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (Roots)"],
          "answers": {"rotary_roots.compensation": "None",
                      "rotary_roots.radio": "No"}},
         {"part_number": "M.RT3M-175.FLG.TC.NA.175.VDN.NA.NA.NA"},
@@ -259,7 +259,7 @@ EXPECTED = [
         {"inlet": 60, "flow": 9000, "meter_types": ["Ultrasonic"],
          "answers": {"ultrasonic.compensation": "Live"}},
         {"manufacturer": "RMG", "model": "RSM200", "part_number": None,
-         "quote_note": "contact Holland Supply for a quote"},
+         "quote_note": "Contact Holland Supply for a quote"},
     ),
 ]
 
@@ -273,7 +273,7 @@ EXPECTED_TOP = [
     ),
     (
         "Eagle rotary corrector on live roots, 60 psi -> P1 102 and INTEG",
-        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (Roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Rotary Corrector"}},
@@ -281,7 +281,7 @@ EXPECTED_TOP = [
     ),
     (
         "a CTR drive is paired with the rotary corrector instrument",
-        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (Roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Rotary Corrector"}},
@@ -292,7 +292,7 @@ EXPECTED_TOP = [
     ),
     (
         "a CD drive is paired with the volume corrector instrument",
-        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (Roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Volume Corrector"}},
@@ -303,7 +303,7 @@ EXPECTED_TOP = [
     ),
     (
         "the confirmed Eagle index raises no warning",
-        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (Roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Rotary Corrector"}},
@@ -336,7 +336,7 @@ EXPECTED_TOP = [
     ),
     (
         "a 23M or larger roots meter asks nothing and completes at once",
-        {"inlet": 200, "flow": 250000, "meter_types": ["Rotary (roots)"]},
+        {"inlet": 200, "flow": 250000, "meter_types": ["Rotary (Roots)"]},
         lambda r: r["stage"] == "complete" and r["questions"] == []
         and r["results"][0]["questions"] == [],
     ),
@@ -352,13 +352,13 @@ EXPECTED_TOP = [
     ),
     (
         "a forced meter comes with a live Eagle volume corrector",
-        {"inlet": 200, "flow": 250000, "meter_types": ["Rotary (roots)"]},
+        {"inlet": 200, "flow": 250000, "meter_types": ["Rotary (Roots)"]},
         lambda r: r["eagle"]["type"] == "Volume Corrector"
         and r["eagle"]["part_number"].startswith("I.MPP-MVC."),
     ),
     (
         "and says on screen what was assumed for it",
-        {"inlet": 200, "flow": 250000, "meter_types": ["Rotary (roots)"]},
+        {"inlet": 200, "flow": 250000, "meter_types": ["Rotary (Roots)"]},
         lambda r: {f["label"]: f["value"] for f in r["results"][0]["fields"]}.get(
             "Pressure compensation"
         ) == "Live"
@@ -368,7 +368,7 @@ EXPECTED_TOP = [
     ),
     (
         "a 16M or smaller still asks for its compensation",
-        {"inlet": 60, "flow": 14000, "meter_types": ["Rotary (roots)"]},
+        {"inlet": 60, "flow": 14000, "meter_types": ["Rotary (Roots)"]},
         lambda r: r["stage"] == "options"
         and r["questions"][0]["id"] == "rotary_roots.compensation",
     ),
@@ -411,7 +411,7 @@ EXPECTED_TOP = [
     ),
     (
         "rotation reads as a direction alone, for both correctors",
-        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"],
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (Roots)"],
          "answers": {"rotary_roots.compensation": "Live",
                      "rotary_roots.live": "Eagle MPplusII Instrument",
                      "rotary_roots.eagle_type": "Rotary Corrector"}},
@@ -467,6 +467,51 @@ EXPECTED_TOP = [
                     for f in r["results"][0]["identity_fields"]),
     ),
     (
+        "Roots is capitalised in the meter type and the heading",
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (Roots)"]},
+        lambda r: "Rotary (Roots)" in r["meter_type_question"]["options"]
+        and r["results"][0]["heading"] == "Rotary (Roots) Meter",
+    ),
+    (
+        "a caller still using the old lower-case spelling is not dropped",
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (roots)"]},
+        lambda r: len(r["results"]) == 1
+        and r["results"][0]["type"] == "Rotary (Roots)"
+        and not any("do not apply" in w for w in r["warnings"]),
+    ),
+    (
+        "and the type matches whatever the case",
+        {"inlet": 60, "flow": 12000, "meter_types": ["ROTARY (ROOTS)"]},
+        lambda r: r["results"][0]["type"] == "Rotary (Roots)",
+    ),
+    (
+        "a type that genuinely does not apply is still called out",
+        {"inlet": 60, "flow": 12000, "meter_types": ["Diaphragm"]},
+        lambda r: r["results"] == []
+        and any("do not apply" in w for w in r["warnings"]),
+    ),
+    (
+        "Roots stays capitalised inside the no-meter message too",
+        # 10C25 cannot carry 3,900 CFH at 20 psi, so its type is offered with
+        # no meter behind it; the message must not lower-case the type name.
+        {"inlet": 20, "flow": 3900, "meter_types": ["Rotary (straight pipe)"]},
+        lambda r: r["results"][0]["available"] is False
+        and r["results"][0]["message"].startswith("No Rotary (straight pipe) meter"),
+    ),
+    (
+        "the radio question is worded as a pulse output or AMR adapter",
+        {"inlet": 60, "flow": 12000, "meter_types": ["Rotary (Roots)"],
+         "answers": {"rotary_roots.compensation": "None"}},
+        lambda r: r["questions"][0]["id"] == "rotary_roots.radio"
+        and r["questions"][0]["label"] == "Pulse Output or AMR adapter required",
+    ),
+    (
+        "the quote note starts with a capital",
+        {"inlet": 2, "flow": 380, "meter_types": ["Sonix IQ"],
+         "answers": {"sonix_iq.ferrule": "20LT", "sonix_iq.pulse": "Yes"}},
+        lambda r: r["results"][0]["quote_note"] == "Contact Holland Supply for a quote",
+    ),
+    (
         "no Eagle when a turbo has no compensation",
         {"inlet": 300, "flow": 100000, "meter_types": ["Turbine"],
          "answers": {"turbine.compensation": "None", "turbine.slot": "None"}},
@@ -481,7 +526,7 @@ EXPECTED_TOP = [
         "tier 5: nothing small works, so roots / ultrasonic / turbine",
         {"inlet": 60, "flow": 9000},
         lambda r: r["meter_type_question"]["options"]
-        == ["Rotary (roots)", "Ultrasonic", "Turbine"],
+        == ["Rotary (Roots)", "Ultrasonic", "Turbine"],
     ),
     (
         "an SR275 is not offered above its 5 psi rating",

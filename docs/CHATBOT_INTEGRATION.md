@@ -125,8 +125,11 @@ that reads `questions` before checking `ok` will crash on a blank form.
    reveal a question that only exists because of the answer just given, so
    answering the batch at once means asking about things the customer has not
    been offered.
-3. **Offer exactly the strings in `options`.** The tool matches on them
-   literally. `"live"` will not match `"Live"`.
+3. **Offer exactly the strings in `options`.** The tool matches option
+   answers literally: `"live"` will not match `"Live"`. The one exception is
+   the meter type, which is matched without regard to case, so a bot built
+   against the older spelling `"Rotary (roots)"` still works — but send
+   `"Rotary (Roots)"`, as the options list it.
 4. **When `ok` is true, `questions` is empty exactly when `stage` is
    `"complete"`.** That is the signal to stop asking. Do not test for anything
    else, and do not read `questions` before checking `ok`.
@@ -185,7 +188,7 @@ Notes that matter:
   "inlet_units": "psi",
   "flow": 12000,
   "flow_units": "CFH",
-  "meter_types": ["Rotary (roots)"],
+  "meter_types": ["Rotary (Roots)"],
   "answers": {
     "rotary_roots.compensation": "Live",
     "rotary_roots.live": "Eagle MPplusII Instrument",
@@ -238,9 +241,9 @@ rather than handling a status code.
 
 | Field | Meaning |
 | --- | --- |
-| `type` | the meter type, e.g. `Rotary (roots)` |
+| `type` | the meter type, e.g. `Rotary (Roots)` |
 | `slug` | its answer-key namespace, e.g. `rotary_roots` |
-| `heading` | display heading, e.g. `Rotary (roots) Meter` |
+| `heading` | display heading, e.g. `Rotary (Roots) Meter` |
 | `available` | **false** when the type is offered but no meter behind it works. Then read `message` and skip the rest |
 | `message` | present when `available` is false: why nothing works |
 | `meter` | internal model code, e.g. `DR3M175`. For diagnostics, not for the customer |
@@ -256,7 +259,7 @@ rather than handling a status code.
 | `fields` | the two concatenated. **Use this to present a finished selection** |
 | `lines` | the same content as flat strings, no labels |
 | `part_number` | the SKU, or **null** |
-| `quote_note` | present when `part_number` is null: `contact Holland Supply for a quote` |
+| `quote_note` | present when `part_number` is null: `Contact Holland Supply for a quote` |
 | `warnings` | notes specific to this entry |
 
 ### The `eagle` object
@@ -316,7 +319,12 @@ rotary_meter_bar.ferrule : 30LT | 45LT | 1-1/2
 rotary_straight_pipe.connection : 30LT | 45LT | 1-1/2
 ```
 
-### Rotary (roots), below the 23M
+### Rotary (Roots), below the 23M
+
+`rotary_roots.radio` is labelled **"Pulse Output or AMR adapter required"**.
+Its id still says `radio` — ids are what the bot keys answers on, so only the
+wording changed.
+
 ```
 rotary_roots.compensation = None
     rotary_roots.radio = Yes
@@ -333,7 +341,7 @@ rotary_roots.compensation = Live
         rotary_roots.eagle_type : Volume Corrector | Rotary Corrector
 ```
 
-### Rotary (roots), the 23M and larger
+### Rotary (Roots), the 23M and larger
 **No questions at all.** Compensation is always Live, correction always an
 Eagle, corrector always a Volume Corrector. The assumption is reported in
 `identity_fields` so the customer can see it — read it out.
@@ -361,8 +369,8 @@ from the response.
 | SR275 | Diaphragm, Sonix IQ |
 | SIQ250 / SIQ425 | Sonix IQ, Ultrasonic |
 | Sonix600 / Sonix880 | Ultrasonic, Rotary (meter bar), Rotary (straight pipe) |
-| DD800 / DD1000 | Rotary (meter bar), Rotary (straight pipe), Rotary (roots) |
-| nothing above | Rotary (roots), Ultrasonic, Turbine |
+| DD800 / DD1000 | Rotary (meter bar), Rotary (straight pipe), Rotary (Roots) |
+| nothing above | Rotary (Roots), Ultrasonic, Turbine |
 
 "Ultrasonic" means Sonix 600/880 in the middle tiers and RMG in the top tier.
 
@@ -385,7 +393,7 @@ treat it as an error.
 | Roots | `M.RT<model>.FLG.<index>.<A>.<rating>.VDN.NA.<B>.NA` | `M.RT3M-175.FLG.ETC.CIR.175.VDN.NA.LITH.NA` |
 | Turbine | `M.T-<n>.<ANSI>.<index>.<slot>.<conn>` | `M.T-18.300.VDR.HF-SS-C.CND` |
 | Eagle | `I.MPP-MVC.<P1>.N.N.N.TC.CVI.CCW.N.ALK.8X6` | `I.MPP-MVC.290.N.N.N.TC.CVI.CCW.N.ALK.8X6` |
-| Sonix IQ, RMG | none — `contact Holland Supply for a quote` | |
+| Sonix IQ, RMG | none — `Contact Holland Supply for a quote` | |
 
 Two roots quirks worth knowing, because they look like bugs:
 
@@ -456,13 +464,13 @@ Cust: 60 psi, 12,000 CFH
   POST {"inlet":60,"inlet_units":"psi","flow":12000,"flow_units":"CFH"}
   -> stage "meter_type"
      questions[0] = {id:"meter_type", type:"single_select",
-                     options:["Rotary (roots)","Ultrasonic","Turbine"]}
+                     options:["Rotary (Roots)","Ultrasonic","Turbine"]}
 
-Bot:  Three meter types will work here: rotary (roots), ultrasonic, or
-      turbine. Which would you like?
+Bot:  Three meter types will work here: Rotary (Roots), Ultrasonic, or
+      Turbine. Which would you like?
 Cust: roots
 
-  POST {...same..., "meter_types":["Rotary (roots)"]}
+  POST {...same..., "meter_types":["Rotary (Roots)"]}
   -> stage "options"
      questions[0] = {id:"rotary_roots.compensation",
                      options:["None","Fix-Factored","Live"]}
@@ -491,7 +499,7 @@ Cust: rotary
      part_numbers: ["M.RT3M-175.FLG.CTR.NA.175.VDN.NA.NA.NA",
                     "I.MPP-MRC.102.N.N.N.TC.INTEG.CCW.N.ALK.8X6"]
 
-Bot:  Rotary (roots) Meter — Dresser 3M175, 2", 15,200 CFH at 60 psi.
+Bot:  Rotary (Roots) Meter — Dresser 3M175, 2", 15,200 CFH at 60 psi.
       Part number M.RT3M-175.FLG.CTR.NA.175.VDN.NA.NA.NA
       With an Eagle MPplusII Rotary Corrector, 0-102 psi transducer,
       part number I.MPP-MRC.102.N.N.N.TC.INTEG.CCW.N.ALK.8X6
